@@ -1,0 +1,172 @@
+<template>
+  <div class="p-4 space-y-4" style="font-family: 'cygre', sans-serif; font-size: 17px; margin-top: 60px;">
+    <PageHeader title="Receipt Reports" subtitle="Please search report by entering date range" class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-400">
+      <div class="flex flex-col sm:flex-row sm:space-x-2">
+        <div class="flex flex-col mb-2">
+          <label for="fromDate" class="mb-1">From Date</label>
+          <input type="date" v-model="fromDate" class="p-2 border rounded" id="fromDate" />
+        </div>
+
+        <div class="flex flex-col mb-2">
+          <label for="toDate" class="mb-1">To Date</label>
+          <input type="date" v-model="toDate" class="p-2 border rounded" id="toDate" />
+        </div>
+
+        <div class="flex space-x-2 mt-4 sm:mt-0">
+          <button @click="fetchReport" class="p-2 py-2 bg-blue-500 text-white rounded" style="height: 42px; margin-top: 27px; border-radius: 15px;">
+            Fetch Report
+          </button>
+          <button @click="exportToExcel" class="p-2 bg-green-500 text-white rounded ml-2" style="height: 42px; margin-top: 27px; border-radius: 15px;">
+            Export to Excel
+          </button>
+          <button @click="exportToPDF" class="p-2 bg-red-500 text-white rounded ml-2" style="height: 42px; margin-top: 27px; border-radius: 15px;">
+            Export to PDF
+          </button>
+        </div>
+      </div>
+    </PageHeader>
+
+    <div class="overflow-x-auto" style="margin-top: 30px;">
+      <table class="min-w-full divide-y py-5 divide-gray-200 rounded-lg" id="receiptTable">
+        <thead class="bg-teal-10">
+          <tr>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">No</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Engineer</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Description</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Receipt File</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Submitted At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(receipt, index) in paginatedReceipts" :key="receipt.receipt_id">
+            <td class="px-4 py-2">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+            <td class="px-4 py-2">{{ receipt.user.name }}</td>
+            <td class="px-4 py-2">{{ receipt.description }}</td>
+            <td class="px-4 py-2">{{ receipt.receipt_file }}</td>
+            <td class="px-4 py-2">{{ formatDate(receipt.created_at) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div v-if="!filteredReceipts.length" class="text-center text-gray-500">
+      No records found.
+    </div>
+
+    <div class="flex justify-center mt-4">
+      <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1" class="px-4 py-2 bg-gray-300 rounded">
+        Previous
+      </button>
+      <span class="px-4 py-2">Page {{ currentPage }}</span>
+      <button @click="changePage(currentPage + 1)" :disabled="currentPage * itemsPerPage >= filteredReceipts.length" class="px-4 py-2 bg-gray-300 rounded">
+        Next
+      </button>
+    </div>
+
+    <div v-if="toastMessage" :class="toastClass" class="fixed bottom-0 right-0 m-4 p-4 rounded">
+      {{ toastMessage }}
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+import axios from '@/axios';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from '@e965/xlsx'; // Import the xlsx library
+
+const receipts = ref([]);
+const fromDate = ref('');
+const toDate = ref('');
+const currentPage = ref(1);
+const itemsPerPage = 10;
+const toastMessage = ref('');
+const toastClass = ref('bg-green-500 text-white');
+
+async function fetchReport() {
+  try {
+    const response = await axios.get('/api/reports/for-receipts', {
+      params: {
+        from: fromDate.value,
+        to: toDate.value,
+      },
+    });
+    receipts.value = response.data.data;
+    toastMessage.value = response.data.message;
+  } catch (error) {
+    console.error('Error fetching report:', error);
+    toastMessage.value = error.response?.data?.message || 'An error occurred while fetching the report.';
+  }
+}
+
+const filteredReceipts = computed(() => {
+  return receipts.value; // Implement filtering logic if needed
+});
+
+const paginatedReceipts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return filteredReceipts.value.slice(start, start + itemsPerPage);
+});
+
+function changePage(page) {
+  currentPage.value = page;
+}
+
+function formatDate(date) {
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  return new Date(date).toLocaleDateString('en-GB', options);
+}
+
+function exportToPDF() {
+  const doc = new jsPDF();
+  const tableColumn = ["No", "Engineer", "Description", "Receipt File", "Submitted At"];
+  const tableRows = [];
+
+  // Loop through filtered receipts
+  filteredReceipts.value.forEach((receipt, index) => {
+    const receiptData = [
+      (currentPage.value - 1) * itemsPerPage + index + 1,
+      receipt.user.name,
+      receipt.description,
+      receipt.receipt_file,
+      formatDate(receipt.created_at),
+    ];
+    tableRows.push(receiptData);
+  });
+
+  // Generate PDF
+  autoTable(doc, {
+    head: [tableColumn],
+    body: tableRows,
+    startY: 30,
+    theme: 'grid',
+    headStyles: { fillColor: [0, 128, 128] },
+    styles: { fontSize: 10 },
+  });
+
+  doc.text("Receipt Reports", 14, 15);
+  doc.save('receipts_report.pdf');
+}
+
+// New export to Excel function
+function exportToExcel() {
+  const worksheet = XLSX.utils.json_to_sheet(filteredReceipts.value.map((receipt, index) => ({
+    No: (currentPage.value - 1) * itemsPerPage + index + 1,
+    User: receipt.user.name,
+    Description: receipt.description,
+    "Receipt File": receipt.receipt_file,
+    "Created At": formatDate(receipt.created_at),
+  })));
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Receipts');
+
+  // Save the Excel file
+  XLSX.writeFile(workbook, 'receipts_report.xlsx');
+}
+</script>
+
+<style scoped>
+/* Add any additional styles here */
+</style>

@@ -1,0 +1,260 @@
+<template>
+  <div class="p-4 space-y-4" style="font-family: 'cygre', serif; font-size: 17px">
+    <PageHeader subtitle="All Projects">
+      <div class="flex flex-col sm:flex-row sm:space-x-2">
+        <router-link to="/assign-project">
+          <BaseButton @click="addNewUser" style="background-color: #2e4053;" class="w-full sm:w-auto">
+            Assign project 
+            <span class="ml-2" aria-hidden="true"><i class="fas fa-plus"></i></span>
+          </BaseButton>
+        </router-link>
+      </div>
+    </PageHeader>
+
+    <div class="flex items-center mb-4 space-x-4">
+      <input
+        type="text"
+        v-model="filter"
+        placeholder="Search..."
+        class="w-full p-2 border rounded sm:w-auto"
+      />
+
+      <button @click="exportToExcel" class="flex items-center p-2 space-x-2 text-white rounded hover:bg-green-600"
+        style="background-color:white;color:#229954; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;">
+        Export to Excel
+        <span class="ml-2" aria-hidden="true"><i class="fas fa-file-excel" style="color:#edbb99"></i></span>
+      </button>
+
+      <button @click="exportToPDF" class="flex items-center p-2 space-x-2 text-white rounded hover:bg-green-600"
+        style="background-color:white;color:#229954; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;">
+        Export to PDF
+        <span class="ml-2" aria-hidden="true"><i class="fas fa-file-pdf"></i></span>
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full divide-y divide-gray-200 rounded-table dark:divide-gray-700" id="data-table"
+        style="box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;">
+        <thead class="bg-gray-50 dark:bg-neutral-700"
+          style="box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;">
+          <tr>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">No</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Project Name</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Engineer</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Created By</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Start Date</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">End Date</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Contract Title</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Created At</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Status</th>
+           
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Follow Up</th>
+            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Action</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200 dark:bg-dark-header dark:divide-gray-700">
+          <tr v-for="(project, index) in paginatedProjects" :key="project.project_id">
+            <td class="table-data">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
+            <td class="table-data">{{ project.project_name || 'NA' }}</td>
+            <td class="table-data">{{ project.user?.name || 'NA' }}</td>
+            <td class="table-data">{{ project.created_by || 'NA' }}</td>
+            <td class="table-data">{{ formatDate(project.start_date) || 'NA' }}</td>
+            <td class="table-data">{{ formatDate(project.end_date) || 'NA' }}</td>
+            <td class="table-data">{{ project.contract?.title || 'NA' }}</td>
+            <td class="table-data">{{ formatDate(project.created_at) || 'NA' }}</td>
+            <td class="table-data">
+              <button
+                :class="{
+                  'bg-yellow-500': project.project_status === 'on-progress',
+                  'bg-green-500': project.project_status === 'completed',
+                  'bg-red-500': project.project_status === 'failed'
+                }"
+                class="btn text-white rounded-full w-24"
+              >
+                {{ project.project_status || 'NA' }}
+              </button>
+            </td>
+          
+            <td class="table-data">{{ project.follow_up || 'NA' }}</td>
+            <td class="table-data">
+              <i
+                @click="editProject(project.project_id)"
+                class="fas fa-edit"
+                style="color:#21618c; font-weight:bold; font-size:17px"
+              ></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="flex justify-center mt-4">
+      <button 
+        :disabled="currentPage === 1" 
+        @click="changePage(currentPage - 1)" 
+        class="px-4 py-2 bg-gray-300 rounded-l-lg hover:bg-gray-400 disabled:opacity-50">
+        Previous
+      </button>
+      <span class="px-4 py-2">Page {{ currentPage }}</span>
+      <button 
+        :disabled="currentPage * itemsPerPage >= filteredProjects.length" 
+        @click="changePage(currentPage + 1)" 
+        class="px-4 py-2 bg-gray-300 rounded-r-lg hover:bg-gray-400 disabled:opacity-50">
+        Next
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from '@/axios'; // Ensure this points to your axios instance
+import { useToast } from 'vue-toastification';
+import * as XLSX from '@e965/xlsx';
+import jsPDF from 'jspdf';
+import { saveAs } from 'file-saver';
+import autoTable from 'jspdf-autotable'; // Import autoTable for table formatting in PDF
+
+const router = useRouter();
+const toast = useToast();
+
+const projects = ref([]);
+const filter = ref('');
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+// Fetch data when component is mounted
+onMounted(async () => {
+  await fetchProjects();
+});
+
+// Fetch projects data from the API and apply null safety defaults
+async function fetchProjects() {
+  try {
+    const response = await axios.get('api/projects'); // Ensure this is the correct endpoint
+    projects.value = response.data.data.map(project => ({
+      project_id: project.project_id,
+      project_name: project.project_name || 'NA',
+      user: project.user || { name: 'NA' },
+      created_by: project.created_by || 'NA',
+      start_date: project.start_date || 'NA',
+      end_date: project.end_date || 'NA',
+      extended_date: project.extended_date || 'NA',
+      project_status: project.project_status || 'NA',
+      contract: project.contract || { title: 'NA' },
+      follow_up: project.follow_up || 'NA',
+      created_at: project.created_at || 'NA'
+    }));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+// Format date to a readable format
+function formatDate(date) {
+  if (!date || date === 'NA') return 'NA';
+  const d = new Date(date);
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+// Navigate to edit project page
+function editProject(projectId) {
+  router.push({ name: 'EditAssignedProject', params: { project_id: projectId } });
+}
+
+// Computed property to filter the projects
+const filteredProjects = computed(() => {
+  return projects.value.filter(entry =>
+    (entry.project_name || 'NA').toLowerCase().includes(filter.value.toLowerCase()) ||
+    (entry.created_by || 'NA').toLowerCase().includes(filter.value.toLowerCase()) ||
+    (entry.project_status || 'NA').toLowerCase().includes(filter.value.toLowerCase()) ||
+    (entry.contract?.title || 'NA').toLowerCase().includes(filter.value.toLowerCase()) ||
+    (entry.follow_up || 'NA').toLowerCase().includes(filter.value.toLowerCase())
+  );
+});
+
+// Computed property for paginated projects
+const paginatedProjects = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return filteredProjects.value.slice(start, start + itemsPerPage);
+});
+
+// Change page function
+function changePage(page) {
+  if (page > 0 && page <= Math.ceil(filteredProjects.value.length / itemsPerPage)) {
+    currentPage.value = page;
+  }
+}
+
+// Handle errors and display as toast messages
+function handleError(error) {
+  let message = 'An unexpected error occurred';
+
+  if (error.response) {
+    if (error.response.data && error.response.data.message) {
+      message = error.response.data.message;
+    } else {
+      message = error.response.statusText;
+    }
+  } else if (error.request) {
+    message = 'No response from server';
+  }
+
+  toast.error(message);
+}
+
+// Export to Excel
+function exportToExcel() {
+  const exportData = filteredProjects.value.map(project => ({
+    No: projects.value.indexOf(project) + 1,
+    'Project Name': project.project_name,
+    Engineer: project.user.name,
+    'Created By': project.created_by,
+    'Start Date': formatDate(project.start_date),
+    'End Date': formatDate(project.end_date),
+    'Contract Title': project.contract.title,
+    'Created At': formatDate(project.created_at),
+    Status: project.project_status,
+    'Extension Date': formatDate(project.extended_date),
+    'Follow Up': project.follow_up
+  }));
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Projects');
+  XLSX.writeFile(wb, 'projects.xlsx');
+}
+
+// Export to PDF
+function exportToPDF() {
+  const doc = new jsPDF();
+  const tableData = paginatedProjects.value.map((project, index) => [
+    index + 1 + (currentPage.value - 1) * itemsPerPage,
+    project.project_name,
+    project.user.name,
+    project.created_by,
+    formatDate(project.start_date),
+    formatDate(project.end_date),
+    project.contract.title,
+    formatDate(project.created_at),
+    project.project_status,
+    formatDate(project.extended_date),
+    project.follow_up
+  ]);
+
+  autoTable(doc, {
+    head: ['No', 'Project Name', 'Engineer', 'Created By', 'Start Date', 'End Date', 'Contract Title', 'Created At', 'Status', 'Extension Date', 'Follow Up'],
+    body: tableData,
+  });
+
+  doc.save('projects.pdf');
+}
+</script>
+
+<style scoped>
+.table-data {
+  padding: 1rem;
+  text-align: left;
+}
+</style>
