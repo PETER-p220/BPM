@@ -1353,6 +1353,7 @@ const routes = [
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
+            
             {
                 path: 'hod/view-update',
                 name: 'HodViewUpdate',
@@ -1667,7 +1668,7 @@ const routes = [
                 name: 'ResetPasswordRequest',
                 component: ResetPasswordRequest,
             },
-            
+
             {
                 path: 'update-password',
                 name: 'ResetPasswordPage',
