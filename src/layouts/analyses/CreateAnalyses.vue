@@ -240,10 +240,10 @@
                 :disabled="isLoading || !isFormValid"
               >
                 <span v-if="isLoading">
-                  <i class="fas fa-spinner fa-spin"></i> Submitting...
+                  <i class="fas fa-spinner fa-spin"></i> Submitting........
                 </span>
                 <span v-else>
-                  <i class="fas fa-upload"></i> Submit Analysis
+                  <i class="fas fa-upload"></i> Submit Analysis 
                 </span>
               </button>
 
