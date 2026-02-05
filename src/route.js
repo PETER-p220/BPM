@@ -96,6 +96,12 @@ import TenderUserEditUpdatesVue from "./layouts/allUpdates/TenderUserEditUpdates
 import AccntantViewUpdateVue from "./layouts/allUpdates/AccntantViewUpdate.vue";
 import AccntantEditUpdateVue from "./layouts/allUpdates/AccntantEditUpdate.vue";
 import AccntantSubmitUpdateVue from "./layouts/allUpdates/AccntantCreateUpdate.vue";
+import HrCreateUpdate from "./layouts/allUpdates/HrCreateUpdate.vue";
+import HrViewUpdates from "./layouts/allUpdates/HrViewUpdates.vue";
+import HrCreateAttendance from "./layouts/attendance/HrCreateAttendance.vue";
+import HrManageAttendance from "./layouts/attendance/HrManageAttendance.vue";
+import HrCreateMinutes from "./layouts/meetingMenutes/HrCreateMinutes.vue";
+import HrViewMinutes from "./layouts/meetingMenutes/HrViewMinutes.vue";
 import MySchedulesVue from "./layouts/priceshedules/MySchedules.vue";
 import AddSheduleVue from "./layouts/priceshedules/AddShedule.vue";
 import ManageAwardedTenders from "./layouts/awardedtenders/ManageAwardedTenders.vue";
@@ -1627,6 +1633,42 @@ const routes = [
                 path: 'request-for/projects',
                 name: 'HrViewProjectRequests',
                 component:  HrViewProjectRequests,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
+                path: '/hr-create-update',
+                name: 'HrCreateUpdate',
+                component: HrCreateUpdate,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
+                path: '/hr-view-updates',
+                name: 'HrViewUpdates',
+                component: HrViewUpdates,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
+                path: '/hr-create-attendance',
+                name: 'HrCreateAttendance',
+                component: HrCreateAttendance,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
+                path: '/hr-manage-attendance',
+                name: 'HrManageAttendance',
+                component: HrManageAttendance,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
+                path: '/hr-create-minutes',
+                name: 'HrCreateMinutes',
+                component: HrCreateMinutes,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
+                path: '/hr-view-minutes',
+                name: 'HrViewMinutes',
+                component: HrViewMinutes,
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
         ],

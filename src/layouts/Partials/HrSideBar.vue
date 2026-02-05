@@ -123,7 +123,7 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -228,14 +228,14 @@ const navigations = ref([
         icon: "fas fa-plus-circle",
         label: "Submit Update",
         name: "HrCreateUpdate",
-        path: "AccntantCreateUpdate",
+        path: "HrCreateUpdate",
         active: false
       },
       {
         icon: "fas fa-list",
         label: "Manage Updates",
         name: "HrViewUpdates",
-        path: "AccntantViewUpdate",
+        path: "HrViewUpdates",
         active: false
       }
     ]
@@ -250,28 +250,28 @@ const navigations = ref([
         icon: "fas fa-user-check",
         label: "Create Attendance",
         name: "HrCreateAttendance",
-        path: "AccntntCreateAttendance",
+        path: "HrCreateAttendance",
         active: false
       },
       {
         icon: "fas fa-clipboard-list",
         label: "Manage Attendance",
         name: "HrManageAttendance",
-        path: "AccountantGetAttendance",
+        path: "HrManageAttendance",
         active: false
       },
       {
         icon: "fas fa-plus",
         label: "Create Minutes",
         name: "HrCreateMinutes",
-        path: "AccontntCreateUpdate",
+        path: "HrCreateMinutes",
         active: false
       },
       {
         icon: "fas fa-file-alt",
-        label: "View Minutes",
+        label: "Manage Minutes",
         name: "HrViewMinutes",
-        path: "AccontntGetMinutes",
+        path: "HrViewMinutes",
         active: false
       }
     ]
@@ -279,12 +279,15 @@ const navigations = ref([
 ]);
 
 const clickNavigation = (navigation, index) => {
+  console.log('Navigation clicked:', navigation);
+  
   if (hasChild(navigation)) {
     // Close all other navigation menus
     navigations.value.forEach((item, idx) => {
       if (idx !== index && item.name) item.active = false;
     });
     navigations.value[index].active = !navigations.value[index].active;
+    console.log('Meetings navigation active:', navigations.value[index].active);
   } else {
     navigateToPath(navigation);
   }
@@ -315,17 +318,28 @@ const getIconWrapperClass = (navigation) => {
   }
   return '';
 };
+
+// Debug: Log navigation items on component mount
+onMounted(() => {
+  console.log('HR Sidebar Navigation Items:', navigations.value);
+  const meetingsNav = navigations.value.find(nav => nav.name === 'MeetingsManagement');
+  if (meetingsNav) {
+    console.log('Meetings Navigation Children:', meetingsNav.children);
+  }
+});
 </script>
 
 <style scoped>
 .sidebar-container {
-  height: 100%;
+  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(to bottom, #1e293b, #0f172a);
   color: white;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   overflow: hidden;
+  position: relative;
 }
 
 /* Header */
