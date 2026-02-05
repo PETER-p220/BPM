@@ -27,5 +27,5 @@ export default {
 </script>
 
 <script setup>
-
+import HodSideBar from './HodSideBar.vue'
 </script>

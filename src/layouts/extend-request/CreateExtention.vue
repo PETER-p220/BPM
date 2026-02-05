@@ -39,13 +39,19 @@
                   id="analysisSelect"
                   class="w-full px-3 py-2 border rounded form-control"
                   v-model="requestData.analysis_id"
-                  :enabled="requestData.project_id"
+                  :disabled="!requestData.project_id"
+                  @change="onAnalysisSelected"
                 >
                   <option value="">Select an analysis item</option>
                   <option v-for="analysis in analysisItems" :key="analysis.analysis_id" :value="analysis.analysis_id">
-                    {{ analysis.items[0] || 'N/A' }}
+                    {{ analysis.items?.[0] || analysis.item_description || 'N/A' }}
+                    (Qty: {{ analysis.quantity || 0 }}, Amount: {{ analysis.amount || 0 }})
                   </option>
                 </select>
+                <div v-if="selectedAnalysis" class="mt-2 text-sm text-gray-600">
+                  <p><strong>Available Quantity:</strong> {{ selectedAnalysis.quantity || 0 }}</p>
+                  <p><strong>Available Amount:</strong> {{ selectedAnalysis.amount || 0 }}</p>
+                </div>
               </div>
             </div>
   
@@ -139,12 +145,23 @@
   });
   const projects = ref([]);
   const analysisItems = ref([]);
+  const selectedAnalysis = ref(null);
   const isLoading = ref(false);
   
   // Fetch projects on component mount
   onMounted(async () => {
     await fetchProjects();
   });
+  
+  // Handle analysis selection
+  function onAnalysisSelected() {
+    selectedAnalysis.value = analysisItems.value.find(item => item.analysis_id === requestData.value.analysis_id) || null;
+  
+    // Show warning if no quantity/amount available
+    if (selectedAnalysis.value && (!selectedAnalysis.value.quantity || !selectedAnalysis.value.amount)) {
+      toast.warning('This analysis item has no quantity or amount values. Please ensure the analysis is properly set up before creating an extension request.');
+    }
+  }
   
   // Fetch projects from API
   async function fetchProjects() {

@@ -1,6 +1,6 @@
 <template>
     <div class="p-4 space-y-4" style="font-family: 'Trirong', sans-serif; font-size: 17px">
-      <PageHeader subtitle="Awarded Tenders">
+      <PageHeader title="Awarded Tenders" subtitle="Awarded Tenders">
         <div class="flex flex-col sm:flex-row sm:space-x-2">
         </div>
       </PageHeader>

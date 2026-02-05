@@ -1,341 +1,272 @@
 <template>
-  <ul class="text-sm text-center" style="color:white;height: 780px; overflow-y: auto; background-color: #283747; font-family: 'Times New Roman', serif; font-size: 14px; font-style: oblique;">
-    <li
-      class="hover:text-dark-secondary hover:bg-dark-primary dark:hover:bg-dark-body"
-      v-for="(navigation, index) in navigations"
-      :key="index"
-      :class="{ 'dark:bg-dark-body': isActive(navigation) }"
-    >
-      <!-- Skip separator items -->
-      <template v-if="navigation.type === 'separator'">
-        <div class="py-2 px-5">
-          <div class="border-t border-gray-600"></div>
+  <div class="h-full bg-gradient-to-b from-[#1a2332] to-[#283747] text-white">
+    <!-- Sidebar Header -->
+    <div class="p-6 border-b border-gray-700/50">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <i class="fas fa-user-tie text-white"></i>
         </div>
-      </template>
+        <div>
+          <h3 class="font-semibold text-white">HOD Portal</h3>
+          <p class="text-xs text-gray-400">Department Management</p>
+        </div>
+      </div>
+    </div>
 
-      <template v-else>
-        <div class="cursor-pointer" @click="clickNavigation(navigation, index)">
-          <div class="flex items-center py-3 pl-5 pr-2" :class="{ 'justify-between': hasChild(navigation) }">
-            <div>
-              <span>
-                <i class="w-6 mr-3 shrink-0" :class="navigation.icon"></i>
+    <!-- Navigation Menu -->
+    <nav class="p-4 space-y-2">
+      <div
+        v-for="(nav, index) in navigations"
+        :key="index"
+        class="transition-all duration-200"
+      >
+        <!-- Separator -->
+        <div v-if="nav.type === 'separator'" class="py-3">
+          <div class="h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
+        </div>
+
+        <!-- Menu Item -->
+        <div v-else>
+          <div
+            @click="handleClick(nav, index)"
+            class="group relative flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 hover:bg-white/10"
+            :class="{ 
+              'bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border border-indigo-500/30': !hasChildren(nav) && isCurrentRoute(nav.name),
+              'bg-white/5': hasChildren(nav) && nav.active
+            }"
+          >
+            <div class="flex items-center space-x-3">
+              <div class="relative">
+                <i 
+                  class="text-lg transition-all duration-200" 
+                  :class="[
+                    nav.icon,
+                    !hasChildren(nav) && isCurrentRoute(nav.name) ? 'text-indigo-400 scale-110' : 'text-gray-300 group-hover:text-white'
+                  ]"
+                ></i>
+                <div 
+                  v-if="!hasChildren(nav) && isCurrentRoute(nav.name)" 
+                  class="absolute -top-1 -right-1 w-2 h-2 bg-indigo-400 rounded-full animate-pulse"
+                ></div>
+              </div>
+              <span class="font-medium transition-colors duration-200"
+                :class="{
+                  'text-indigo-300': !hasChildren(nav) && isCurrentRoute(nav.name),
+                  'text-gray-200 group-hover:text-white': hasChildren(nav) || !isCurrentRoute(nav.name)
+                }"
+              >
+                {{ nav.label }}
               </span>
-              <span>{{ navigation.label }}</span>
             </div>
-            <span v-if="hasChild(navigation)">
-              <i class="w-6 mr-3 shrink-0 fas" :class="navigation.active ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-            </span>
+
+            <i
+              v-if="hasChildren(nav)"
+              class="fas text-xs transition-all duration-300 text-gray-400"
+              :class="nav.active ? 'fa-chevron-down rotate-180' : 'fa-chevron-right'"
+            />
+          </div>
+
+          <!-- Children Submenu -->
+          <div 
+            v-if="hasChildren(nav) && nav.active" 
+            class="mt-2 ml-4 space-y-1 overflow-hidden animate-in slide-in-from-top-2 duration-200"
+          >
+            <div
+              v-for="(child, childIndex) in nav.children"
+              :key="childIndex"
+              @click="navigate(child)"
+              class="group flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-white/10 hover:translate-x-1"
+              :class="{ 
+                'bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border-l-2 border-indigo-400': isCurrentRoute(child.name)
+              }"
+            >
+              <i 
+                class="text-sm transition-colors duration-200 w-4"
+                :class="[
+                  child.icon,
+                  isCurrentRoute(child.name) ? 'text-indigo-400' : 'text-gray-400 group-hover:text-white'
+                ]"
+              ></i>
+              <span class="text-sm transition-colors duration-200"
+                :class="{
+                  'text-indigo-300 font-medium': isCurrentRoute(child.name),
+                  'text-gray-300 group-hover:text-white': !isCurrentRoute(child.name)
+                }"
+              >
+                {{ child.label }}
+              </span>
+              <div 
+                v-if="isCurrentRoute(child.name)" 
+                class="ml-auto w-1.5 h-1.5 bg-indigo-400 rounded-full"
+              ></div>
+            </div>
           </div>
         </div>
-
-        <!-- Render child list if it has children and the parent is active -->
-        <div v-if="hasChild(navigation) && navigation.active">
-          <ul class="pl-5">
-            <li
-              class="cursor-pointer text-secondary hover:text-darken-secondary hover:bg-darken-primary dark:hover:bg-black"
-              v-for="child in navigation.children"
-              :key="child.name"
-              @click="navigateToChild(child)"
-            >
-              <div class="flex items-center py-2 pl-10 pr-2">
-                <span>
-                  <i class="w-4 mr-3 shrink-0" :class="child.icon"></i>
-                </span>
-                <span>{{ child.label }}</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </template>
-    </li>
-  </ul>
+      </div>
+    </nav>
+    
+  </div>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
+const currentRoute = useRoute()
 
 const navigations = ref([
-  // ──── DASHBOARD ────
   {
-    icon: "fas fa-chart-line text-blue-500",
-    label: "Dashboard",
-    name: "Dashboard",
-    path: "HodDashboard",          // ✅ matches router name: 'HodDashboard'
-    active: false,
+    icon: 'fas fa-tachometer-alt text-blue-400',
+    label: 'Dashboard',
+    name: 'HodDashboard',
   },
 
-  { type: 'separator' },           // clean visual divider instead of empty {}
+  { type: 'separator' },                                            
 
-  // ──── TENDERS ────
   {
-    icon: "fas fa-tasks text-red-500",
-    label: "Assigned Tenders",
-    name: "Assigned Tenders",
+    icon: 'fas fa-file-contract text-red-400',
+    label: 'Tenders',
     active: false,
     children: [
-      {
-        icon: "fas fa-tasks text-blue-500",
-        label: "View Assigned Tenders",
-        name: "HodTenders",
-        path: "HodTenders",        // ✅ matches router name: 'HodTenders'
-        active: false,
-      },
-    ],
-  },
-  {
-    icon: "fas fa-tasks text-green-500",
-    label: "Submitted Tenders",
-    name: "Submitted Tenders",
-    active: false,
-    children: [
-      {
-        icon: "fas fa-tasks text-blue-500",
-        label: "View Submitted Tenders",
-        name: "HodViewSubmittedTenders",
-        path: "HodViewSubmittedTenders", // ✅ matches router name: 'HodViewSubmittedTenders'
-        active: false,
-      },
-    ],
-  },
-  {
-    icon: "fas fa-tasks text-yellow-500",
-    label: "Awarded Tenders",
-    name: "Awarded Tenders",
-    active: false,
-    children: [
-      {
-        icon: "fas fa-eye text-blue-500",
-        label: "View Awarded Tenders",
-        name: "HodViewAwardedTenders",
-        path: "HodViewAwardedTenders",   // ✅ matches router name: 'HodViewAwardedTenders'
-        active: false,
-      },
+      { icon: 'fas fa-list-ul', label: 'Assigned Tenders', name: 'HodTenders' },
+      { icon: 'fas fa-paper-plane', label: 'Submitted Tenders', name: 'HodViewSubmittedTenders' },
+      { icon: 'fas fa-trophy', label: 'Awarded Tenders', name: 'HodViewAwardedTenders' },
     ],
   },
 
   { type: 'separator' },
 
-  // ──── PROJECTS ────
   {
-    icon: "fas fa-tasks text-teal-500",
-    label: "Assigned Projects",
-    name: "Assigned Projects",
+    icon: 'fas fa-project-diagram text-teal-400',
+    label: 'Projects',
     active: false,
     children: [
-      {
-        icon: "fas fa-tasks text-blue-500",
-        label: "Manage Assigned Projects",
-        name: "HodViewProjects",
-        path: "HodViewProjects",         // ✅ matches router name: 'HodViewProjects'
-        active: false,
-      },
-    ],
-  },
-  {
-    icon: "fas fa-calendar-alt text-purple-500",
-    label: "Projects Activities",
-    name: "Projects Activities",
-    active: false,
-    children: [
-      {
-        icon: "fas fa-tasks text-blue-500",
-        label: "Manage Activities",
-        name: "HodActivities",
-        path: "HodActivities",          // ✅ NEW route — see router fix below
-        active: false,
-      },
+      { icon: 'fas fa-list', label: 'Assigned Projects', name: 'HodViewProjects' },
+      { icon: 'fas fa-tasks', label: 'Project Activities', name: 'HodActivities' },
     ],
   },
 
   { type: 'separator' },
 
-  // ──── REQUESTS & SCHEDULES ────
   {
-    icon: "fas fa-layer-group text-teal-500",
-    label: "Requests Management",
-    name: "Requests Management",
+    icon: 'fas fa-inbox text-cyan-400',
+    label: 'Requests & Schedules',
     active: false,
     children: [
-      {
-        icon: "fas fa-eye text-green-500",
-        label: "View Requests",
-        name: "HodGetAllRequests",
-        path: "HodGetAllRequests",      // ✅ matches router name: 'HodGetAllRequests'
-        active: false,
-      },
-    ],
-  },
-  {
-    icon: "fas fa-layer-group text-pink-500",
-    label: "Price Schedules",
-    name: "Price Schedules",
-    active: false,
-    children: [
-      {
-        icon: "fas fa-eye text-green-500",
-        label: "View Price Schedules",
-        name: "HodPriceSchedules",
-        path: "HodPriceSchedules",      // ✅ NEW route — see router fix below
-        active: false,
-      },
-    ],
-  },
-  {
-    icon: "fas fa-chart-pie text-pink-500",
-    label: "Project Analyses",
-    name: "Project Analyses",
-    active: false,
-    children: [
-      {
-        icon: "fas fa-eye text-green-500",
-        label: "View Analyses",
-        name: "HodViewAnalyses",
-        path: "HodViewAnalyses",        // ✅ NEW route — see router fix below
-        active: false,
-      },
+      { icon: 'fas fa-list-ul', label: 'All Requests', name: 'HodGetAllRequests' },
+      { icon: 'fas fa-file-invoice-dollar', label: 'Price Schedules', name: 'HodPriceSchedules' },
+      { icon: 'fas fa-chart-bar', label: 'Project Analyses', name: 'HodViewAnalyses' },
     ],
   },
 
   { type: 'separator' },
 
-  // ──── UPDATES & MEETINGS ────
   {
-    icon: "fas fa-file-upload text-blue-500",
-    label: "Updates Management",
-    name: "Updates Management",
+    icon: 'fas fa-upload text-blue-400',
+    label: 'Updates',
     active: false,
     children: [
-      {
-        icon: "fas fa-receipt text-yellow-500",
-        label: "Submit Update",
-        name: "HodSubmitUpdate",
-        path: "HodSubmitUpdate",        // ✅ matches router name: 'HodSubmitUpdate'
-        active: false,
-      },
-      {
-        icon: "fas fa-tasks text-blue-500",
-        label: "Manage Updates",
-        name: "HodViewUpdate",
-        path: "HodViewUpdate",          // ✅ matches router name: 'HodViewUpdate'
-        active: false,
-      },
+      { icon: 'fas fa-plus-circle', label: 'Submit Update', name: 'HodSubmitUpdate' },
+      { icon: 'fas fa-list', label: 'View / Manage Updates', name: 'HodViewUpdate' },
     ],
   },
+
   {
-    icon: "fas fa-calendar-alt text-indigo-500",
-    label: "Meetings Management",
-    name: "Meetings Management",
+    icon: 'fas fa-users text-indigo-400',
+    label: 'Meetings',
     active: false,
     children: [
-      {
-        icon: "fas fa-user-check text-purple-500",
-        label: "Manage Attendance",
-        name: "HodManageAllAttendance",
-        path: "HodManageAllAttendance", // ✅ matches router name: 'HodManageAllAttendance'
-        active: false,
-      },
-      {
-        icon: "fas fa-plus text-purple-500",
-        label: "Create Attendance",
-        name: "HodCreateAttendance",
-        path: "HodCreateAttendance",    // ✅ matches router name: 'HodCreateAttendance'
-        active: false,
-      },
-      {
-        icon: "fas fa-file-alt text-green-500",
-        label: "View Minutes",
-        name: "HodGetMinutes",
-        path: "HodGetMinutes",          // ✅ matches router name: 'HodGetMinutes'
-        active: false,
-      },
-      {
-        icon: "fas fa-plus text-green-500",
-        label: "Create Minutes",
-        name: "HodCreateUpdate",
-        path: "HodCreateUpdate",        // ✅ matches router name: 'HodCreateUpdate'
-        active: false,
-      },
+      { icon: 'fas fa-user-check', label: 'Manage Attendance', name: 'HodManageAllAttendance' },
+      { icon: 'fas fa-plus', label: 'Create Attendance', name: 'HodCreateAttendance' },
+      { icon: 'fas fa-file-alt', label: 'Meeting Minutes', name: 'HodGetMinutes' },
+      { icon: 'fas fa-plus', label: 'Create Minutes', name: 'HodCreateUpdate' },
     ],
   },
-]);
+])
 
-const clickNavigation = (navigation, index) => {
-  if (navigation.type === 'separator') return;
+function handleClick(item, index) {
+  if (item.type === 'separator') return
 
-  if (hasChild(navigation)) {
-    navigations.value.forEach((item, idx) => {
-      if (idx !== index) item.active = false;
-    });
-    navigations.value[index].active = !navigations.value[index].active;
+  if (hasChildren(item)) {
+    // Close other groups
+    navigations.value.forEach((n, i) => {
+      if (i !== index) n.active = false
+    })
+    item.active = !item.active
   } else {
-    navigateToPath(navigation);
+    navigate(item)
   }
-};
+}
 
-const navigateToPath = (navigation) => {
-  if (hasPath(navigation)) {
-    router.push({ name: navigation.path });
+function navigate(item) {
+  if (item.name) {
+    router.push({ name: item.name })
   }
-};
+}
 
-const navigateToChild = (child) => {
-  if (hasPath(child)) {
-    router.push({ name: child.path });
-  }
-};
+const hasChildren = (item) => item.children && item.children.length > 0
 
-const hasPath = (navigation) => navigation.hasOwnProperty('path');
-const hasChild = (navigation) => navigation.children && navigation.children.length > 0;
-const isActive = (navigation) => navigation.active === true;
+const isCurrentRoute = (name) => currentRoute.name === name
+
+// Optional: Auto-expand parent when child route is active
+watch(
+  () => currentRoute.name,
+  (newName) => {
+    navigations.value.forEach((parent) => {
+      if (hasChildren(parent)) {
+        parent.active = parent.children.some(child => child.name === newName)
+      }
+    })
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>
-ul::-webkit-scrollbar {
-  width: 8px;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-ul::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 10px;
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
 }
 
-ul::-webkit-scrollbar-thumb:hover {
-  background: #888;
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  transition: background 0.3s ease;
 }
 
-.text-secondary {
-  color: #B3B3B3;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.hover\:text-dark-secondary:hover {
-  color: #FFFFFF;
+/* Animations */
+@keyframes slide-in-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.hover\:bg-dark-primary:hover {
-  background-color: #3B3B3B;
+.animate-in {
+  animation-fill-mode: both;
 }
 
-.dark\:hover\:bg-dark-body:hover {
-  background-color: #2C2C2C;
+.slide-in-from-top-2 {
+  animation-name: slide-in-from-top;
 }
 
-.hover\:text-darken-secondary:hover {
-  color: #E6E6E6;
-}
-
-.hover\:bg-darken-primary:hover {
-  background-color: #4B4B4B;
-}
-
-ul {
-  max-height: 780px;
-  overflow-y: auto;
-}
-
-ul > li {
-  overflow: hidden;
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>

@@ -8,7 +8,6 @@ import store from "./store.js";
 import './app.css';
 import VueApexCharts from 'vue3-apexcharts';
 import 'sweetalert2/dist/sweetalert2.min.css';
-import * as XLSX from 'xlsx';
 
 // Import Toast and POSITION from vue-toastification
 import Toast, { POSITION } from 'vue-toastification';

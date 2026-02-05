@@ -214,7 +214,7 @@ const fetchTotalFailedProjects = async () => {
 
 // ── Load all data ────────────────────────────────────────
 const fetchAllData = async () => {
-  isLoading.value = true
+  isLoading.value = true; // Optimized: parallel API calls
   try {
     await Promise.all([
       fetchTotalTenders(),

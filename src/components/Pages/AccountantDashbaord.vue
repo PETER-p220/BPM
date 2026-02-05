@@ -619,8 +619,8 @@ const fetchAllRequests = async () => {
   
   try {
     const [approvedResponse, rejectedResponse] = await Promise.all([
-      axios.get('api/user-analyses/approved/count'),
-      axios.get('api/user-analyses/rejected/count')
+      axios.get('/api/user-analyses/approved/count'),
+      axios.get('/api/user-analyses/rejected/count')
     ]);
 
     totalApproved.value = approvedResponse.data?.approved_count || 

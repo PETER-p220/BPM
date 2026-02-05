@@ -197,6 +197,7 @@ import IntentionToAwardsReport from "./layouts/awards/IntentionToAwardsReport.vu
 import AwardLettersReport from "./layouts/attendance/awardLettersReport.vue";
 import InsuranceBondReport from "./layouts/perfomances/InsuranceBondReport.vue";
 import SecurityDeclaREports from "./layouts/perfomances/securityDeclaREports.vue";
+import HrtDashbaord from "./components/Pages/HrDashbaord.vue";
 import HrDashbaord from "./components/Pages/HrDashbaord.vue";
 import UserProfile5 from "./layouts/UserProfile5.vue";
 import ManageContracts from "./layouts/contracts/ManageContracts.vue";
@@ -1353,7 +1354,6 @@ const routes = [
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
-            
             {
                 path: 'hod/view-update',
                 name: 'HodViewUpdate',
@@ -1629,9 +1629,6 @@ const routes = [
                 component:  HrViewProjectRequests,
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
-
-            
-
         ],
     },
 
@@ -1641,23 +1638,20 @@ const routes = [
         component: GuestLayout,
         children: [
             {
-                path: '/',
+                path: '/',          
                 name: 'Login',
                 component: Login,
             },
-
             {
                 path: 'register',
                 name: 'Register',
                 component: Register,
             },
-
             {
                 path: '/auth/google/callback',
                 name: 'GoogleCallback',
                 component: GoogleCallback,
             },
-
             {
                 path: 'password',
                 name: 'Password',
@@ -1668,7 +1662,6 @@ const routes = [
                 name: 'ResetPasswordRequest',
                 component: ResetPasswordRequest,
             },
-
             {
                 path: 'update-password',
                 name: 'ResetPasswordPage',

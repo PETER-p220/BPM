@@ -668,13 +668,18 @@ const retryFetch = (section) => {
   }
 };
 
-// Initialize data fetching
+// Initialize data fetching in parallel for faster load
 onMounted(() => {
-  fetchTenderCounts();
-  fetchPriceScheduleCounts();
-  fetchAnalysisCounts();
-  fetchProjectCounts();
+  Promise.all([
+    fetchTenderCounts(),
+    fetchPriceScheduleCounts(),
+    fetchAnalysisCounts(),
+    fetchProjectCounts()
+  ]).catch(err => {
+    console.error('Dashboard initial load failed:', err);
+  });
 });
+
 </script>
 
 <style scoped>

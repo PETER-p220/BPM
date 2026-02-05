@@ -1,9 +1,9 @@
   <template>
     <div class="p-4 space-y-4" style="font-family: 'Trirong', sans-serif; font-size: 17px">
-      <PageHeader subtitle="Meeting Minutes Report">
+      <PageHeader title="Meeting Minutes Report" subtitle="Meeting Minutes Report">
         <div class="flex flex-col sm:flex-row sm:space-x-2">
           <router-link to="/hod/create-minutes">
-            <BaseButton @click="addNewMeetingMinute" class="w-full sm:w-auto bg-[#2e4053] text-white">
+            <BaseButton class="w-full sm:w-auto bg-[#2e4053] text-white">
               Create Meeting Minute
               <span class="ml-2" aria-hidden="true"><i class="fas fa-plus"></i></span>
             </BaseButton>

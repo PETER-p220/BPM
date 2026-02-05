@@ -56,9 +56,9 @@
     name: "AccountantDashbaord",
     path: "AccountantDashbaord",
     active: false,
-},
-{},
-{
+  },
+  {},
+  {
     "icon": "fas fa-project-diagram text-orange-500",
     "label": "Projects",
     "name": "Projects",
@@ -67,22 +67,22 @@
       {
         "icon": "fas fa-chart-bar text-green-500",
         "label": "Analysis",
-        "name": "AccountantViewAnalysis",
+        "name": "AccViewAnalysis",
         "path": "AccViewAnalysis",
         "active": false
       },
       {
         "icon": "fas fa-folder-open text-green-500",
         "label": "Project Portfolio",
-        "name": "AccountantViewPortfolio",
+        "name": "AccViewPortfolio",
         "path": "AccViewPortofolio",
         "active": false
       },
       {
         "icon": "fas fa-money-check-alt text-green-500",
         "label": "Payment Follow-Up",
-        "name": "AccountantFollowUp",
-        "path": "Followup",
+        "name": "AccFollowUp",
+        "path": "AccFollowUp",
         "active": false
       }
     ]
@@ -96,14 +96,14 @@
       {
         "icon": "fas fa-check-circle text-green-500",
         "label": "Approve Requests",
-        "name": "AccountantManageRequests",
+        "name": "AccManageRequests",
         "path": "AccManageRequests",
         "active": false
       },
       {
         "icon": "fas fa-clock text-green-500",
         "label": "Approve Extension Requests",
-        "name": "AccountantManageExtendedRequests",
+        "name": "AccManageExtendedRequests",
         "path": "AccManageExtendedRequests",
         "active": false
       }
@@ -118,7 +118,7 @@
       {
         "icon": "fas fa-file-invoice text-green-500",
         "label": "View Receipts",
-        "name": "AccountantGetAllReceipts",
+        "name": "AccntntGetALlReceipts",
         "path": "AccntntGetALlReceipts",
         "active": false
       }
@@ -133,14 +133,14 @@
       {
         "icon": "fas fa-plus-circle text-yellow-500",
         "label": "Submit Update",
-        "name": "AccountantCreateUpdate",
+        "name": "AccntantCreateUpdate",
         "path": "AccntantCreateUpdate",
         "active": false
       },
       {
         "icon": "fas fa-tasks text-blue-500",
         "label": "Manage Updates",
-        "name": "AccountantViewUpdates",
+        "name": "AccntantViewUpdate",
         "path": "AccntantViewUpdate",
         "active": false
       }
@@ -155,21 +155,21 @@
       {
         "icon": "fas fa-user-check text-purple-500",
         "label": "Create Attendance",
-        "name": "AccountantCreateAttendance",
-        "path": "AccountantGetAttendance",
+        "name": "AccntntCreateAttendance",
+        "path": "AccntntCreateAttendance",
         "active": false
       },
       {
         "icon": "fas fa-file-alt text-green-500",
         "label": "Create Minutes",
-        "name": "AccountantCreateMinutes",
-        "path": "AccontntGetMinutes",
+        "name": "AccntntCreateMinutes",
+        "path": "AccntntCreateMinutes",
         "active": false
       }
     ]
   },
 
-    { icon: 'fas fa-ellipsis-h text-gray-500',
+  { icon: 'fas fa-ellipsis-h text-gray-500',
      label: 'Others',
       name: 'Others',
        path: 'Others',

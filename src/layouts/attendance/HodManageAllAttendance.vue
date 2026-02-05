@@ -1,10 +1,10 @@
 <template>
     <div class="p-4 space-y-4" style="font-family: 'cygre', serif; font-size: 23px">
       <!-- Page Header Section -->
-      <PageHeader subtitle="Attendance Report">
+      <PageHeader title="Attendance Report" subtitle="Attendance Report">
         <div class="flex flex-col sm:flex-row sm:space-x-2">
           <router-link to="/hod/create-attendance">
-            <BaseButton @click="addNewUser" class="w-full sm:w-auto bg-[#2e4053] text-white">
+            <BaseButton class="w-full sm:w-auto bg-[#2e4053] text-white">
               Create Attendance
               <span class="ml-2" aria-hidden="true"><i class="fas fa-plus"></i></span>
             </BaseButton>

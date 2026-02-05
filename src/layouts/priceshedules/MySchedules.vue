@@ -1,6 +1,6 @@
 <template>
   <div class="p-4 py-5 space-y-4" style="font-family: 'cygre', serif; font-size: 17px">
-    <PageHeader subtitle="Quotations">
+    <PageHeader title="Quotations" subtitle="Quotations">
       <div class="flex flex-col sm:flex-row sm:justify-end sm:space-x-2">
         <router-link to="/submit-shedule" class="self-end sm:self-auto">
           <BaseButton style="background-color: #0d4063;" class="w-full sm:w-auto">

@@ -170,6 +170,13 @@
         "icon": "fas fa-user-check text-purple-500",
         "label": "Create Attendance",
         "name": "HrCreateAttendance",
+        "path": "AccntntCreateAttendance",
+        "active": false
+      },
+      {
+        "icon": "fas fa-clipboard-list text-teal-500",
+        "label": "Manage Attendance",
+        "name": "HrManageAttendance",
         "path": "AccountantGetAttendance",
         "active": false
       },
@@ -177,18 +184,18 @@
         "icon": "fas fa-file-alt text-green-500",
         "label": "Create Minutes",
         "name": "HrCreateMinutes",
+        "path": "AccontntCreateUpdate",
+        "active": false
+      },
+      {
+        "icon": "fas fa-book-open text-blue-500",
+        "label": "View Minutes",
+        "name": "HrViewMinutes",
         "path": "AccontntGetMinutes",
         "active": false
       }
     ]
   },
-
-    // { icon: 'fas fa-ellipsis-h text-gray-500',
-    //  label: 'Others',
-    //   name: 'Others',
-    //    path: 'Others',
-    //     style: { fontFamily: 'Roboto' } 
-    // },
   ]);
   
   const clickNavigation = (navigation, index) => {

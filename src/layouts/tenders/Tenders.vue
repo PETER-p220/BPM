@@ -275,13 +275,33 @@ function viewTender(id) {
 }
 
 async function downloadTenderPdf(url, title = 'tender') {
-  if (!url) return
+  if (!url) {
+    toast.error('No file URL provided.')
+    return
+  }
   try {
+    // Validate URL format
+    const urlObj = new URL(url, window.location.origin)
+    if (!urlObj.pathname) {
+      throw new Error('Invalid file path')
+    }
+
+    // Fetch file as blob
     const response = await axios.get(url, { responseType: 'blob' })
-    const fileName = `${title.replace(/\s+/g, '_')}_tender.pdf`
+    if (!response.data || response.data.size === 0) {
+      throw new Error('File is empty or unavailable')
+    }
+
+    // Extract file extension from URL or default to pdf
+    const extension = url.split('.').pop()?.split('?')[0] || 'pdf'
+    const fileName = `${title.replace(/\s+/g, '_')}_tender.${extension}`
+
+    // Trigger download
     saveAs(response.data, fileName)
+    toast.success('File downloaded successfully.')
   } catch (err) {
-    toast.error('Could not download file. File may be unavailable.')
+    console.error('Download failed:', err)
+    toast.error('Could not download file. File may be unavailable or the link is broken.')
   }
 }
 </script>

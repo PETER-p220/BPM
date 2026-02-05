@@ -40,12 +40,18 @@
                 class="w-full px-3 py-2 border rounded form-control"
                 v-model="requestData.analysis_id"
                 :disabled="!requestData.project_id"
+                @change="onAnalysisSelected"
               >
                 <option value="">Select an analysis item</option>
                 <option v-for="analysis in analysisItems" :key="analysis.analysis_id" :value="analysis.analysis_id">
-                  {{ analysis.items[0] || 'N/A' }}
+                  {{ analysis.items?.[0] || analysis.item_description || 'N/A' }}
+                  (Qty: {{ analysis.quantity || 0 }}, Amount: {{ analysis.amount || 0 }})
                 </option>
               </select>
+              <div v-if="selectedAnalysis" class="mt-2 text-sm text-gray-600">
+                <p><strong>Available Quantity:</strong> {{ selectedAnalysis.quantity || 0 }}</p>
+                <p><strong>Available Amount:</strong> {{ selectedAnalysis.amount || 0 }}</p>
+              </div>
             </div>
           </div>
 
@@ -165,12 +171,33 @@ const requestData = ref({
 });
 const projects = ref([]);
 const analysisItems = ref([]);
+const selectedAnalysis = ref(null);
 const isLoading = ref(false);
 
 // Fetch projects on component mount
 onMounted(async () => {
   await fetchProjects();
 });
+
+// Handle analysis selection
+function onAnalysisSelected() {
+  selectedAnalysis.value = analysisItems.value.find(item => item.analysis_id === requestData.value.analysis_id) || null;
+  
+  // Auto-set max values based on available quantity/amount
+  if (selectedAnalysis.value) {
+    // Set max for quantity input
+    const quantityInput = document.getElementById('quantityPurchased');
+    if (quantityInput) {
+      quantityInput.max = selectedAnalysis.value.quantity || 0;
+    }
+    
+    // Set max for amount input
+    const amountInput = document.getElementById('amountPurchased');
+    if (amountInput) {
+      amountInput.max = selectedAnalysis.value.amount || 0;
+    }
+  }
+}
 
 // Fetch projects from API
 async function fetchProjects() {

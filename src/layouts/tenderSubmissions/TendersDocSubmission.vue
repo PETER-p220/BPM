@@ -110,11 +110,33 @@ async function fetchData() {
 
 // Download Tender PDF
 async function downloadTenderPdf(attachment) {
+  if (!attachment) {
+    toast.error('No file URL provided.')
+    return
+  }
   try {
-    const response = await axios.get(attachment, { responseType: 'blob' });
-    saveAs(response.data, 'tender_attachment.pdf');
+    // Validate URL format
+    const urlObj = new URL(attachment, window.location.origin)
+    if (!urlObj.pathname) {
+      throw new Error('Invalid file path')
+    }
+
+    // Fetch file as blob
+    const response = await axios.get(attachment, { responseType: 'blob' })
+    if (!response.data || response.data.size === 0) {
+      throw new Error('File is empty or unavailable')
+    }
+
+    // Extract file extension from URL or default to pdf
+    const extension = attachment.split('.').pop()?.split('?')[0] || 'pdf'
+    const fileName = `tender_submission_${Date.now()}.${extension}`
+
+    // Trigger download
+    saveAs(response.data, fileName)
+    toast.success('File downloaded successfully.')
   } catch (error) {
-    handleError(error);
+    console.error('Download failed:', error)
+    handleError(error)
   }
 }
 

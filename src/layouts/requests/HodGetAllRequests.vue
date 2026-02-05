@@ -3,7 +3,7 @@
 
 <template>
     <div class="p-4 space-y-4" style="font-family: 'Trirong', sans-serif; font-size: 17px">
-      <PageHeader subtitle="Requests for project">
+      <PageHeader title="Requests for project" subtitle="Requests for project">
         <div class="flex flex-col sm:flex-row sm:space-x-2"></div>
       </PageHeader>
   

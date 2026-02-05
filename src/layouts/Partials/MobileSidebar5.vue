@@ -10,7 +10,7 @@
             <div class="flex-1 h-0 mt-5">
                 <nav>
                     <div class="space-y-1">
-                      
+                        <HrSideBar></HrSideBar>
                     </div>
                 </nav>
             </div>
@@ -20,13 +20,14 @@
 
 <script>
 export default {
-    name: 'MobileSidebar4'
+    name: 'MobileSidebar5'
 }
 </script>
 
 <script setup>
 import { computed } from "vue"
 import { useStore } from "vuex"
+import HrSideBar from "./HrSideBar.vue";
 
 const store = useStore()
 

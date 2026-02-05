@@ -1,6 +1,6 @@
 <template>
     <div class="p-4 py-5 space-y-4" style="font-family: 'cygre', serif; font-size: 17px">
-      <PageHeader subtitle="Analyses">
+      <PageHeader title="Analyses" subtitle="Analyses">
         <div class="flex flex-col sm:flex-row sm:justify-end sm:space-x-2">
         </div>
       </PageHeader>

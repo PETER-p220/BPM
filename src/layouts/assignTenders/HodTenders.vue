@@ -1,6 +1,6 @@
 <template>
     <div class="p-4 space-y-4" style="font-family: 'cygre', serif; font-size: 23px">
-      <PageHeader subtitle="Assigned Tenders">
+      <PageHeader title="Assigned Tenders" subtitle="Assigned Tenders">
         <div class="flex flex-col sm:flex-row sm:space-x-2">
         </div>
       </PageHeader>

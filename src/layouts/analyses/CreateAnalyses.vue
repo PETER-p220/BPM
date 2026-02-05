@@ -378,7 +378,7 @@ async function storeAnalysis() {
 
     formData.append('excel_file', analysisData.value.excel_file)
 
-    // Optional fields
+    // Optional fields - now properly connected to backend
     if (analysisData.value.serial_number) formData.append('serial_number', analysisData.value.serial_number)
     if (analysisData.value.item_description) formData.append('item_description', analysisData.value.item_description)
     if (analysisData.value.quoted_quantity) formData.append('quoted_quantity', analysisData.value.quoted_quantity)
