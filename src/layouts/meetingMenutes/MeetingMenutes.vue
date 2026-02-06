@@ -86,19 +86,31 @@ async function fetchReport() {
       toast.error('Please select a date.');
       return;
     }
+    
     const response = await axios.post('api/meeting-minutes/report', {
       date: selectedDate.value,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
     });
+    
     if (response.data.status === 'success') {
       reportData.value = response.data.data || [];
       if (reportData.value.length === 0) {
-        toast.error('No data found for the selected date.');
+        toast.warning('No meeting minutes found for selected date.');
+      } else {
+        toast.success(`Found ${reportData.value.length} meeting minutes.`);
       }
     } else {
-      toast.error(response.data.message || 'No data found for the selected date.');
+      const errorMessage = response.data?.message || 'Failed to fetch meeting minutes report.';
+      toast.error(errorMessage);
+      console.error('API Error:', response.data);
     }
   } catch (error) {
-    toast.error('Error fetching report: ' + error.message);
+    console.error('Fetch error:', error);
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch meeting minutes report.';
+    toast.error(errorMessage);
   }
 }
 
@@ -116,29 +128,37 @@ function exportToExcel() {
   XLSX.writeFile(workbook, 'Meeting_Minutes_Report.xlsx');
 }
 
-function exportToPDF() {
-  const doc = new jsPDF();
-  const headers = [['No', 'Name', 'Prepared By', 'Project', 'Minute Points', 'Details', 'Date']];
+async function exportToPDF() {
+  try {
+    // Dynamically import jspdf-autotable
+    const { default: autoTable } = await import('jspdf-autotable')
+    
+    const doc = new jsPDF();
+    const headers = [['No', 'Name', 'Prepared By', 'Project', 'Minute Points', 'Details', 'Date']];
 
-  const data = reportData.value.map((minute, index) => [
-    index + 1,
-    minute.user?.name || 'N/A',
-    minute.logged_user?.name || 'N/A',
-    minute.project?.project_name || 'N/A',
-    minute.minute_point || 'N/A',
-    minute.if_more_detail || 'N/A',
-    minute.created_at ? new Date(minute.created_at).toLocaleString() : 'N/A',
-  ]);
+    const data = reportData.value.map((minute, index) => [
+      index + 1,
+      minute.user?.name || 'N/A',
+      minute.logged_user?.name || 'N/A',
+      minute.project?.project_name || 'N/A',
+      minute.minute_point || 'N/A',
+      minute.if_more_detail || 'N/A',
+      minute.created_at ? new Date(minute.created_at).toLocaleString() : 'N/A',
+    ]);
 
-  doc.autoTable({
-    head: headers,
-    body: data,
-    startY: 20,
-    theme: 'striped',
-    headStyles: { fillColor: [44, 62, 80] },
-  });
+    autoTable(doc, {
+      head: headers,
+      body: data,
+      startY: 20,
+      theme: 'striped',
+      headStyles: { fillColor: [44, 62, 80] },
+    });
 
-  doc.save('Meeting_Minutes_Report.pdf');
+    doc.save('Meeting_Minutes_Report.pdf');
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    toast.error('Error generating PDF. Please try again.');
+  }
 }
 </script>
 

@@ -1,121 +1,195 @@
 <template>
-  <div class="p-4 space-y-4" style="font-family: 'cygre', serif; font-size: 17px">
-    <PageHeader subtitle="All Projects">
-      <div class="flex flex-col sm:flex-row sm:space-x-2">
-        <router-link to="/assign-project">
-          <BaseButton @click="addNewUser" style="background-color: #2e4053;" class="w-full sm:w-auto">
-            Assign project 
-            <span class="ml-2" aria-hidden="true"><i class="fas fa-plus"></i></span>
-          </BaseButton>
-        </router-link>
+  <div class="p-6 space-y-6 bg-gray-50 dark:bg-gray-950 min-h-screen">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">All Projects</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Overview of all registered projects and their status
+        </p>
       </div>
-    </PageHeader>
 
-    <div class="flex items-center mb-4 space-x-4">
-      <input
-        type="text"
-        v-model="filter"
-        placeholder="Search..."
-        class="w-full p-2 border rounded sm:w-auto"
-      />
-
-      <button @click="exportToExcel" class="flex items-center p-2 space-x-2 text-white rounded hover:bg-green-600"
-        style="background-color:white;color:#229954; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;">
-        Export to Excel
-        <span class="ml-2" aria-hidden="true"><i class="fas fa-file-excel" style="color:#edbb99"></i></span>
-      </button>
-
-      <button @click="exportToPDF" class="flex items-center p-2 space-x-2 text-white rounded hover:bg-green-600"
-        style="background-color:white;color:#229954; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;">
-        Export to PDF
-        <span class="ml-2" aria-hidden="true"><i class="fas fa-file-pdf"></i></span>
-      </button>
+      <router-link to="/assign-project">
+        <button
+          class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm transition"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Assign Project
+        </button>
+      </router-link>
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="w-full divide-y divide-gray-200 rounded-table dark:divide-gray-700" id="data-table"
-        style="box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;">
-        <thead class="bg-gray-50 dark:bg-neutral-700"
-          style="box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;">
-          <tr>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">No</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Project Name</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Engineer</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Created By</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Start Date</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">End Date</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Contract Title</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Created At</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Status</th>
-           
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Follow Up</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Action</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200 dark:bg-dark-header dark:divide-gray-700">
-          <tr v-for="(project, index) in paginatedProjects" :key="project.project_id">
-            <td class="table-data">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
-            <td class="table-data">{{ project.project_name || 'NA' }}</td>
-            <td class="table-data">{{ project.user?.name || 'NA' }}</td>
-            <td class="table-data">{{ project.created_by || 'NA' }}</td>
-            <td class="table-data">{{ formatDate(project.start_date) || 'NA' }}</td>
-            <td class="table-data">{{ formatDate(project.end_date) || 'NA' }}</td>
-            <td class="table-data">{{ project.contract?.title || 'NA' }}</td>
-            <td class="table-data">{{ formatDate(project.created_at) || 'NA' }}</td>
-            <td class="table-data">
-              <button
-                :class="{
-                  'bg-yellow-500': project.project_status === 'on-progress',
-                  'bg-green-500': project.project_status === 'completed',
-                  'bg-red-500': project.project_status === 'failed'
-                }"
-                class="btn text-white rounded-full w-24"
-              >
-                {{ project.project_status || 'NA' }}
-              </button>
-            </td>
-          
-            <td class="table-data">{{ project.follow_up || 'NA' }}</td>
-            <td class="table-data">
-              <i
-                @click="editProject(project.project_id)"
-                class="fas fa-edit"
-                style="color:#21618c; font-weight:bold; font-size:17px"
-              ></i>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Search & Export -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+      <div class="relative flex-1 max-w-md">
+        <input
+          v-model="filter"
+          type="text"
+          placeholder="Search by project name, engineer, status..."
+          class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+        />
+        <svg
+          class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+
+      <div class="flex items-center gap-3 flex-wrap">
+        <button
+          @click="exportToExcel"
+          class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow-sm transition"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Export Excel
+        </button>
+
+        <button
+          @click="exportToPDF"
+          class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-sm transition"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Export PDF
+        </button>
+      </div>
     </div>
 
-    <!-- Pagination Controls -->
-    <div class="flex justify-center mt-4">
-      <button 
-        :disabled="currentPage === 1" 
-        @click="changePage(currentPage - 1)" 
-        class="px-4 py-2 bg-gray-300 rounded-l-lg hover:bg-gray-400 disabled:opacity-50">
-        Previous
-      </button>
-      <span class="px-4 py-2">Page {{ currentPage }}</span>
-      <button 
-        :disabled="currentPage * itemsPerPage >= filteredProjects.length" 
-        @click="changePage(currentPage + 1)" 
-        class="px-4 py-2 bg-gray-300 rounded-r-lg hover:bg-gray-400 disabled:opacity-50">
-        Next
-      </button>
+    <!-- Table -->
+    <div class="bg-white dark:bg-gray-900 shadow-sm rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+          <thead class="bg-gray-50 dark:bg-gray-800">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">No</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project Name</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Engineer</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created By</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Start Date</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">End Date</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Title</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created At</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Follow Up</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-gray-900">
+            <tr
+              v-for="(project, index) in paginatedProjects"
+              :key="project.project_id"
+              class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+            >
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                {{ index + 1 + (currentPage - 1) * itemsPerPage }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                {{ project.project_name || '—' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                {{ project.user?.name || '—' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                {{ project.created_by || '—' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                {{ formatDate(project.start_date) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                {{ formatDate(project.end_date) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                {{ project.contract?.title || '—' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                {{ formatDate(project.created_at) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  :class="getStatusClasses(project.project_status)"
+                  class="inline-flex px-3 py-1 text-xs font-medium rounded-full"
+                >
+                  {{ project.project_status || '—' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                {{ project.follow_up || '—' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <button
+                  @click="editProject(project.project_id)"
+                  class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
+                  title="Edit Project"
+                >
+                  <i class="fas fa-edit text-lg"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Empty state -->
+            <tr v-if="paginatedProjects.length === 0">
+              <td colspan="11" class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
+                <div class="flex flex-col items-center">
+                  <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p class="text-lg font-medium">No projects found</p>
+                  <p class="mt-1">Try adjusting your search or assign a new project</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        Showing {{ paginatedProjects.length }} of {{ filteredProjects.length }} projects
+      </p>
+
+      <div class="flex items-center gap-2">
+        <button
+          :disabled="currentPage === 1"
+          @click="changePage(currentPage - 1)"
+          class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
+        >
+          Previous
+        </button>
+
+        <span class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          Page {{ currentPage }}
+        </span>
+
+        <button
+          :disabled="currentPage * itemsPerPage >= filteredProjects.length"
+          @click="changePage(currentPage + 1)"
+          class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
+        >
+          Next
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from '@/axios'; // Ensure this points to your axios instance
+import axios from '@/axios';
 import { useToast } from 'vue-toastification';
 import * as XLSX from '@e965/xlsx';
 import jsPDF from 'jspdf';
-import { saveAs } from 'file-saver';
-import autoTable from 'jspdf-autotable'; // Import autoTable for table formatting in PDF
+import autoTable from 'jspdf-autotable';
 
 const router = useRouter();
 const toast = useToast();
@@ -125,136 +199,138 @@ const filter = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
-// Fetch data when component is mounted
 onMounted(async () => {
   await fetchProjects();
 });
 
-// Fetch projects data from the API and apply null safety defaults
 async function fetchProjects() {
   try {
-    const response = await axios.get('api/projects'); // Ensure this is the correct endpoint
-    projects.value = response.data.data.map(project => ({
-      project_id: project.project_id,
-      project_name: project.project_name || 'NA',
-      user: project.user || { name: 'NA' },
-      created_by: project.created_by || 'NA',
-      start_date: project.start_date || 'NA',
-      end_date: project.end_date || 'NA',
-      extended_date: project.extended_date || 'NA',
-      project_status: project.project_status || 'NA',
-      contract: project.contract || { title: 'NA' },
-      follow_up: project.follow_up || 'NA',
-      created_at: project.created_at || 'NA'
+    const response = await axios.get('api/projects');
+    projects.value = response.data.data.map(p => ({
+      project_id: p.project_id,
+      project_name: p.project_name || '—',
+      user: p.user || { name: '—' },
+      created_by: p.created_by || '—',
+      start_date: p.start_date,
+      end_date: p.end_date,
+      extended_date: p.extended_date,
+      project_status: p.project_status || '—',
+      contract: p.contract || { title: '—' },
+      follow_up: p.follow_up || '—',
+      created_at: p.created_at
     }));
   } catch (error) {
-    handleError(error);
+    toast.error(error.response?.data?.message || 'Failed to load projects');
   }
 }
 
-// Format date to a readable format
 function formatDate(date) {
-  if (!date || date === 'NA') return 'NA';
-  const d = new Date(date);
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  if (!date) return '—';
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 }
 
-// Navigate to edit project page
-function editProject(projectId) {
-  router.push({ name: 'EditAssignedProject', params: { project_id: projectId } });
-}
-
-// Computed property to filter the projects
 const filteredProjects = computed(() => {
-  return projects.value.filter(entry =>
-    (entry.project_name || 'NA').toLowerCase().includes(filter.value.toLowerCase()) ||
-    (entry.created_by || 'NA').toLowerCase().includes(filter.value.toLowerCase()) ||
-    (entry.project_status || 'NA').toLowerCase().includes(filter.value.toLowerCase()) ||
-    (entry.contract?.title || 'NA').toLowerCase().includes(filter.value.toLowerCase()) ||
-    (entry.follow_up || 'NA').toLowerCase().includes(filter.value.toLowerCase())
+  if (!filter.value.trim()) return projects.value;
+
+  const search = filter.value.toLowerCase();
+  return projects.value.filter(p =>
+    p.project_name.toLowerCase().includes(search) ||
+    p.user?.name?.toLowerCase().includes(search) ||
+    p.created_by?.toLowerCase().includes(search) ||
+    p.contract?.title?.toLowerCase().includes(search) ||
+    p.project_status?.toLowerCase().includes(search) ||
+    p.follow_up?.toLowerCase().includes(search)
   );
 });
 
-// Computed property for paginated projects
 const paginatedProjects = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return filteredProjects.value.slice(start, start + itemsPerPage);
 });
 
-// Change page function
 function changePage(page) {
-  if (page > 0 && page <= Math.ceil(filteredProjects.value.length / itemsPerPage)) {
-    currentPage.value = page;
+  if (page < 1 || page > Math.ceil(filteredProjects.value.length / itemsPerPage)) return;
+  currentPage.value = page;
+}
+
+function editProject(projectId) {
+  router.push({ name: 'EditAssignedProject', params: { project_id: projectId } });
+}
+
+function getStatusClasses(status) {
+  switch (status?.toLowerCase()) {
+    case 'on-progress':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300';
+    case 'completed':
+      return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300';
+    case 'failed':
+      return 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
   }
 }
 
-// Handle errors and display as toast messages
-function handleError(error) {
-  let message = 'An unexpected error occurred';
-
-  if (error.response) {
-    if (error.response.data && error.response.data.message) {
-      message = error.response.data.message;
-    } else {
-      message = error.response.statusText;
-    }
-  } else if (error.request) {
-    message = 'No response from server';
-  }
-
-  toast.error(message);
-}
-
-// Export to Excel
 function exportToExcel() {
-  const exportData = filteredProjects.value.map(project => ({
-    No: projects.value.indexOf(project) + 1,
-    'Project Name': project.project_name,
-    Engineer: project.user.name,
-    'Created By': project.created_by,
-    'Start Date': formatDate(project.start_date),
-    'End Date': formatDate(project.end_date),
-    'Contract Title': project.contract.title,
-    'Created At': formatDate(project.created_at),
-    Status: project.project_status,
-    'Extension Date': formatDate(project.extended_date),
-    'Follow Up': project.follow_up
+  if (!filteredProjects.value.length) {
+    toast.warning('No data to export');
+    return;
+  }
+
+  const data = filteredProjects.value.map((p, index) => ({
+    No: index + 1,
+    'Project Name': p.project_name,
+    Engineer: p.user?.name || '—',
+    'Created By': p.created_by || '—',
+    'Start Date': formatDate(p.start_date),
+    'End Date': formatDate(p.end_date),
+    'Contract Title': p.contract?.title || '—',
+    'Created At': formatDate(p.created_at),
+    Status: p.project_status || '—',
+    'Follow Up': p.follow_up || '—'
   }));
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Projects');
-  XLSX.writeFile(wb, 'projects.xlsx');
+
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Projects');
+  XLSX.writeFile(workbook, 'All_Projects.xlsx');
 }
 
-// Export to PDF
 function exportToPDF() {
+  if (!filteredProjects.value.length) {
+    toast.warning('No data to export');
+    return;
+  }
+
   const doc = new jsPDF();
-  const tableData = paginatedProjects.value.map((project, index) => [
-    index + 1 + (currentPage.value - 1) * itemsPerPage,
-    project.project_name,
-    project.user.name,
-    project.created_by,
-    formatDate(project.start_date),
-    formatDate(project.end_date),
-    project.contract.title,
-    formatDate(project.created_at),
-    project.project_status,
-    formatDate(project.extended_date),
-    project.follow_up
+  doc.setFontSize(16);
+  doc.text('All Projects Report', 14, 20);
+
+  const tableData = filteredProjects.value.map((p, index) => [
+    index + 1,
+    p.project_name || '—',
+    p.user?.name || '—',
+    p.created_by || '—',
+    formatDate(p.start_date),
+    formatDate(p.end_date),
+    p.contract?.title || '—',
+    formatDate(p.created_at),
+    p.project_status || '—',
+    p.follow_up || '—'
   ]);
 
   autoTable(doc, {
-    head: ['No', 'Project Name', 'Engineer', 'Created By', 'Start Date', 'End Date', 'Contract Title', 'Created At', 'Status', 'Extension Date', 'Follow Up'],
+    head: [['No', 'Project Name', 'Engineer', 'Created By', 'Start Date', 'End Date', 'Contract Title', 'Created At', 'Status', 'Follow Up']],
     body: tableData,
+    startY: 30,
+    styles: { fontSize: 9, cellPadding: 3 },
+    headStyles: { fillColor: [75, 85, 99] },
+    alternateRowStyles: { fillColor: [245, 245, 245] }
   });
 
-  doc.save('projects.pdf');
+  doc.save('All_Projects.pdf');
 }
 </script>
-
-<style scoped>
-.table-data {
-  padding: 1rem;
-  text-align: left;
-}
-</style>

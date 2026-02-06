@@ -13,7 +13,7 @@
 
     <div class="flex items-center mb-4 space-x-4">
       <input
-        type="text"
+        type="text"  
         v-model="filter"
         placeholder="Search..."
         class="w-full p-2 border rounded sm:w-auto"

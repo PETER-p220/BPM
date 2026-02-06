@@ -1,132 +1,194 @@
 <template>
-  <div class="p-4 py-5 space-y-4" style="font-family: 'cygre', serif; font-size: 17px">
-    <PageHeader title="Quotations" subtitle="Quotations">
-      <div class="flex flex-col sm:flex-row sm:justify-end sm:space-x-2">
-        <router-link to="/submit-shedule" class="self-end sm:self-auto">
-          <BaseButton style="background-color: #0d4063;" class="w-full sm:w-auto">
-            Create New Quoation
-            <span class="ml-2" aria-hidden="true"><i class="fas fa-plus"></i></span>
-          </BaseButton>
-        </router-link>
+  <div class="quotations-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-left">
+          <h1 class="page-title">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Quotations
+          </h1>
+          <p class="page-subtitle">Manage and view all quotations</p>
+        </div>
+        <div class="header-right">
+          <router-link to="/submit-shedule">
+            <button class="btn btn-primary">
+              <i class="fas fa-plus"></i>
+              <span>Create New Quotation</span>
+            </button>
+          </router-link>
+        </div>
       </div>
-    </PageHeader>
-
-    <div class="flex items-center mb-4">
-      <input
-        type="text"
-        v-model="filter"
-        placeholder="Search by Tender Title..."
-        class="w-full p-2 border rounded sm:w-auto"
-      />
     </div>
 
-    <!-- Full-Width Container -->
-    <div class="space-y-4">
+    <!-- Search and Filters -->
+    <div class="filters-section">
+      <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input
+          type="text"
+          v-model="filter"
+          placeholder="Search by tender title..."
+          class="search-input"
+        />
+      </div>
+    </div>
+
+    <!-- Quotations List -->
+    <div class="quotations-list">
       <div
         v-for="tender in filteredTenders"
         :key="tender.tender_id"
-        class="w-full p-4 bg-white rounded-lg shadow-lg"
+        class="quotation-card"
       >
-        <h3 class="mb-2 text-lg font-semibold text-gray-800">Tender: {{ tender.tender.title }}</h3>
-        <p class="text-sm text-gray-600">Project Manager: {{ tender.user?.name || 'N/A' }}</p>
-        <p class="text-sm text-gray-600">Created: {{ formatDate(tender.created_at) }}</p>
-        <div class="mt-2">
-          <span
-            :class="statusButtonClass(tender.status)"
-            class="inline-block px-3 py-1 text-sm font-medium rounded-full"
-          >
-            {{ tender.status }}
-          </span>
-          <p v-if="tender.status === 'rejected' && tender.reason_for_reject" class="mt-1 text-sm text-red-600">
-            Reason: {{ tender.reason_for_reject }}
-          </p>
+        <!-- Card Header -->
+        <div class="card-header">
+          <div class="card-header-left">
+            <h3 class="tender-title">
+              <i class="fas fa-file-contract"></i>
+              {{ tender.tender.title }}
+            </h3>
+            <div class="card-meta">
+              <span class="meta-item">
+                <i class="fas fa-user"></i>
+                {{ tender.user?.name || 'N/A' }}
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-calendar"></i>
+                {{ formatDate(tender.created_at) }}
+              </span>
+            </div>
+          </div>
+          <div class="card-header-right">
+            <span :class="['status-badge', `status-${tender.status}`]">
+              <i :class="statusIcon(tender.status)"></i>
+              {{ tender.status }}
+            </span>
+          </div>
         </div>
 
-        <!-- Tender-Level Totals -->
-        <div class="mt-2 text-sm text-gray-700">
-          <p><strong>Total Amount(VAT Excl):</strong> {{ formatCurrency(tender.total_amount_vat_excl) }}</p>
-          <p><strong>Total Amount(VAT Incl):</strong> {{ formatCurrency(tender.total_amount_vat_incl) }}</p>
-          <p><strong>Amount Needed:</strong> {{ formatCurrency(tender.total_amount_needed) }}</p>
-          <p><strong>Site Contingency:</strong> {{ formatCurrency(tender.site_contingency) }}</p>
-          <p><strong>Total Investment:</strong> {{ formatCurrency(tender.total_investment) }}</p>
-          <p><strong>Projected Profit:</strong> {{ formatCurrency(tender.projected_profit) }} ({{ tender.projected_profit_percentage }}%)</p>
+        <!-- Rejection Reason -->
+        <div v-if="tender.status === 'rejected' && tender.reason_for_reject" class="rejection-notice">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span><strong>Rejection Reason:</strong> {{ tender.reason_for_reject }}</span>
         </div>
 
-        <!-- Schedule Details with Grouped Headings -->
-        <div class="mt-4">
-          <h4 class="text-sm font-medium text-gray-700">Schedule Items</h4>
-          <div class="mt-2 overflow-x-auto">
-            <div class="flex flex-col">
-              <!-- Grouped Headings -->
-              <div class="flex space-x-2 text-sm font-semibold text-gray-600 bg-gray-100 p-2 rounded-t">
-                <span class="w-10 flex-shrink-0"></span> <!-- S/N -->
-                <span class="w-80 flex-shrink-0"></span> <!-- Description (increased from w-40) -->
-                <span class="w-20 flex-shrink-0 text-center whitespace-nowrap">QUOTED PRICES (VAT EXCL)</span> <!-- Q. Qty -->
-                <span class="w-10 flex-shrink-0"></span> <!-- Unit -->
-                <span class="w-24 flex-shrink-0"></span> <!-- Q. Rate -->
-                <span class="w-28 flex-shrink-0"></span> <!-- Q. Amount -->
-                <span class="w-20 flex-shrink-0 text-center whitespace-nowrap">BUYING PRICES (VAT INCL)</span> <!-- Qty -->
-                <span class="w-24 flex-shrink-0"></span> <!-- Rate -->
-                <span class="w-28 flex-shrink-0"></span> <!-- Amount -->
-                <span class="w-20 flex-shrink-0"></span> <!-- Source -->
-                <span class="w-20 flex-shrink-0"></span> <!-- Urgent -->
-              </div>
-              <!-- Column Headings -->
-              <div class="flex space-x-2 text-sm font-semibold text-gray-600 bg-gray-100 p-2">
-                <span class="w-10 flex-shrink-0">S/N</span>
-                <span class="w-80 flex-shrink-0">Description</span> <!-- Description (increased from w-40) -->
-                <span class="w-20 flex-shrink-0">Q. Qty</span>
-                <span class="w-10 flex-shrink-0">Unit</span>
-                <span class="w-24 flex-shrink-0">Q. Rate</span>
-                <span class="w-28 flex-shrink-0">Q. Amount</span>
-                <span class="w-20 flex-shrink-0">Qty</span>
-                <span class="w-24 flex-shrink-0">Rate</span>
-                <span class="w-28 flex-shrink-0">Amount</span>
-                <span class="w-20 flex-shrink-0">Source</span>
-                <span class="w-20 flex-shrink-0">Urgent</span>
-              </div>
-              <!-- Items -->
-              <div v-for="item in tender.items" :key="item.price_schedule_id" class="flex space-x-2 text-sm border-t pt-2">
-                <span class="w-10 flex-shrink-0">{{ item.serial_number }}</span>
-                <span class="w-80 flex-shrink-0 truncate">{{ item.item_description || 'N/A' }}</span> <!-- Description (increased from w-40) -->
-                <span class="w-20 flex-shrink-0">{{ item.quoted_quantity || '-' }}</span>
-                <span class="w-10 flex-shrink-0">{{ item.quoted_unit || '-' }}</span>
-                <span class="w-24 flex-shrink-0">{{ formatCurrency(item.quoted_rate) }}</span>
-                <span class="w-28 flex-shrink-0">{{ formatCurrency(item.quoted_amount) }}</span>
-                <span class="w-20 flex-shrink-0">{{ item.quantity || '-' }}</span>
-                <span class="w-24 flex-shrink-0">{{ formatCurrency(item.rate) }}</span>
-                <span class="w-28 flex-shrink-0">{{ formatCurrency(item.amount) }}</span>
-                <span class="w-20 flex-shrink-0">{{ item.source || 'N/A' }}</span>
-                <span class="w-20 flex-shrink-0">{{ item.urgent_status || 'N/A' }}</span>
-              </div>
+        <!-- Financial Summary -->
+        <div class="financial-summary">
+          <h4 class="summary-title">
+            <i class="fas fa-chart-line"></i>
+            Financial Summary
+          </h4>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span class="summary-label">Total Amount (VAT Excl)</span>
+              <span class="summary-value">{{ formatCurrency(tender.total_amount_vat_excl) }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Total Amount (VAT Incl)</span>
+              <span class="summary-value">{{ formatCurrency(tender.total_amount_vat_incl) }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Amount Needed</span>
+              <span class="summary-value">{{ formatCurrency(tender.total_amount_needed) }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Site Contingency</span>
+              <span class="summary-value">{{ formatCurrency(tender.site_contingency) }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Total Investment</span>
+              <span class="summary-value highlight">{{ formatCurrency(tender.total_investment) }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Projected Profit</span>
+              <span class="summary-value profit">
+                {{ formatCurrency(tender.projected_profit) }}
+                <span class="profit-percentage">({{ tender.projected_profit_percentage }}%)</span>
+              </span>
             </div>
           </div>
         </div>
+
+        <!-- Schedule Items Table -->
+        <div class="schedule-section">
+          <h4 class="schedule-title">
+            <i class="fas fa-list-ul"></i>
+            Schedule Items
+          </h4>
+          <div class="table-wrapper">
+            <table class="schedule-table">
+              <thead>
+                <tr class="group-header">
+                  <th colspan="6" class="group-cell quoted-group">QUOTED PRICES (VAT EXCL)</th>
+                  <th colspan="5" class="group-cell buying-group">BUYING PRICES (VAT INCL)</th>
+                </tr>
+                <tr>
+                  <th class="th-sn">S/N</th>
+                  <th class="th-desc">Description</th>
+                  <th class="th-qty">Q. Qty</th>
+                  <th class="th-unit">Unit</th>
+                  <th class="th-rate">Q. Rate</th>
+                  <th class="th-amount">Q. Amount</th>
+                  <th class="th-qty">Qty</th>
+                  <th class="th-rate">Rate</th>
+                  <th class="th-amount">Amount</th>
+                  <th class="th-source">Source</th>
+                  <th class="th-urgent">Urgent</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in tender.items" :key="item.price_schedule_id">
+                  <td class="td-sn">{{ item.serial_number }}</td>
+                  <td class="td-desc" :title="item.item_description">{{ item.item_description || 'N/A' }}</td>
+                  <td class="td-qty">{{ item.quoted_quantity || '-' }}</td>
+                  <td class="td-unit">{{ item.quoted_unit || '-' }}</td>
+                  <td class="td-rate">{{ formatCurrency(item.quoted_rate) }}</td>
+                  <td class="td-amount">{{ formatCurrency(item.quoted_amount) }}</td>
+                  <td class="td-qty">{{ item.quantity || '-' }}</td>
+                  <td class="td-rate">{{ formatCurrency(item.rate) }}</td>
+                  <td class="td-amount">{{ formatCurrency(item.amount) }}</td>
+                  <td class="td-source">{{ item.source || 'N/A' }}</td>
+                  <td class="td-urgent">
+                    <span v-if="item.urgent_status" :class="['urgent-badge', item.urgent_status.toLowerCase()]">
+                      {{ item.urgent_status }}
+                    </span>
+                    <span v-else class="text-muted">N/A</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      <div
-        v-if="!filteredTenders.length"
-        class="w-full p-4 text-center text-gray-500 bg-white rounded-lg shadow-lg"
-      >
-        No schedules found for the current filter.
+
+      <!-- Empty State -->
+      <div v-if="!filteredTenders.length" class="empty-state">
+        <i class="fas fa-folder-open"></i>
+        <p>No quotations found for the current filter.</p>
       </div>
     </div>
 
     <!-- Pagination -->
-    <div class="flex justify-center mt-4">
+    <div class="pagination-section" v-if="filteredTenders.length">
       <button
         :disabled="currentPage === 1"
         @click="changePage(currentPage - 1)"
-        class="px-4 py-2 bg-gray-300 rounded-l-lg hover:bg-gray-400 disabled:opacity-50"
+        class="pagination-btn"
       >
+        <i class="fas fa-chevron-left"></i>
         Previous
       </button>
-      <span class="px-4 py-2">Page {{ currentPage }}</span>
+      <span class="pagination-info">
+        Page <strong>{{ currentPage }}</strong> of <strong>{{ totalPages }}</strong>
+      </span>
       <button
-        :disabled="currentPage * itemsPerPage >= allTenders.length"
+        :disabled="currentPage >= totalPages"
         @click="changePage(currentPage + 1)"
-        class="px-4 py-2 bg-gray-300 rounded-r-lg hover:bg-gray-400 disabled:opacity-50"
+        class="pagination-btn"
       >
         Next
+        <i class="fas fa-chevron-right"></i>
       </button>
     </div>
   </div>
@@ -140,7 +202,7 @@ import { useToast } from 'vue-toastification';
 const schedules = ref([]);
 const filter = ref('');
 const currentPage = ref(1);
-const itemsPerPage = 10; // Number of tenders per page
+const itemsPerPage = 10;
 const toast = useToast();
 
 onMounted(async () => {
@@ -161,7 +223,6 @@ async function fetchSchedules() {
   }
 }
 
-// Group schedules by tender_id
 function groupByTender(data) {
   const grouped = {};
   data.forEach(item => {
@@ -185,7 +246,6 @@ function groupByTender(data) {
       };
     }
 
-    // Assign totals from the first item that has them
     if (item.total_amount_vat_excl && !grouped[tenderId].total_amount_vat_excl) {
       grouped[tenderId].total_amount_vat_excl = item.total_amount_vat_excl;
       grouped[tenderId].total_amount_vat_incl = item.total_amount_vat_incl;
@@ -196,7 +256,6 @@ function groupByTender(data) {
       grouped[tenderId].projected_profit_percentage = item.projected_profit_percentage;
     }
 
-    // Add all items with descriptions or valid serial numbers
     if (item.item_description || item.serial_number.match(/^[A-M\s]+$/)) {
       grouped[tenderId].items.push(item);
     }
@@ -217,8 +276,10 @@ const filteredTenders = computed(() => {
   return allTenders.value.slice(start, end);
 });
 
+const totalPages = computed(() => Math.ceil(allTenders.value.length / itemsPerPage));
+
 function formatDate(dateString) {
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
   return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
@@ -231,11 +292,13 @@ function formatCurrency(value) {
   }).format(value);
 }
 
-function statusButtonClass(status) {
-  if (status === 'pending') return 'bg-yellow-500 text-white';
-  if (status === 'passed') return 'bg-green-500 text-white';
-  if (status === 'rejected') return 'bg-red-500 text-white';
-  return 'bg-gray-500 text-white';
+function statusIcon(status) {
+  const icons = {
+    pending: 'fas fa-clock',
+    passed: 'fas fa-check-circle',
+    rejected: 'fas fa-times-circle'
+  };
+  return icons[status] || 'fas fa-circle';
 }
 
 function handleError(error) {
@@ -251,31 +314,549 @@ function handleError(error) {
 }
 
 function changePage(page) {
-  if (page > 0 && page <= Math.ceil(allTenders.value.length / itemsPerPage)) {
+  if (page > 0 && page <= totalPages.value) {
     currentPage.value = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 </script>
 
 <style scoped>
-.overflow-x-auto::-webkit-scrollbar {
+.quotations-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.page-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page-title i {
+  color: #3b82f6;
+  font-size: 1.75rem;
+}
+
+.page-subtitle {
+  color: #64748b;
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.btn {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Filters Section */
+.filters-section {
+  background: white;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.search-wrapper {
+  position: relative;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem 0.625rem 2.75rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Quotations List */
+.quotations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quotation-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.quotation-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Header */
+.card-header {
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(to bottom, #f8fafc, white);
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.tender-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tender-title i {
+  color: #3b82f6;
+  font-size: 1rem;
+}
+
+.card-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #64748b;
+  font-size: 0.8125rem;
+}
+
+.meta-item i {
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+  border: 1px solid #fbbf24;
+}
+
+.status-passed {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.status-rejected {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+/* Rejection Notice */
+.rejection-notice {
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border-left: 4px solid #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #991b1b;
+  font-size: 0.875rem;
+}
+
+.rejection-notice i {
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+/* Financial Summary */
+.financial-summary {
+  padding: 1.5rem;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.summary-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.summary-title i {
+  color: #3b82f6;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.summary-item {
+  background: white;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.summary-value {
+  font-size: 1rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.summary-value.highlight {
+  color: #3b82f6;
+  font-size: 1.125rem;
+}
+
+.summary-value.profit {
+  color: #10b981;
+  font-size: 1.125rem;
+}
+
+.profit-percentage {
+  font-size: 0.875rem;
+  color: #059669;
+  margin-left: 0.375rem;
+}
+
+/* Schedule Section */
+.schedule-section {
+  padding: 1.5rem;
+}
+
+.schedule-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.schedule-title i {
+  color: #3b82f6;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.schedule-table thead {
+  background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.group-header th {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+  border-bottom: 2px solid #cbd5e1;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quoted-group {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #1e40af;
+  border-right: 1px solid #93c5fd;
+}
+
+.buying-group {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+}
+
+.schedule-table th {
+  padding: 0.75rem 0.875rem;
+  text-align: left;
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.schedule-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.2s ease;
+}
+
+.schedule-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.schedule-table td {
+  padding: 0.75rem 0.875rem;
+  color: #475569;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.td-sn {
+  font-weight: 600;
+  color: #1e293b;
+  width: 60px;
+}
+
+.td-desc {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-qty, .td-unit {
+  text-align: center;
+  width: 80px;
+}
+
+.td-rate, .td-amount {
+  text-align: right;
+  font-weight: 500;
+  width: 120px;
+}
+
+.td-source, .td-urgent {
+  width: 100px;
+}
+
+.urgent-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.urgent-badge.yes {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.urgent-badge.no {
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  color: #3730a3;
+  border: 1px solid #6366f1;
+}
+
+.text-muted {
+  color: #94a3b8;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+/* Pagination */
+.pagination-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.pagination-btn {
+  padding: 0.625rem 1.25rem;
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.pagination-info strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* Scrollbar */
+.table-wrapper::-webkit-scrollbar {
   height: 8px;
 }
-.overflow-x-auto::-webkit-scrollbar-thumb {
-  background-color: #a0aec0;
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
   border-radius: 4px;
 }
-.overflow-x-auto::-webkit-scrollbar-track {
-  background-color: #edf2f7;
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 
-/* Ensure full width responsiveness */
-.w-full {
-  width: 100%;
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
-/* Center text for grouped headings */
-.text-center {
-  text-align: center;
+/* Responsive */
+@media (max-width: 768px) {
+  .quotations-container {
+    padding: 1rem;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .card-header {
+    flex-direction: column;
+  }
 }
 </style>

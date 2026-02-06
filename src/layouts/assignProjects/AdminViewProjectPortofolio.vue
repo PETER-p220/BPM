@@ -1,32 +1,43 @@
 <template>
-  <div class="engineers-with-projects py-8 md:py-10 bg-gray-50 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="py-8 md:py-10 bg-gray-50 dark:bg-gray-950 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
       <!-- Header -->
-      <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Engineers With Projects</h1>
-          <p class="mt-1 text-gray-600">Overview of engineers and their assigned projects</p>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            Engineers With Projects
+          </h1>
+          <p class="mt-1 text-gray-600 dark:text-gray-400">
+            Overview of engineers and their assigned projects
+          </p>
         </div>
       </div>
 
-      <!-- Controls -->
-      <div class="mb-6 bg-white shadow rounded-lg p-4 border border-gray-200">
+      <!-- Search & Export Controls -->
+      <div class="bg-white dark:bg-gray-900 shadow-sm rounded-xl border border-gray-200 dark:border-gray-800 p-4">
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="relative flex-1">
             <input
               v-model="filter"
               type="text"
               placeholder="Search engineer name or email..."
-              class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
             />
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <svg
+              class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
           </div>
 
-          <div class="flex gap-3">
+          <div class="flex items-center gap-3 flex-wrap">
             <button
               @click="exportToExcel"
-              class="btn-export excel"
               :disabled="isExporting || isLoading || !filteredUsers.length"
+              class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow-sm transition disabled:opacity-50"
             >
               <i class="fas fa-file-excel mr-2"></i>
               Excel
@@ -34,8 +45,8 @@
 
             <button
               @click="exportToPDF"
-              class="btn-export pdf"
               :disabled="isExporting || isLoading || !filteredUsers.length"
+              class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-sm transition disabled:opacity-50"
             >
               <i class="fas fa-file-pdf mr-2"></i>
               PDF
@@ -44,215 +55,257 @@
         </div>
       </div>
 
-      <!-- Loading -->
-      <div v-if="isLoading" class="bg-white shadow rounded-xl p-12 text-center">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-blue-600 border-gray-200"></div>
-        <p class="mt-4 text-gray-600">Loading engineers data...</p>
+      <!-- Loading State -->
+      <div v-if="isLoading" class="bg-white dark:bg-gray-900 shadow-sm rounded-xl p-12 text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-indigo-600 border-gray-200 dark:border-gray-700"></div>
+        <p class="mt-4 text-gray-600 dark:text-gray-400">Loading engineers data...</p>
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="filteredUsers.length === 0" class="bg-white shadow rounded-xl p-12 text-center">
-        <i class="fas fa-users-slash text-6xl text-gray-300 mb-4"></i>
-        <h3 class="text-xl font-medium text-gray-700">No engineers found</h3>
-        <p class="mt-2 text-gray-500">
+      <div v-else-if="filteredUsers.length === 0" class="bg-white dark:bg-gray-900 shadow-sm rounded-xl p-12 text-center">
+        <i class="fas fa-users-slash text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+        <h3 class="text-xl font-medium text-gray-700 dark:text-gray-300">No engineers found</h3>
+        <p class="mt-2 text-gray-500 dark:text-gray-400">
           {{ filter ? 'Try adjusting your search.' : 'No engineers with projects yet.' }}
         </p>
       </div>
 
-      <!-- Engineer Cards -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
-          v-for="user in paginatedUsers"
-          :key="user.user_id"
-          @click="openModal(user)"
-          class="bg-white shadow-md rounded-xl p-6 cursor-pointer hover:shadow-lg transition-shadow border border-gray-200"
-        >
-          <div class="flex justify-between items-start">
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900">{{ user.name || '—' }}</h3>
-              <p class="text-sm text-gray-600 mt-1">{{ user.email || '—' }}</p>
-            </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold text-blue-600">{{ user.total_projects || 0 }}</div>
-              <p class="text-xs text-gray-500">Projects</p>
-            </div>
-          </div>
+      <!-- Main Table -->
+      <div v-else class="bg-white dark:bg-gray-900 shadow-sm rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+            <thead class="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">No</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Engineer Name</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Projects</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">In Progress</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Completed</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Failed</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-gray-900">
+              <tr
+                v-for="(user, index) in paginatedUsers"
+                :key="user.user_id"
+                @click="openModal(user)"
+                class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
+              >
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  {{ index + 1 + (currentPage - 1) * itemsPerPage }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {{ user.name || '—' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                  {{ user.email || '—' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                  {{ user.total_projects || 0 }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-yellow-600 dark:text-yellow-400">
+                  {{ user.on_progress_projects || 0 }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-green-600 dark:text-green-400">
+                  {{ user.completed_projects || 0 }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-red-600 dark:text-red-400">
+                  {{ user.failed_projects || 0 }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  <span
+                    class="inline-flex px-3 py-1 text-xs font-medium rounded-full"
+                    :class="user.status === 'is_active' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'"
+                  >
+                    {{ user.status === 'is_active' ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+              </tr>
 
-          <div class="mt-4 grid grid-cols-2 gap-2 text-sm">
-            <div>
-              <span class="font-medium">In Progress:</span> {{ user.on_progress_projects || 0 }}
-            </div>
-            <div>
-              <span class="font-medium">Completed:</span> {{ user.completed_projects || 0 }}
-            </div>
-            <div>
-              <span class="font-medium">Failed:</span> {{ user.failed_projects || 0 }}
-            </div>
-            <div>
-              <span class="font-medium">Status:</span>
-              <span :class="user.status === 'is_active' ? 'text-green-600' : 'text-red-600'">
-                {{ user.status === 'is_active' ? 'Active' : 'Inactive' }}
-              </span>
-            </div>
-          </div>
+              <!-- Empty row if no data (fallback) -->
+              <tr v-if="paginatedUsers.length === 0">
+                <td colspan="8" class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
+                  No engineers match your search
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <!-- Pagination -->
-      <div v-if="filteredUsers.length > 0" class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="text-sm text-gray-700">
-          Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
-          <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredUsers.length) }}</span> of
-          <span class="font-medium">{{ filteredUsers.length }}</span> engineers
-        </div>
+      <div v-if="filteredUsers.length > 0" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+          {{ Math.min(currentPage * itemsPerPage, filteredUsers.length) }} of
+          {{ filteredUsers.length }} engineers
+        </p>
 
-        <div class="flex gap-2">
+        <div class="flex items-center gap-2">
           <button
             :disabled="currentPage === 1"
             @click="changePage(currentPage - 1)"
-            class="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
+            class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
           >
             Previous
           </button>
           <button
             :disabled="currentPage * itemsPerPage >= filteredUsers.length"
             @click="changePage(currentPage + 1)"
-            class="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
+            class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
           >
             Next
           </button>
         </div>
       </div>
 
-      <!-- Modal -->
+      <!-- Engineer Details Modal -->
       <div
         v-if="selectedUser"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4"
         @click="closeModal"
       >
         <div
-          class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+          class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
           @click.stop
         >
-          <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-10">
-            <h2 class="text-2xl font-bold text-gray-900">Engineer Details</h2>
-            <button @click="closeModal" class="text-gray-500 hover:text-gray-800 text-2xl">
+          <div class="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center justify-between z-10">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Engineer Details</h2>
+            <button @click="closeModal" class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 text-2xl">
               ×
             </button>
           </div>
 
           <div class="p-6 space-y-6">
             <!-- Basic Info -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
-                <p class="text-sm text-gray-600">Name</p>
-                <p class="text-lg font-medium">{{ selectedUser.name || '—' }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Name</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.name || '—' }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600">Email</p>
-                <p class="text-lg font-medium">{{ selectedUser.email || '—' }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Email</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.email || '—' }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600">Status</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Status</p>
                 <span
-                  class="inline-block px-3 py-1 text-sm font-medium rounded-full"
-                  :class="selectedUser.status === 'is_active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                  class="inline-flex px-3 py-1 text-sm font-medium rounded-full"
+                  :class="selectedUser.status === 'is_active' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'"
                 >
                   {{ selectedUser.status === 'is_active' ? 'Active' : 'Inactive' }}
                 </span>
               </div>
               <div>
-                <p class="text-sm text-gray-600">Role</p>
-                <p class="text-lg font-medium">{{ selectedUser.role || '—' }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Role</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.role || '—' }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600">Department</p>
-                <p class="text-lg font-medium">{{ selectedUser.department || '—' }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Department</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.department || '—' }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600">Total Projects</p>
-                <p class="text-lg font-bold text-blue-600">{{ selectedUser.total_projects || 0 }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Total Projects</p>
+                <p class="text-xl font-bold text-indigo-600 dark:text-indigo-400">{{ selectedUser.total_projects || 0 }}</p>
               </div>
             </div>
 
-            <!-- Project Summary -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
+            <!-- Project Summary Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-gray-50 dark:bg-gray-800 p-5 rounded-lg">
               <div class="text-center">
-                <p class="text-sm text-gray-600">In Progress</p>
-                <p class="text-xl font-bold text-yellow-600">{{ selectedUser.on_progress_projects || 0 }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">In Progress</p>
+                <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ selectedUser.on_progress_projects || 0 }}</p>
               </div>
               <div class="text-center">
-                <p class="text-sm text-gray-600">Completed</p>
-                <p class="text-xl font-bold text-green-600">{{ selectedUser.completed_projects || 0 }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Completed</p>
+                <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ selectedUser.completed_projects || 0 }}</p>
               </div>
               <div class="text-center">
-                <p class="text-sm text-gray-600">Failed</p>
-                <p class="text-xl font-bold text-red-600">{{ selectedUser.failed_projects || 0 }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Failed</p>
+                <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ selectedUser.failed_projects || 0 }}</p>
               </div>
               <div class="text-center">
-                <p class="text-sm text-gray-600">Total</p>
-                <p class="text-xl font-bold text-gray-900">{{ selectedUser.total_projects || 0 }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Total</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ selectedUser.total_projects || 0 }}</p>
               </div>
             </div>
 
-            <!-- Projects List -->
+            <!-- Assigned Projects List -->
             <div>
-              <h3 class="text-xl font-semibold mb-4">Assigned Projects</h3>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Assigned Projects</h3>
+
               <div v-if="selectedUser.projects?.length" class="space-y-4">
                 <div
                   v-for="project in selectedUser.projects"
                   :key="project.project_id"
-                  class="p-5 bg-gray-50 rounded-lg border border-gray-200"
+                  class="p-5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
                 >
-                  <div class="flex justify-between items-start">
-                    <h4 class="text-lg font-medium text-gray-900">{{ project.project_name || '—' }}</h4>
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full"
-                      :class="getStatusClass(project.project_status)"
-                    >
-                      {{ project.project_status || '—' }}
-                    </span>
-                  </div>
-
-                  <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div>
-                      <span class="text-gray-600">Start:</span> {{ project.start_date || '—' }}
-                    </div>
-                    <div>
-                      <span class="text-gray-600">End:</span> {{ project.end_date || '—' }}
-                    </div>
-                    <div>
-                      <span class="text-gray-600">Extended:</span> {{ project.extended_date || '—' }}
-                    </div>
-                    <div>
-                      <span class="text-gray-600">Created By:</span> {{ project.created_by || '—' }}
+                      <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        {{ project.project_name || 'Untitled Project' }}
+                      </h4>
+                      <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        <span class="font-medium">Status:</span>
+                        <span :class="getStatusClass(project.project_status)" class="ml-2 px-2.5 py-0.5 text-xs font-medium rounded-full">
+                          {{ project.project_status || '—' }}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div class="mt-3 text-sm">
-                    <p><span class="text-gray-600">Members:</span> 
-                      {{ project.members?.length ? project.members.join(', ') : 'None' }}
+                  <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <p class="text-gray-600 dark:text-gray-400">Start Date</p>
+                      <p class="font-medium">{{ project.start_date || '—' }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-600 dark:text-gray-400">End Date</p>
+                      <p class="font-medium">{{ project.end_date || '—' }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-600 dark:text-gray-400">Extended Date</p>
+                      <p class="font-medium">{{ project.extended_date || '—' }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-600 dark:text-gray-400">Created By</p>
+                      <p class="font-medium">{{ project.created_by || '—' }}</p>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 text-sm">
+                    <p>
+                      <span class="text-gray-600 dark:text-gray-400 font-medium">Team Members:</span>
+                      {{ project.members?.length ? project.members.join(', ') : 'None assigned' }}
                     </p>
                   </div>
 
-                  <div v-if="project.contract" class="mt-3 pt-3 border-t border-gray-200">
-                    <p class="text-sm font-medium">Contract: {{ project.contract.title || '—' }}</p>
-                    <p class="text-sm text-gray-600">Status: {{ project.contract.status || '—' }}</p>
-                  </div>
-
-                  <div v-if="project.tender" class="mt-2">
-                    <p class="text-sm font-medium">Tender: {{ project.tender.title || '—' }}</p>
+                  <div v-if="project.contract || project.tender" class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div v-if="project.contract">
+                      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Contract</p>
+                      <p class="text-gray-600 dark:text-gray-400">{{ project.contract.title || '—' }}</p>
+                      <p class="text-xs mt-1">Status: {{ project.contract.status || '—' }}</p>
+                    </div>
+                    <div v-if="project.tender">
+                      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Tender</p>
+                      <p class="text-gray-600 dark:text-gray-400">{{ project.tender.title || '—' }}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <p v-else class="text-gray-500 italic mt-4">No projects assigned to this engineer.</p>
+
+              <p v-else class="text-gray-500 dark:text-gray-400 italic mt-4">
+                No projects assigned to this engineer yet.
+              </p>
             </div>
           </div>
 
-          <div class="sticky bottom-0 bg-white border-t px-6 py-4 flex justify-end">
+          <div class="sticky bottom-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-6 py-4 flex justify-end">
             <button
               @click="closeModal"
-              class="px-6 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition"
+              class="px-6 py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition"
             >
               Close
             </button>
@@ -331,11 +384,11 @@ function closeModal() {
 
 function getStatusClass(status) {
   const classes = {
-    'on-progress': 'bg-yellow-100 text-yellow-800',
-    'completed': 'bg-green-100 text-green-800',
-    'failed': 'bg-red-100 text-red-800'
+    'on-progress': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300',
+    completed: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
+    failed: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
   }
-  return classes[status?.toLowerCase()] || 'bg-gray-100 text-gray-800'
+  return classes[status?.toLowerCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
 }
 
 async function exportToExcel() {
@@ -350,8 +403,8 @@ async function exportToExcel() {
       Department: user.department || '—',
       'Total Projects': user.total_projects || 0,
       'On Progress': user.on_progress_projects || 0,
-      'Completed': user.completed_projects || 0,
-      'Failed': user.failed_projects || 0
+      Completed: user.completed_projects || 0,
+      Failed: user.failed_projects || 0
     }))
 
     const ws = XLSX.utils.json_to_sheet(data)
@@ -370,7 +423,7 @@ function exportToPDF() {
   try {
     const doc = new jsPDF()
     doc.setFontSize(18)
-    doc.text('Engineers With Projects', 14, 20)
+    doc.text('Engineers With Projects Report', 14, 20)
 
     const tableData = filteredUsers.value.map((user, index) => [
       index + 1,
@@ -402,49 +455,3 @@ function exportToPDF() {
   }
 }
 </script>
-
-<style scoped>
-.btn-primary {
-  background-color: #1e293b;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary:hover {
-  background-color: #0f172a;
-}
-
-.btn-export {
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-  border: 1px solid;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn-export.excel {
-  border-color: #16a34a;
-  color: #166534;
-}
-
-.btn-export.excel:hover {
-  background-color: #f0fdf4;
-}
-
-.btn-export.pdf {
-  border-color: #dc2626;
-  color: #991b1b;
-}
-
-.btn-export.pdf:hover {
-  background-color: #fef2f2;
-}
-</style>

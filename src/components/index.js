@@ -1,9 +1,9 @@
-
 import GuestHeader from '@layouts/Partials/GuestHeader.vue'
 import AppSidebar from '@layouts/Partials/AppSidebar.vue'
 import AppHeader from '@layouts/Partials/AppHeader.vue'
 import AppHeader1 from '@layouts/Partials/AppHeader1.vue'
 import AppNavigation from '@layouts/Partials/AppNavigation.vue'
+import AppNavigation1 from '@layouts/Partials/AppNavigation1.vue'
 import MobileSidebar from '@layouts/Partials/MobileSidebar.vue'
 import MobileSidebar1 from '@layouts/Partials/MobileSidebar1.vue'
 import ProfileDropdown from '@layouts/Partials/ProfileDropdown.vue'
@@ -38,7 +38,6 @@ import ProfileDropdown4 from  '@layouts/Partials/ProfileDropdown4.vue'
 import MobileSidebar4 from '@layouts/Partials/MobileSidebar4.vue'
 import AppSidebar4 from '@layouts/Partials/AppSidebar4.vue'
 import AppHeader4   from '@layouts/Partials/AppHeader4.vue'
-import AppNavigation1 from '@layouts/Partials/AppNavigation1.vue'
 import AppHeader5 from '../layouts/Partials/AppHeader5.vue'
 import AppSidebar5 from '../layouts/Partials/AppSidebar5.vue'
 import HrSideBar from '../layouts/Partials/HrSideBar.vue'
@@ -52,6 +51,7 @@ export default app => {
   app.component('AppHeader', AppHeader)
   app.component('AppHeader1',AppHeader1)
   app.component('AppNavigation', AppNavigation)
+  app.component('AppNavigation1',AppNavigation1)
   app.component('MobileSidebar', MobileSidebar)
   app.component('MobileSidebar1',MobileSidebar1)
   app.component('ProfileDropdown', ProfileDropdown)

@@ -1,85 +1,139 @@
 <template>
-  <div class="py-5 edit-assignment" style="font-family: 'cygre', serif; font-size: 23px">
-    <div class="container px-4 mx-auto">
-      <div class="w-full shadow-lg card">
-        <div class="flex items-center justify-between px-4 py-2 text-white card-header" style="background-color: #283747;">
-          <div><i class="mr-2 fa fa-edit"></i> Edit Project</div>
-          <button type="button" class="text-white" @click="closeModal">
-            <i class="fa fa-times"></i>
+  <div class="p-6 min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div class="max-w-3xl mx-auto">
+      <!-- Card -->
+      <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-800 text-white flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <i class="fas fa-edit text-lg"></i>
+            <h2 class="text-xl font-semibold">Edit Project</h2>
+          </div>
+          <button
+            @click="closeModal"
+            class="text-gray-300 hover:text-white transition p-1 rounded-full hover:bg-gray-700"
+            title="Close"
+          >
+            <i class="fas fa-times text-xl"></i>
           </button>
         </div>
 
-        <div class="p-6 bg-white card-body">
-          <h3 class="mb-4 text-lg font-semibold">Edit Project</h3>
-
-          <!-- Validation Error Summary -->
-          <div v-if="Object.keys(errors).length" class="p-4 mb-4 text-red-700 bg-red-100 rounded">
-            <h4 class="mb-2 font-bold">Please fix the following errors:</h4>
-            <ul class="pl-4 list-disc">
-              <li v-for="(errorList, field) in errors" :key="field" class="mb-1">
-                {{ errorList[0] }}
+        <!-- Form Content -->
+        <div class="p-6">
+          <!-- Validation Errors -->
+          <div
+            v-if="Object.keys(errors).length"
+            class="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-red-800 dark:text-red-200"
+          >
+            <h4 class="font-semibold mb-2">Please correct the following errors:</h4>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+              <li v-for="(messages, field) in errors" :key="field">
+                <span class="font-medium">{{ field.replace(/_/g, ' ') }}:</span>
+                {{ messages[0] }}
               </li>
             </ul>
           </div>
 
-          <!-- Contract Title (Read-only) -->
-          <div class="mt-4">
-            <label for="contractTitle" class="form-label">Contract Title</label>
-            <input type="text" id="contractTitle" class="w-full px-3 py-2 border rounded form-control" v-model="projectData.contract.title" disabled />
-          </div>
+          <form @submit.prevent="updateProject" class="space-y-6">
+            <!-- Contract -->
+            <div>
+              <label for="contract" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Contract <span class="text-red-500">*</span>
+              </label>
+              <select
+                id="contract"
+                v-model="projectData.contract_id"
+                :class="{ 'border-red-500 focus:ring-red-500': errors.contract_id }"
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                required
+              >
+                <option value="" disabled>Select Contract</option>
+                <option v-for="contract in contracts" :key="contract.contract_id" :value="contract.contract_id">
+                  {{ contract.title }}
+                </option>
+              </select>
+              <p v-if="errors.contract_id" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                {{ errors.contract_id[0] }}
+              </p>
+            </div>
 
-          <!-- Contract ID -->
-          <div class="mt-4">
-            <label for="contractSelect" class="form-label">Select Contract</label>
-            <select id="contractSelect" class="w-full px-3 py-2 border rounded form-control" 
-                    :class="{ 'border-red-500': errors.contract_id }" v-model="projectData.contract_id">
-              <option value="" disabled>Select a contract</option>
-              <option v-for="contract in contracts" :key="contract.contract_id" :value="contract.contract_id">
-                {{ contract.title }}
-              </option>
-            </select>
-            <span v-if="errors.contract_id" class="text-sm text-red-500">{{ errors.contract_id[0] }}</span>
-          </div>
+            <!-- Current Contract Title (read-only) -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Current Contract Title
+              </label>
+              <input
+                type="text"
+                :value="projectData.contract?.title || '—'"
+                disabled
+                class="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 cursor-not-allowed"
+              />
+            </div>
 
-          <!-- Project Status -->
-          <div class="mt-4">
-            <label for="projectStatus" class="form-label">Project Status</label>
-            <select id="projectStatus" class="w-full px-3 py-2 border rounded form-control" 
-                    :class="{ 'border-red-500': errors.project_status }" v-model="projectData.project_status">
-              <option value="" disabled>Select status</option>
-              <option value="on-progress">On Progress</option>
-              <option value="completed">Completed</option>
-              <option value="failed">Failed</option>
-            </select>
-            <span v-if="errors.project_status" class="text-sm text-red-500">{{ errors.project_status[0] }}</span>
-          </div>
+            <!-- Project Status -->
+            <div>
+              <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Project Status <span class="text-red-500">*</span>
+              </label>
+              <select
+                id="status"
+                v-model="projectData.project_status"
+                :class="{ 'border-red-500 focus:ring-red-500': errors.project_status }"
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                required
+              >
+                <option value="" disabled>Select Status</option>
+                <option value="on-progress">On Progress</option>
+                <option value="completed">Completed</option>
+                <option value="failed">Failed</option>
+              </select>
+              <p v-if="errors.project_status" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                {{ errors.project_status[0] }}
+              </p>
+            </div>
 
-          <!-- Follow Up -->
-          <div class="mt-4">
-            <label for="followUp" class="form-label">Follow Up</label>
-            <select id="followUp" class="w-full px-3 py-2 border rounded form-control" 
-                    :class="{ 'border-red-500': errors.follow_up }" v-model="projectData.follow_up">
-              <option value="">None</option>
-              <option value="on-progress">On Progress</option>
-              <option value="completed">Completed</option>
-            </select>
-            <span v-if="errors.follow_up" class="text-sm text-red-500">{{ errors.follow_up[0] }}</span>
-          </div>
+            <!-- Follow Up -->
+            <div>
+              <label for="followUp" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Follow Up
+              </label>
+              <select
+                id="followUp"
+                v-model="projectData.follow_up"
+                :class="{ 'border-red-500 focus:ring-red-500': errors.follow_up }"
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+              >
+                <option value="">None</option>
+                <option value="on-progress">On Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+              <p v-if="errors.follow_up" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                {{ errors.follow_up[0] }}
+              </p>
+            </div>
 
-          <!-- Action Buttons -->
-          <div class="flex gap-4 mt-4">
-            <button @click="updateProject" class="px-4 py-2 mt-4 text-white rounded hover:bg-blue-700" 
-                    style="background-color: #283747;" :disabled="isLoading">
-              Update Project
-              <span v-if="isLoading" class="flex items-center gap-2">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
-              </span>
-            </button>
-            <router-link to="/adminview-assignedprojects" 
-                         class="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
-              <i class="fa fa-times"></i> Cancel
-            </router-link>
-          </div>
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row sm:justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-800">
+              <button
+                type="button"
+                @click="closeModal"
+                class="px-6 py-2.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg font-medium transition"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                :disabled="isLoading"
+                class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[140px]"
+              >
+                <span v-if="isLoading">
+                  <i class="fas fa-spinner fa-spin"></i> Updating...
+                </span>
+                <span v-else>Update Project</span>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -88,8 +142,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from '@/axios';
 import { useRoute, useRouter } from 'vue-router';
+import axios from '@/axios';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
@@ -103,42 +157,47 @@ const projectData = ref({
   project_status: '',
   follow_up: ''
 });
+
 const contracts = ref([]);
 const errors = ref({});
 const isLoading = ref(false);
 
 onMounted(async () => {
-  await Promise.all([fetchProjectData(), fetchContracts()]);
+  await Promise.all([
+    fetchProjectData(),
+    fetchContracts()
+  ]);
 });
 
 async function fetchProjectData() {
   try {
     const response = await axios.get(`api/projects/${route.params.project_id}`);
     const data = response.data.data;
+
     projectData.value = {
       project_id: data.project_id || '',
       contract_id: data.contract_id || '',
-      contract: { title: data.contract?.title || 'NA' },
+      contract: { title: data.contract?.title || '' },
       project_status: data.project_status || '',
       follow_up: data.follow_up || ''
     };
   } catch (error) {
-    handleError(error);
+    toast.error(error.response?.data?.message || 'Failed to load project');
   }
 }
 
 async function fetchContracts() {
   try {
     const response = await axios.get('api/c-dropdown');
-    contracts.value = response.data.data;
+    contracts.value = response.data.data || [];
   } catch (error) {
-    handleError(error);
+    toast.error('Failed to load contracts');
   }
 }
 
 async function updateProject() {
   isLoading.value = true;
-  errors.value = {}; // Reset errors
+  errors.value = {};
 
   try {
     const payload = {
@@ -146,23 +205,21 @@ async function updateProject() {
       project_status: projectData.value.project_status,
       follow_up: projectData.value.follow_up || null
     };
+
     const response = await axios.put(`api/projects/${route.params.project_id}`, payload);
-    toast.success(response.data.message);
+
+    toast.success(response.data.message || 'Project updated successfully');
     router.push('/adminview-assignedprojects');
   } catch (error) {
     if (error.response?.status === 400 && error.response.data.errors) {
       errors.value = error.response.data.errors;
+      toast.warning('Please correct the highlighted fields');
     } else {
-      handleError(error);
+      toast.error(error.response?.data?.message || 'Failed to update project');
     }
   } finally {
     isLoading.value = false;
   }
-}
-
-function handleError(error) {
-  const message = error.response?.data?.message || error.message || 'An unexpected error occurred';
-  toast.error(message);
 }
 
 function closeModal() {

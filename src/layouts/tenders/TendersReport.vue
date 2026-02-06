@@ -101,7 +101,7 @@
   import axios from '@/axios';
   import * as XLSX from '@e965/xlsx';
   import jsPDF from 'jspdf';
-  import 'jspdf-autotable';
+  import autoTable from 'jspdf-autotable';
   
   const tenders = ref([]);
   const tenderTypes = ref([]);
@@ -173,23 +173,29 @@
   }
   
   function exportToPDF() {
-    const doc = new jsPDF();
-    doc.autoTable({
-      head: [['No', 'Title', 'Tender Type', 'Tender Number', 'Procurement Entity', 'Tender File', 'Date of Publication', 'Date of Submission', 'Expiration Date', 'Created At']],
-      body: tenders.value.map((tender, index) => ([
-        index + 1,
-        tender.title,
-        tender.tender_type,
-        tender.tender_number,
-        tender.procurement_entity,
-        'Download File',
-        formatDate(tender.date_of_Publication),
-        formatDate(tender.bid_submission),
-        formatDate(tender.expired_at),
-        formatDate(tender.created_at),
-      ])),
-    });
-    doc.save('tenders.pdf');
+    try {
+      const doc = new jsPDF();
+      autoTable(doc, {
+        head: [['No', 'Title', 'Tender Type', 'Tender Number', 'Procurement Entity', 'Tender File', 'Date of Publication', 'Date of Submission', 'Expiration Date', 'Created At']],
+        body: tenders.value.map((tender, index) => ([
+          index + 1,
+          tender.title,
+          tender.tender_type,
+          tender.tender_number,
+          tender.procurement_entity,
+          'Download File',
+          formatDate(tender.date_of_Publication),
+          formatDate(tender.bid_submission),
+          formatDate(tender.expired_at),
+          formatDate(tender.created_at),
+        ])),
+      });
+      doc.save('tenders.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toastMessage.value = 'Error generating PDF. Please try again.';
+      toastClass.value = 'bg-red-500 text-white';
+    }
   }
   
   const filteredTenders = computed(() => {
