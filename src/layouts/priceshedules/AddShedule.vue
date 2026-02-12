@@ -1,51 +1,106 @@
 <template>
-  <div class="py-5 add-user" style="font-family: 'cygre', sans-serif; font-size: 17px">
-    <div class="container px-4 mx-auto">
-      <div class="w-full shadow-lg card">
-        <div class="flex items-center justify-between px-4 py-2 text-white card-header" style="background-color: #283747;">
-          <div><i class="mr-2 fa fa-plus"></i> Submit Quotation</div>
-          <button type="button" class="text-white" @click="closeModal">
-            <i class="fa fa-times"></i>
+  <div class="add-user py-6 md:py-10 min-h-screen bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+      <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
+        <!-- Header -->
+        <div
+          class="px-6 py-4 flex items-center justify-between text-white"
+          style="background-color: #283747;"
+        >
+          <div class="flex items-center gap-3 text-lg font-semibold">
+            <i class="fa fa-file-invoice"></i>
+            Submit Quotation
+          </div>
+          <button
+            type="button"
+            class="p-2 rounded-full hover:bg-white/20 transition-colors"
+            @click="closeModal"
+          >
+            <i class="fa fa-times text-xl"></i>
           </button>
         </div>
 
-        <!-- Schedule Creation Form -->
-        <div class="p-6 bg-white card-body">
-          <h3 class="mb-4 text-lg font-semibold"></h3>
-          
-          <!-- First Row: Tender -->
-          <div class="row">
-            <div class="col-sm-12">
-              <label for="tenderSelect" class="form-label">Select Tender</label>
-              <select id="tenderSelect" class="w-full px-3 py-2 border rounded form-control" v-model="scheduleData.tender_id">
-                <option value="">Select a Tender</option>
-                <option v-for="tender in tenders" :key="tender.tender_id" :value="tender.tender_id">{{ tender.title }}</option>
+        <!-- Form Body -->
+        <div class="p-6 md:p-8">
+          <form @submit.prevent="storeSchedule" class="space-y-6">
+            <!-- Tender Selection -->
+            <div>
+              <label for="tenderSelect" class="block text-sm font-medium text-gray-700 mb-2">
+                Select Tender <span class="text-red-500">*</span>
+              </label>
+              <select
+                id="tenderSelect"
+                v-model="scheduleData.tender_id"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white shadow-sm"
+                :disabled="isLoading"
+              >
+                <option value="" disabled>Select a Tender</option>
+                <option v-for="tender in tenders" :key="tender.tender_id" :value="tender.tender_id">
+                  {{ tender.title }}
+                </option>
               </select>
             </div>
-          </div>
 
-          <!-- File Upload -->
-          <div class="mt-4">
-            <label for="scheduleFile" class="form-label">Upload Quotation File (Excel: .xlsx, .xls)</label>
-            <input type="file" id="scheduleFile" class="w-full px-3 py-2 border rounded form-control" 
-                   accept=".xlsx,.xls" @change="handleFileUpload('excel_file', $event)" />
-          </div>
+            <!-- File Upload -->
+            <div>
+              <label for="scheduleFile" class="block text-sm font-medium text-gray-700 mb-2">
+                Upload Quotation File <span class="text-red-500">*</span>
+              </label>
+              <div class="mt-1">
+                <label
+                  for="scheduleFile"
+                  class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
+                  :class="{ 'border-blue-500 bg-blue-50': scheduleData.excel_file }"
+                >
+                  <div class="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
+                    <i class="fa fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-sm text-gray-600">
+                      <span class="font-semibold text-blue-600">Click to upload</span> or drag and drop
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      Excel files only (.xlsx, .xls)
+                    </p>
+                    <p v-if="scheduleData.excel_file" class="text-sm text-green-600 mt-2 font-medium">
+                      {{ scheduleData.excel_file.name }}
+                    </p>
+                  </div>
+                  <input
+                    id="scheduleFile"
+                    type="file"
+                    class="hidden"
+                    accept=".xlsx,.xls"
+                    @change="handleFileUpload('excel_file', $event)"
+                    :disabled="isLoading"
+                  />
+                </label>
+              </div>
+            </div>
 
-          <!-- Action Buttons -->
-          <div class="flex gap-4 mt-4">
-            <button @click="storeSchedule" class="px-4 py-2 mt-4 text-white rounded hover:bg-blue-700" 
-                    style="background-color:#283747;" :disabled="isLoading">
-              <i class="fa fa-plus"></i> Save changes
-              <span v-if="isLoading" class="flex items-center gap-2 mt-4">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
-              </span>
-            </button>
-            <span>
-              <router-link to="/user/schedules" class="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
-                <i class="fa fa-times"></i> Cancel
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6">
+              <button
+                type="submit"
+                class="flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white font-medium rounded-lg shadow-md transition-all"
+                :style="{ backgroundColor: '#283747' }"
+                :class="{ 'opacity-70 cursor-not-allowed': isLoading }"
+                :disabled="isLoading"
+              >
+                <i class="fa fa-save"></i>
+                Submit Quotation
+                <span v-if="isLoading" class="ml-2 flex items-center gap-2">
+                  <i class="fa fa-spinner fa-spin"></i>
+                </span>
+              </button>
+
+              <router-link
+                to="/user/schedules"
+                class="flex-1 flex items-center justify-center gap-2 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-all"
+              >
+                <i class="fa fa-times"></i>
+                Cancel
               </router-link>
-            </span>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -60,19 +115,19 @@ import { useRouter } from 'vue-router';
 
 const toast = useToast();
 const router = useRouter();
+
 const scheduleData = ref({
   tender_id: '',
   excel_file: null,
 });
+
 const tenders = ref([]);
 const isLoading = ref(false);
 
-// Fetch tenders on mount
 onMounted(async () => {
   await fetchTenders();
 });
 
-// Fetch tenders from API
 async function fetchTenders() {
   try {
     const response = await axios.get('api/dropdown/tender');
@@ -82,27 +137,31 @@ async function fetchTenders() {
   }
 }
 
-// Handle file upload
 function handleFileUpload(fileKey, event) {
   const file = event.target.files[0];
-  if (file && !['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'].includes(file.type)) {
+  if (!file) return;
+
+  const validTypes = [
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-excel',
+  ];
+
+  if (!validTypes.includes(file.type)) {
     toast.error('Please upload a valid Excel file (.xlsx or .xls)');
     event.target.value = '';
     return;
   }
+
   scheduleData.value[fileKey] = file;
 }
 
-// Store the new schedule
 async function storeSchedule() {
-  isLoading.value = true;
-
-  // Validation
   if (!scheduleData.value.tender_id || !scheduleData.value.excel_file) {
     toast.error('Please select a tender and upload an Excel file.');
-    isLoading.value = false;
     return;
   }
+
+  isLoading.value = true;
 
   try {
     const formData = new FormData();
@@ -110,12 +169,12 @@ async function storeSchedule() {
     formData.append('excel_file', scheduleData.value.excel_file);
 
     const response = await axios.post('api/price-shedules', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    toast.success(response.data.message + ` (${response.data.rows_imported} rows imported)`);
+    toast.success(
+      `${response.data.message} (${response.data.rows_imported || 0} rows imported)`
+    );
     router.push('/user/schedules');
   } catch (error) {
     handleError(error);
@@ -124,24 +183,32 @@ async function storeSchedule() {
   }
 }
 
-// Handle errors
 function handleError(error) {
   let message = 'An unexpected error occurred';
-  if (error.response && error.response.data) {
-    message = error.response.data.message || 'Error processing the request';
-    if (error.response.data.error) {
-      message += `: ${error.response.data.error}`;
-    }
+  if (error.response?.data) {
+    message = error.response.data.message || message;
+    if (error.response.data.error) message += `: ${error.response.data.error}`;
   } else if (error.request) {
-    message = 'No response from the server. Please check your connection.';
+    message = 'No response from server. Please check your connection.';
   } else {
     message = error.message;
   }
   toast.error(message);
 }
 
-// Close modal (if used in a modal context)
 function closeModal() {
   router.push('/user/schedules');
 }
 </script>
+
+<style scoped>
+/* Optional: Add subtle animations or extra polish if desired */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

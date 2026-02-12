@@ -15,7 +15,6 @@
             </button>
           </router-link>
         </div>
-
         <!-- Search Bar -->
         <div class="mt-6">
           <div class="relative">
@@ -369,103 +368,32 @@ async function fetchAnalyses() {
   loading.value = true;
   try {
     const response = await axios.get('/api/user-analysis');
-    console.log('API Response:', response.data); // Debug log
+    console.log('Full API Response:', response); // Debug log
+    console.log('Response data:', response.data); // Debug log
+    console.log('Response status:', response.data.status); // Debug log
+    console.log('Response data array:', response.data.data); // Debug log
     
     if (response.data.status === 200 && Array.isArray(response.data.data)) {
-      const groupedAnalyses = groupByProject(response.data.data);
-      analyses.value = groupedAnalyses;
-      console.log('Grouped Analyses:', groupedAnalyses); // Debug log
+      // Backend already groups data by project, so we just need to ensure proper formatting
+      analyses.value = response.data.data;
+      console.log('Final analyses data:', analyses.value); // Debug log
+      console.log('Number of projects:', analyses.value.length); // Debug log
+      
+      // Log first project details if available
+      if (analyses.value.length > 0) {
+        console.log('First project:', analyses.value[0]);
+        console.log('First project items:', analyses.value[0].items);
+      }
     } else {
+      console.log('Invalid response format:', response.data);
       throw new Error('Invalid API response format');
     }
   } catch (error) {
+    console.error('Error in fetchAnalyses:', error);
     handleError(error);
   } finally {
     loading.value = false;
   }
-}
-
-function groupByProject(data) {
-  console.log('Raw data to group:', data); // Debug log
-  
-  const grouped = {};
-  
-  data.forEach(item => {
-    const projectId = item.project_id;
-    
-    // Initialize project group if it doesn't exist
-    if (!grouped[projectId]) {
-      grouped[projectId] = {
-        project_id: projectId,
-        project: item.project || {},
-        user: item.user || {},
-        tender: item.tender || null,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-        status: item.status || 'pending',
-        reason_for_reject: item.reason_for_reject || null,
-        // Financial fields - will be populated from first item with values
-        total_amount_vat_excl: item.total_amount_vat_excl || null,
-        total_amount_vat_incl: item.total_amount_vat_incl || null,
-        total_amount_needed: item.total_amount_needed || null,
-        site_contingency: item.site_contingency || null,
-        total_investment: item.total_investment || null,
-        projected_profit: item.projected_profit || null,
-        projected_profit_percentage: item.projected_profit_percentage || null,
-        items: []
-      };
-    }
-
-    // Update financial totals if the current item has non-null values
-    // This ensures we get the financial data even if it's not in the first item
-    if (item.total_amount_vat_excl !== null && item.total_amount_vat_excl !== undefined) {
-      grouped[projectId].total_amount_vat_excl = item.total_amount_vat_excl;
-    }
-    if (item.total_amount_vat_incl !== null && item.total_amount_vat_incl !== undefined) {
-      grouped[projectId].total_amount_vat_incl = item.total_amount_vat_incl;
-    }
-    if (item.total_amount_needed !== null && item.total_amount_needed !== undefined) {
-      grouped[projectId].total_amount_needed = item.total_amount_needed;
-    }
-    if (item.site_contingency !== null && item.site_contingency !== undefined) {
-      grouped[projectId].site_contingency = item.site_contingency;
-    }
-    if (item.total_investment !== null && item.total_investment !== undefined) {
-      grouped[projectId].total_investment = item.total_investment;
-    }
-    if (item.projected_profit !== null && item.projected_profit !== undefined) {
-      grouped[projectId].projected_profit = item.projected_profit;
-    }
-    if (item.projected_profit_percentage !== null && item.projected_profit_percentage !== undefined) {
-      grouped[projectId].projected_profit_percentage = item.projected_profit_percentage;
-    }
-
-    // Add ALL items to the items array
-    // The serial_number might be "No", "1", "2", etc., so we include everything
-    grouped[projectId].items.push({
-      analysis_id: item.analysis_id,
-      serial_number: item.serial_number,
-      item_description: item.item_description,
-      quoted_quantity: item.quoted_quantity,
-      quoted_unit: item.quoted_unit,
-      quoted_rate: item.quoted_rate,
-      quoted_amount: item.quoted_amount,
-      quantity: item.quantity,
-      rate: item.rate,
-      amount: item.amount,
-      source: item.source,
-      urgent_status: item.urgent_status
-    });
-  });
-
-  // Convert grouped object to array and sort by most recent
-  const result = Object.values(grouped).sort((a, b) => 
-    new Date(b.created_at) - new Date(a.created_at)
-  );
-  
-  console.log('Grouped result:', result); // Debug log
-  
-  return result;
 }
 
 const allProjects = computed(() =>

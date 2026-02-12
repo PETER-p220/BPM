@@ -267,16 +267,16 @@ const chartOptions = ref({
       'Registered Tenders',
       'Assigned Tenders',
       'Submitted Tenders',
-      'Quotations',
-      'Analyses',
-      'Requests',
-      'Projects'
+      'Projects',
+      'Analyses (N/A)',
+      'Requests (N/A)',
+      'Completed Projects'
     ],
     labels: {
       style: {
         fontSize: '12px',
         fontWeight: '500',
-        colors: '#6b7280'
+        color: '#6b7280'
       },
       rotate: -45,
       rotateAlways: false
@@ -369,10 +369,10 @@ const chartSeries = computed(() => [
       totalTenders.value,
       totalAssignedTenders.value,
       totalTenderSubmissions.value,
-      totalSchedules.value,
-      totalAnalyses.value,
-      totalRequests.value,
-      totalProjects.value
+      totalProjects.value,
+      0,
+      0,
+      totalCompletedProjects.value
     ]
   }
 ]);
@@ -613,6 +613,7 @@ const fetchRejectedRequests = async () => {
 };
 
 onMounted(() => {
+  // Only call working API endpoints
   fetchTotalTenders();
   fetchTotalAssignedTenders();
   fetchTotalTenderSubmissions();
@@ -626,17 +627,19 @@ onMounted(() => {
   fetchTotalUsers();
   fetchTotalRoles();
   fetchTotalDepartments();
-  fetchTotalAnalyses();
-  fetchTotalPassedAnalyses();
-  fetchTotalRejectedAnalyses();
-  fetchTotalAmountRequired();
-  fetchTotalSchedules();
-  fetchTotalPassedSchedules();
-  fetchTotalRejectedSchedules();
-  fetchTotalRequests();
-  fetchApprovedRequests();
-  fetchRejectedRequests();
+  // Skip problematic endpoints - they don't exist or return 500 errors
+  // fetchTotalAnalyses();
+  // fetchTotalPassedAnalyses();
+  // fetchTotalRejectedAnalyses();
+  // fetchTotalAmountRequired();
+  // fetchTotalSchedules();
+  // fetchTotalPassedSchedules();
+  // fetchTotalRejectedSchedules();
+  // fetchTotalRequests();
+  // fetchApprovedRequests();
+  // fetchRejectedRequests();
 });
+
 </script>
 
 <style scoped>

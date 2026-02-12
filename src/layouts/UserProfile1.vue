@@ -53,9 +53,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from '@/axios'; // Ensure this points to your axios instance
 import { useToast } from 'vue-toastification';
 
+const router = useRouter();
 const toast = useToast();
 
 // Object to store fetched user data
@@ -95,12 +97,17 @@ function handleError(error) {
       message = error.response.statusText;
     }
   } else if (error.request) {
-    message = 'No response from the server. Please check your connection.';
+    message = 'No response from server. Please check your connection.';
   } else {
     message = error.message;
   }
 
   toast.error(message); // Show error message with toast
+}
+
+// Close modal and navigate back to user dashboard
+function closeModal() {
+  router.push('/user/dashboard');
 }
 </script>
 

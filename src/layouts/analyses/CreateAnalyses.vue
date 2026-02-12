@@ -11,12 +11,10 @@
             </div>
             <h2 class="text-xl font-semibold">Submit Analysis</h2>
           </div>
-
           <router-link
             to="/user/analyses"
             class="p-2 rounded-full hover:bg-white/10 transition-colors"
-            title="Close"
-          >
+            title="Close">
             <i class="fas fa-times text-lg"></i>
           </router-link>
         </div>

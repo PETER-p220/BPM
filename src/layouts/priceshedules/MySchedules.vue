@@ -1,159 +1,232 @@
 <template>
-  <div class="quotations-container">
-    <!-- Page Header -->
-    <div class="page-header">
-      <div class="header-content">
-        <div class="header-left">
-          <h1 class="page-title">
-            <i class="fas fa-file-invoice-dollar"></i>
-            Quotations
-          </h1>
-          <p class="page-subtitle">Manage and view all quotations</p>
-        </div>
-        <div class="header-right">
-          <router-link to="/submit-shedule">
-            <button class="btn btn-primary">
-              <i class="fas fa-plus"></i>
-              <span>Create New Quotation</span>
-            </button>
-          </router-link>
+  <div class="p-6 space-y-6 bg-gray-50 dark:bg-gray-950 min-h-screen">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Quotations</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Manage and view all your quotations
+        </p>
+      </div>
+
+      <router-link to="/submit-shedule">
+        <button
+          class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition flex items-center justify-center gap-2 shadow-md"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Create New Quotation
+        </button>
+      </router-link>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="bg-white dark:bg-gray-900 shadow-sm rounded-xl border border-gray-200 dark:border-gray-800 p-5">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div class="relative flex-1">
+          <svg
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            v-model="filter"
+            placeholder="Search by tender title..."
+            class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+          />
         </div>
       </div>
     </div>
 
-    <!-- Search and Filters -->
-    <div class="filters-section">
-      <div class="search-wrapper">
-        <i class="fas fa-search search-icon"></i>
-        <input
-          type="text"
-          v-model="filter"
-          placeholder="Search by tender title..."
-          class="search-input"
-        />
-      </div>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="bg-white dark:bg-gray-900 shadow-sm rounded-xl p-12 text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-indigo-600 border-gray-200 dark:border-gray-700"></div>
+      <p class="mt-4 text-gray-600 dark:text-gray-400">Loading quotations...</p>
     </div>
 
     <!-- Quotations List -->
-    <div class="quotations-list">
+    <div v-else-if="filteredTenders.length > 0" class="space-y-6">
       <div
         v-for="tender in filteredTenders"
         :key="tender.tender_id"
-        class="quotation-card"
+        class="bg-white dark:bg-gray-900 shadow-sm rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden"
       >
         <!-- Card Header -->
-        <div class="card-header">
-          <div class="card-header-left">
-            <h3 class="tender-title">
-              <i class="fas fa-file-contract"></i>
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
               {{ tender.tender.title }}
             </h3>
-            <div class="card-meta">
-              <span class="meta-item">
-                <i class="fas fa-user"></i>
+
+            <div class="mt-1 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
                 {{ tender.user?.name || 'N/A' }}
               </span>
-              <span class="meta-item">
-                <i class="fas fa-calendar"></i>
+              <span class="flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
                 {{ formatDate(tender.created_at) }}
               </span>
             </div>
           </div>
-          <div class="card-header-right">
-            <span :class="['status-badge', `status-${tender.status}`]">
-              <i :class="statusIcon(tender.status)"></i>
-              {{ tender.status }}
-            </span>
-          </div>
+
+          <span
+            :class="[
+              'inline-flex px-4 py-1.5 rounded-full text-sm font-medium',
+              tender.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' :
+              tender.status === 'passed' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' :
+              'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
+            ]"
+          >
+            <svg class="w-4 h-4 mr-1.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="statusIcon(tender.status)" />
+            </svg>
+            {{ tender.status }}
+          </span>
         </div>
 
         <!-- Rejection Reason -->
-        <div v-if="tender.status === 'rejected' && tender.reason_for_reject" class="rejection-notice">
-          <i class="fas fa-exclamation-triangle"></i>
-          <span><strong>Rejection Reason:</strong> {{ tender.reason_for_reject }}</span>
+        <div
+          v-if="tender.status === 'rejected' && tender.reason_for_reject"
+          class="px-6 py-4 bg-red-50 dark:bg-red-950/30 border-t border-red-100 dark:border-red-900/30 flex items-start gap-3"
+        >
+          <svg class="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <p class="font-medium text-red-800 dark:text-red-300">Rejection Reason:</p>
+            <p class="text-red-700 dark:text-red-200 mt-1">{{ tender.reason_for_reject }}</p>
+          </div>
         </div>
 
         <!-- Financial Summary -->
-        <div class="financial-summary">
-          <h4 class="summary-title">
-            <i class="fas fa-chart-line"></i>
+        <div class="px-6 py-6 border-t border-gray-200 dark:border-gray-800">
+          <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
             Financial Summary
           </h4>
-          <div class="summary-grid">
-            <div class="summary-item">
-              <span class="summary-label">Total Amount (VAT Excl)</span>
-              <span class="summary-value">{{ formatCurrency(tender.total_amount_vat_excl) }}</span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Total Amount (VAT Excl)</p>
+              <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">
+                {{ formatCurrency(tender.total_amount_vat_excl) }}
+              </p>
             </div>
-            <div class="summary-item">
-              <span class="summary-label">Total Amount (VAT Incl)</span>
-              <span class="summary-value">{{ formatCurrency(tender.total_amount_vat_incl) }}</span>
+
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Total Amount (VAT Incl)</p>
+              <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">
+                {{ formatCurrency(tender.total_amount_vat_incl) }}
+              </p>
             </div>
-            <div class="summary-item">
-              <span class="summary-label">Amount Needed</span>
-              <span class="summary-value">{{ formatCurrency(tender.total_amount_needed) }}</span>
+
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Amount Needed</p>
+              <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">
+                {{ formatCurrency(tender.total_amount_needed) }}
+              </p>
             </div>
-            <div class="summary-item">
-              <span class="summary-label">Site Contingency</span>
-              <span class="summary-value">{{ formatCurrency(tender.site_contingency) }}</span>
+
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Site Contingency</p>
+              <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">
+                {{ formatCurrency(tender.site_contingency) }}
+              </p>
             </div>
-            <div class="summary-item">
-              <span class="summary-label">Total Investment</span>
-              <span class="summary-value highlight">{{ formatCurrency(tender.total_investment) }}</span>
+
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Total Investment</p>
+              <p class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
+                {{ formatCurrency(tender.total_investment) }}
+              </p>
             </div>
-            <div class="summary-item">
-              <span class="summary-label">Projected Profit</span>
-              <span class="summary-value profit">
+
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Projected Profit</p>
+              <p class="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
                 {{ formatCurrency(tender.projected_profit) }}
-                <span class="profit-percentage">({{ tender.projected_profit_percentage }}%)</span>
-              </span>
+                <span class="text-sm ml-2">({{ tender.projected_profit_percentage }}%)</span>
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- Schedule Items Table -->
-        <div class="schedule-section">
-          <h4 class="schedule-title">
-            <i class="fas fa-list-ul"></i>
+        <!-- Schedule Items -->
+        <div class="px-6 py-6 border-t border-gray-200 dark:border-gray-800">
+          <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
             Schedule Items
           </h4>
-          <div class="table-wrapper">
-            <table class="schedule-table">
-              <thead>
-                <tr class="group-header">
-                  <th colspan="6" class="group-cell quoted-group">QUOTED PRICES (VAT EXCL)</th>
-                  <th colspan="5" class="group-cell buying-group">BUYING PRICES (VAT INCL)</th>
-                </tr>
+
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-800">
                 <tr>
-                  <th class="th-sn">S/N</th>
-                  <th class="th-desc">Description</th>
-                  <th class="th-qty">Q. Qty</th>
-                  <th class="th-unit">Unit</th>
-                  <th class="th-rate">Q. Rate</th>
-                  <th class="th-amount">Q. Amount</th>
-                  <th class="th-qty">Qty</th>
-                  <th class="th-rate">Rate</th>
-                  <th class="th-amount">Amount</th>
-                  <th class="th-source">Source</th>
-                  <th class="th-urgent">Urgent</th>
+                  <th colspan="6" class="px-6 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-950/30">
+                    QUOTED PRICES (VAT EXCL)
+                  </th>
+                  <th colspan="5" class="px-6 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300 bg-green-50 dark:bg-green-950/30">
+                    BUYING PRICES (VAT INCL)
+                  </th>
+                </tr>
+                <tr class="bg-gray-100 dark:bg-gray-800">
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400">S/N</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400">Description</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400">Q. Qty</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400">Unit</th>
+                  <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-400">Q. Rate</th>
+                  <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-400">Q. Amount</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400">Qty</th>
+                  <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-400">Rate</th>
+                  <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-400">Amount</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400">Source</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400">Urgent</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 <tr v-for="item in tender.items" :key="item.price_schedule_id">
-                  <td class="td-sn">{{ item.serial_number }}</td>
-                  <td class="td-desc" :title="item.item_description">{{ item.item_description || 'N/A' }}</td>
-                  <td class="td-qty">{{ item.quoted_quantity || '-' }}</td>
-                  <td class="td-unit">{{ item.quoted_unit || '-' }}</td>
-                  <td class="td-rate">{{ formatCurrency(item.quoted_rate) }}</td>
-                  <td class="td-amount">{{ formatCurrency(item.quoted_amount) }}</td>
-                  <td class="td-qty">{{ item.quantity || '-' }}</td>
-                  <td class="td-rate">{{ formatCurrency(item.rate) }}</td>
-                  <td class="td-amount">{{ formatCurrency(item.amount) }}</td>
-                  <td class="td-source">{{ item.source || 'N/A' }}</td>
-                  <td class="td-urgent">
-                    <span v-if="item.urgent_status" :class="['urgent-badge', item.urgent_status.toLowerCase()]">
+                  <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ item.serial_number || '—' }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate" :title="item.item_description">
+                    {{ item.item_description || 'N/A' }}
+                  </td>
+                  <td class="px-4 py-3 text-center text-sm text-gray-700 dark:text-gray-300">{{ item.quoted_quantity || '—' }}</td>
+                  <td class="px-4 py-3 text-center text-sm text-gray-700 dark:text-gray-300">{{ item.quoted_unit || '—' }}</td>
+                  <td class="px-4 py-3 text-right text-sm text-gray-700 dark:text-gray-300">{{ formatCurrency(item.quoted_rate) }}</td>
+                  <td class="px-4 py-3 text-right text-sm font-medium text-gray-900 dark:text-white">{{ formatCurrency(item.quoted_amount) }}</td>
+                  <td class="px-4 py-3 text-center text-sm text-gray-700 dark:text-gray-300">{{ item.quantity || '—' }}</td>
+                  <td class="px-4 py-3 text-right text-sm text-gray-700 dark:text-gray-300">{{ formatCurrency(item.rate) }}</td>
+                  <td class="px-4 py-3 text-right text-sm font-medium text-gray-900 dark:text-white">{{ formatCurrency(item.amount) }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ item.source || 'N/A' }}</td>
+                  <td class="px-4 py-3 text-center">
+                    <span
+                      v-if="item.urgent_status"
+                      :class="[
+                        'inline-flex px-2.5 py-1 text-xs font-medium rounded-full',
+                        item.urgent_status.toLowerCase() === 'yes'
+                          ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
+                          : 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
+                      ]"
+                    >
                       {{ item.urgent_status }}
                     </span>
-                    <span v-else class="text-muted">N/A</span>
+                    <span v-else class="text-gray-500 dark:text-gray-400 text-xs">N/A</span>
                   </td>
                 </tr>
               </tbody>
@@ -161,72 +234,90 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Empty State -->
-      <div v-if="!filteredTenders.length" class="empty-state">
-        <i class="fas fa-folder-open"></i>
-        <p>No quotations found for the current filter.</p>
-      </div>
+    <!-- Empty State -->
+    <div v-else class="bg-white dark:bg-gray-900 shadow-sm rounded-xl p-12 text-center">
+      <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <h3 class="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
+        No quotations found
+      </h3>
+      <p class="text-gray-500 dark:text-gray-400">
+        Create a new quotation to get started
+      </p>
     </div>
 
     <!-- Pagination -->
-    <div class="pagination-section" v-if="filteredTenders.length">
-      <button
-        :disabled="currentPage === 1"
-        @click="changePage(currentPage - 1)"
-        class="pagination-btn"
-      >
-        <i class="fas fa-chevron-left"></i>
-        Previous
-      </button>
-      <span class="pagination-info">
-        Page <strong>{{ currentPage }}</strong> of <strong>{{ totalPages }}</strong>
-      </span>
-      <button
-        :disabled="currentPage >= totalPages"
-        @click="changePage(currentPage + 1)"
-        class="pagination-btn"
-      >
-        Next
-        <i class="fas fa-chevron-right"></i>
-      </button>
+    <div v-if="filteredTenders.length > 0" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        Showing {{ filteredTenders.length }} of {{ schedules.length }} quotations
+      </p>
+
+      <div class="flex items-center gap-2">
+        <button
+          :disabled="currentPage === 1"
+          @click="changePage(currentPage - 1)"
+          class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
+        >
+          Previous
+        </button>
+
+        <span class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          Page {{ currentPage }}
+        </span>
+
+        <button
+          :disabled="currentPage >= totalPages"
+          @click="changePage(currentPage + 1)"
+          class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
+        >
+          Next
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import axios from '@/axios';
-import { useToast } from 'vue-toastification';
+import { ref, onMounted, computed } from 'vue'
+import axios from '@/axios'
+import { useToast } from 'vue-toastification'
 
-const schedules = ref([]);
-const filter = ref('');
-const currentPage = ref(1);
-const itemsPerPage = 10;
-const toast = useToast();
+const toast = useToast()
+
+const schedules = ref([])
+const filter = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 10
+const isLoading = ref(false)
 
 onMounted(async () => {
-  await fetchSchedules();
-});
+  await fetchSchedules()
+})
 
 async function fetchSchedules() {
+  isLoading.value = true
   try {
-    const response = await axios.get('/api/user-schedule');
+    const response = await axios.get('/api/user-schedule')
     if (response.data.status === 200 && Array.isArray(response.data.data)) {
-      const groupedSchedules = groupByTender(response.data.data);
-      schedules.value = groupedSchedules;
+      const grouped = groupByTender(response.data.data)
+      schedules.value = grouped
     } else {
-      throw new Error('Invalid API response format');
+      throw new Error('Invalid API response format')
     }
   } catch (error) {
-    handleError(error);
+    toast.error(error.message || 'Failed to load quotations')
+  } finally {
+    isLoading.value = false
   }
 }
 
 function groupByTender(data) {
-  const grouped = {};
+  const grouped = {}
   data.forEach(item => {
-    const tenderId = item.tender_id;
+    const tenderId = item.tender_id
     if (!grouped[tenderId]) {
       grouped[tenderId] = {
         tender_id: tenderId,
@@ -243,53 +334,55 @@ function groupByTender(data) {
         projected_profit: null,
         projected_profit_percentage: null,
         items: []
-      };
+      }
     }
 
+    // Set financial summary if available
     if (item.total_amount_vat_excl && !grouped[tenderId].total_amount_vat_excl) {
-      grouped[tenderId].total_amount_vat_excl = item.total_amount_vat_excl;
-      grouped[tenderId].total_amount_vat_incl = item.total_amount_vat_incl;
-      grouped[tenderId].total_amount_needed = item.total_amount_needed;
-      grouped[tenderId].site_contingency = item.site_contingency;
-      grouped[tenderId].total_investment = item.total_investment;
-      grouped[tenderId].projected_profit = item.projected_profit;
-      grouped[tenderId].projected_profit_percentage = item.projected_profit_percentage;
+      grouped[tenderId].total_amount_vat_excl = item.total_amount_vat_excl
+      grouped[tenderId].total_amount_vat_incl = item.total_amount_vat_incl
+      grouped[tenderId].total_amount_needed = item.total_amount_needed
+      grouped[tenderId].site_contingency = item.site_contingency
+      grouped[tenderId].total_investment = item.total_investment
+      grouped[tenderId].projected_profit = item.projected_profit
+      grouped[tenderId].projected_profit_percentage = item.projected_profit_percentage
     }
 
-    if (item.item_description || item.serial_number.match(/^[A-M\s]+$/)) {
-      grouped[tenderId].items.push(item);
+    // Add schedule item
+    if (item.item_description || item.serial_number?.match(/^[A-M\s]+$/)) {
+      grouped[tenderId].items.push(item)
     }
-  });
+  })
 
-  return Object.values(grouped);
+  return Object.values(grouped)
 }
 
 const allTenders = computed(() =>
   schedules.value.filter(tender =>
     tender.tender?.title?.toLowerCase().includes(filter.value.toLowerCase()) || !filter.value
   )
-);
+)
 
 const filteredTenders = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return allTenders.value.slice(start, end);
-});
+  const start = (currentPage.value - 1) * itemsPerPage
+  return allTenders.value.slice(start, start + itemsPerPage)
+})
 
-const totalPages = computed(() => Math.ceil(allTenders.value.length / itemsPerPage));
+const totalPages = computed(() => Math.ceil(allTenders.value.length / itemsPerPage))
 
 function formatDate(dateString) {
-  const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  return new Date(dateString).toLocaleDateString(undefined, options);
+  if (!dateString) return 'N/A'
+  const options = { year: 'numeric', month: 'short', day: 'numeric' }
+  return new Date(dateString).toLocaleDateString(undefined, options)
 }
 
 function formatCurrency(value) {
-  if (!value) return 'N/A';
+  if (!value) return 'N/A'
   return new Intl.NumberFormat('en-TZ', {
     style: 'currency',
     currency: 'TZS',
     minimumFractionDigits: 2
-  }).format(value);
+  }).format(value)
 }
 
 function statusIcon(status) {
@@ -297,566 +390,14 @@ function statusIcon(status) {
     pending: 'fas fa-clock',
     passed: 'fas fa-check-circle',
     rejected: 'fas fa-times-circle'
-  };
-  return icons[status] || 'fas fa-circle';
-}
-
-function handleError(error) {
-  let message = 'An unexpected error occurred';
-  if (error.response) {
-    message = error.response.data.message || error.response.statusText;
-  } else if (error.request) {
-    message = 'No response from the server. Please check your connection.';
-  } else {
-    message = error.message;
   }
-  toast.error(message);
+  return icons[status] || 'fas fa-circle'
 }
 
 function changePage(page) {
   if (page > 0 && page <= totalPages.value) {
-    currentPage.value = page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    currentPage.value = page
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 </script>
-
-<style scoped>
-.quotations-container {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  background: #f8fafc;
-  min-height: 100vh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
-/* Page Header */
-.page-header {
-  margin-bottom: 2rem;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.header-left {
-  flex: 1;
-}
-
-.page-title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 0.5rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.page-title i {
-  color: #3b82f6;
-  font-size: 1.75rem;
-}
-
-.page-subtitle {
-  color: #64748b;
-  font-size: 0.9375rem;
-  margin: 0;
-}
-
-.btn {
-  padding: 0.625rem 1.25rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  white-space: nowrap;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-  transform: translateY(-1px);
-}
-
-/* Filters Section */
-.filters-section {
-  background: white;
-  border-radius: 10px;
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-}
-
-.search-wrapper {
-  position: relative;
-  max-width: 400px;
-}
-
-.search-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  font-size: 0.875rem;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.625rem 0.875rem 0.625rem 2.75rem;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Quotations List */
-.quotations-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.quotation-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-  overflow: hidden;
-  transition: all 0.2s ease;
-}
-
-.quotation-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* Card Header */
-.card-header {
-  padding: 1.25rem 1.5rem;
-  background: linear-gradient(to bottom, #f8fafc, white);
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.tender-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 0.5rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.tender-title i {
-  color: #3b82f6;
-  font-size: 1rem;
-}
-
-.card-meta {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  color: #64748b;
-  font-size: 0.8125rem;
-}
-
-.meta-item i {
-  color: #94a3b8;
-  font-size: 0.75rem;
-}
-
-.status-badge {
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  text-transform: capitalize;
-}
-
-.status-pending {
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #92400e;
-  border: 1px solid #fbbf24;
-}
-
-.status-passed {
-  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-  color: #065f46;
-  border: 1px solid #10b981;
-}
-
-.status-rejected {
-  background: linear-gradient(135deg, #fee2e2, #fecaca);
-  color: #991b1b;
-  border: 1px solid #ef4444;
-}
-
-/* Rejection Notice */
-.rejection-notice {
-  padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #fef2f2, #fee2e2);
-  border-left: 4px solid #ef4444;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: #991b1b;
-  font-size: 0.875rem;
-}
-
-.rejection-notice i {
-  font-size: 1.125rem;
-  flex-shrink: 0;
-}
-
-/* Financial Summary */
-.financial-summary {
-  padding: 1.5rem;
-  background: #fafbfc;
-  border-top: 1px solid #e2e8f0;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.summary-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #334155;
-  margin: 0 0 1rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.summary-title i {
-  color: #3b82f6;
-}
-
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.summary-item {
-  background: white;
-  padding: 0.875rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.summary-label {
-  font-size: 0.75rem;
-  color: #64748b;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.summary-value {
-  font-size: 1rem;
-  color: #1e293b;
-  font-weight: 600;
-}
-
-.summary-value.highlight {
-  color: #3b82f6;
-  font-size: 1.125rem;
-}
-
-.summary-value.profit {
-  color: #10b981;
-  font-size: 1.125rem;
-}
-
-.profit-percentage {
-  font-size: 0.875rem;
-  color: #059669;
-  margin-left: 0.375rem;
-}
-
-/* Schedule Section */
-.schedule-section {
-  padding: 1.5rem;
-}
-
-.schedule-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #334155;
-  margin: 0 0 1rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.schedule-title i {
-  color: #3b82f6;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.schedule-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8125rem;
-}
-
-.schedule-table thead {
-  background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.group-header th {
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  color: #1e293b;
-  text-align: center;
-  border-bottom: 2px solid #cbd5e1;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.quoted-group {
-  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-  color: #1e40af;
-  border-right: 1px solid #93c5fd;
-}
-
-.buying-group {
-  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-  color: #065f46;
-}
-
-.schedule-table th {
-  padding: 0.75rem 0.875rem;
-  text-align: left;
-  font-weight: 600;
-  color: #475569;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  border-bottom: 1px solid #e2e8f0;
-  white-space: nowrap;
-}
-
-.schedule-table tbody tr {
-  border-bottom: 1px solid #f1f5f9;
-  transition: background 0.2s ease;
-}
-
-.schedule-table tbody tr:hover {
-  background: #f8fafc;
-}
-
-.schedule-table td {
-  padding: 0.75rem 0.875rem;
-  color: #475569;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.td-sn {
-  font-weight: 600;
-  color: #1e293b;
-  width: 60px;
-}
-
-.td-desc {
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.td-qty, .td-unit {
-  text-align: center;
-  width: 80px;
-}
-
-.td-rate, .td-amount {
-  text-align: right;
-  font-weight: 500;
-  width: 120px;
-}
-
-.td-source, .td-urgent {
-  width: 100px;
-}
-
-.urgent-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.urgent-badge.yes {
-  background: linear-gradient(135deg, #fee2e2, #fecaca);
-  color: #991b1b;
-  border: 1px solid #ef4444;
-}
-
-.urgent-badge.no {
-  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
-  color: #3730a3;
-  border: 1px solid #6366f1;
-}
-
-.text-muted {
-  color: #94a3b8;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  background: white;
-  border-radius: 12px;
-  border: 1px dashed #cbd5e1;
-}
-
-.empty-state i {
-  font-size: 4rem;
-  color: #cbd5e1;
-  margin-bottom: 1rem;
-}
-
-.empty-state p {
-  color: #64748b;
-  font-size: 1rem;
-}
-
-/* Pagination */
-.pagination-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding: 1rem;
-  background: white;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-}
-
-.pagination-btn {
-  padding: 0.625rem 1.25rem;
-  background: white;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
-  color: #475569;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination-info {
-  color: #64748b;
-  font-size: 0.875rem;
-}
-
-.pagination-info strong {
-  color: #1e293b;
-  font-weight: 600;
-}
-
-/* Scrollbar */
-.table-wrapper::-webkit-scrollbar {
-  height: 8px;
-}
-
-.table-wrapper::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
-}
-
-.table-wrapper::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-.table-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .quotations-container {
-    padding: 1rem;
-  }
-  
-  .header-content {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .summary-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .card-header {
-    flex-direction: column;
-  }
-}
-</style>

@@ -1,202 +1,468 @@
 <template>
-  <div class="p-4 space-y-4" style="font-family: 'cygre', serif; font-size: 17px">
-    <PageHeader subtitle="Assigned Projects">
-      <div class="flex flex-col sm:flex-row sm:space-x-2"></div>
-    </PageHeader>
-
-    <div class="flex items-center mb-4 space-x-4">
-      <input
-        type="text"
-        v-model="filter"
-        placeholder="Search..."
-        class="w-full p-2 border rounded sm:w-auto"
-      />
-
-      <button @click="exportToExcel" class="flex items-center p-2 space-x-2 text-white rounded hover:bg-green-600"
-        style="background-color:white;color:#229954 ;box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;">
-        Export to Excel
-        <span class="ml-2" aria-hidden="true"><i class="fas fa-file-excel" style="color:#edbb99"></i></span>
-      </button>
-
-      <button @click="exportToPDF" class="flex items-center p-2 space-x-2 text-white rounded hover:bg-green-600"
-        style="background-color:white;color:#229954 ;box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;">
-        Export to PDF
-        <span class="ml-2" aria-hidden="true"><i class="fas fa-file-pdf"></i></span>
-      </button>
-    </div>
-
-    <div class="overflow-x-auto">
-      <table class="w-full divide-y divide-gray-200 rounded-table dark:divide-gray-700" id="data-table"
-        style="box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;">
-        <thead class="bg-gray-50 dark:bg-neutral-700"
-          style="box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;">
-          <tr>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">No</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Project Name</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Assigned By</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Start Date</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">End Date</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Contract</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Created At</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Project Status</th>
-            <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Action</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200 dark:bg-dark-header dark:divide-gray-700">
-          <tr v-for="(project, index) in paginatedProjects" :key="project.project_id">
-            <td class="table-data">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-            <td class="table-data">
-              <button @click="openProjectModal(project.project_id)" class="text-blue-600 hover:underline">
-                {{ project.project_name || 'NA' }}
-              </button>
-            </td>
-            <td class="table-data">{{ project.created_by || 'NA' }}</td>
-            <td class="table-data">{{ formatDate(project.start_date) || 'NA' }}</td>
-            <td class="table-data">{{ formatDate(project.end_date) || 'NA' }}</td>
-            <td class="table-data">
-              <button
-                v-if="project.contract?.pdf_file"
-                @click="downloadFile(project.contract.pdf_file)"
-                class="text-blue-500 hover:underline"
-              >
-                Download Contract
-              </button>
-              <span v-else>NA</span>
-            </td>
-            <td class="table-data">{{ formatDate(project.created_at) || 'NA' }}</td>
-            <td class="table-data">
-              <button
-                :class="{
-                  'bg-yellow-500': project.project_status === 'on-progress',
-                  'bg-green-500': project.project_status === 'completed',
-                  'bg-red-500': project.project_status === 'failed'
-                }"
-                class="btn text-white rounded-full w-24"
-              >
-                {{ project.project_status || 'NA' }}
-              </button>
-            </td>
-            <td class="table-data">
-              <i
-                @click="editProject(project.project_id)"
-                class="fas fa-edit"
-                style="color:#21618c; font-weight:bold; font-size:17px"
-              ></i>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Modal for Project Details -->
-    <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white dark:bg-neutral-800 rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Project Details</h2>
-          <button @click="closeProjectModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300">
-            <i class="fas fa-times"></i>
-          </button>
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header Section -->
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+              Project Assignments
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400">
+              Manage and track your assigned projects
+            </p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
+              {{ filteredProjects.length }} Projects
+            </span>
+          </div>
         </div>
-        <div v-if="selectedProject" class="space-y-4">
-          <div>
-            <strong>Project Name:</strong> {{ selectedProject.project_name || 'NA' }}
+      </div>
+
+      <!-- Controls Section -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <!-- Search Bar -->
+          <div class="relative flex-1 max-w-md">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+            <input
+              type="text"
+              v-model="filter"
+              placeholder="Search projects, assigners, status..."
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+            />
           </div>
-          <div>
-            <strong>Project ID:</strong> {{ selectedProject.project_id || 'NA' }}
-          </div>
-          <div>
-            <strong>Engineer:</strong> {{ selectedProject.user?.name || 'NA' }}
-          </div>
-          <div>
-            <strong>Team Members:</strong> {{ selectedProject.members?.length ? selectedProject.members.join(', ') : 'NA' }}
-          </div>
-          <div>
-            <strong>Assigned By:</strong> {{ selectedProject.created_by || 'NA' }}
-          </div>
-          <div>
-            <strong>Start Date:</strong> {{ formatDate(selectedProject.start_date) || 'NA' }}
-          </div>
-          <div>
-            <strong>End Date:</strong> {{ formatDate(selectedProject.end_date) || 'NA' }}
-          </div>
-          <div>
-            <strong>Extended Date:</strong> {{ formatDate(selectedProject.extended_date) || 'NA' }}
-          </div>
-          <div>
-            <strong>Status:</strong> {{ selectedProject.project_status || 'NA' }}
-          </div>
-          <div>
-            <strong>Follow Up:</strong> {{ selectedProject.follow_up || 'NA' }}
-          </div>
-          <div>
-            <strong>Created At:</strong> {{ formatDate(selectedProject.created_at) || 'NA' }}
-          </div>
-          <div>
-            <strong>Updated At:</strong> {{ formatDate(selectedProject.updated_at) || 'NA' }}
-          </div>
-          <div>
-            <strong>Contract Title:</strong> {{ selectedProject.contract?.title || 'NA' }}
-          </div>
-          <div>
-            <strong>Contract Timeline Category:</strong> {{ selectedProject.contract?.time_line_category || 'NA' }}
-          </div>
-          <div>
-            <strong>Contract Start Date:</strong> {{ formatDate(selectedProject.contract?.start_date) || 'NA' }}
-          </div>
-          <div>
-            <strong>Contract End Date:</strong> {{ formatDate(selectedProject.contract?.end_date) || 'NA' }}
-          </div>
-          <div>
-            <strong>Contract PDF:</strong> 
+
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-3">
             <button
-              v-if="selectedProject.contract?.pdf_file"
-              @click="downloadFile(selectedProject.contract.pdf_file)"
-              class="text-blue-500 hover:underline"
+              @click="exportToExcel"
+              class="inline-flex items-center px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
             >
-              Download Contract
+              <i class="fas fa-file-excel mr-2"></i>
+              Export Excel
             </button>
-            <span v-else>NA</span>
-          </div>
-          <div>
-            <strong>Contract Status:</strong> {{ selectedProject.contract?.status || 'NA' }}
-          </div>
-          <div>
-            <strong>Performance Guarantee:</strong> {{ selectedProject.contract?.performance_guarantee || 'NA' }}
-          </div>
-          <div>
-            <strong>Tender Type:</strong> {{ selectedProject.tender?.tender_type || 'NA' }}
-          </div>
-          <div>
-            <strong>Tender Attachment:</strong> 
             <button
-              v-if="selectedProject.tender?.attachment"
-              @click="downloadFile(selectedProject.tender.attachment)"
-              class="text-blue-500 hover:underline"
+              @click="exportToPDF"
+              class="inline-flex items-center px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
             >
-              Download Attachment
+              <i class="fas fa-file-pdf mr-2"></i>
+              Export PDF
             </button>
-            <span v-else>NA</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Section -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 border-b border-gray-200 dark:border-gray-600">
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                  #
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                  Project Name
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                  Assigned By
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                  Timeline
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                  Contract
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                  Status
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+              <tr
+                v-for="(project, index) in paginatedProjects"
+                :key="project.project_id"
+                class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+              >
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {{ (currentPage - 1) * itemsPerPage + index + 1 }}
+                </td>
+                <td class="px-6 py-4">
+                  <button
+                    @click="openProjectModal(project.project_id)"
+                    class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium hover:underline transition-colors"
+                  >
+                    {{ project.project_name || 'NA' }}
+                  </button>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    ID: {{ project.project_id }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-8 w-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                      <span class="text-white text-xs font-bold">
+                        {{ (project.created_by || 'NA').charAt(0).toUpperCase() }}
+                      </span>
+                    </div>
+                    <div class="ml-3">
+                      <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {{ project.created_by || 'NA' }}
+                      </div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">
+                        {{ formatDate(project.created_at) }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900 dark:text-gray-100">
+                    <div class="flex items-center mb-1">
+                      <i class="fas fa-play text-green-500 text-xs mr-2"></i>
+                      {{ formatDate(project.start_date) }}
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-stop text-red-500 text-xs mr-2"></i>
+                      {{ formatDate(project.end_date) }}
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <button
+                    v-if="project.contract?.pdf_file"
+                    @click="downloadFile(project.contract.pdf_file)"
+                    class="inline-flex items-center px-3 py-1.5 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors text-sm"
+                  >
+                    <i class="fas fa-download mr-2 text-xs"></i>
+                    Contract
+                  </button>
+                  <span v-else class="text-gray-400 dark:text-gray-500 text-sm">No Contract</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    :class="{
+                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200': project.project_status === 'on-progress',
+                      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': project.project_status === 'completed',
+                      'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': project.project_status === 'failed',
+                      'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200': !project.project_status || project.project_status === 'NA'
+                    }"
+                    class="px-3 py-1.5 inline-flex items-center text-xs font-semibold rounded-full"
+                  >
+                    <span
+                      :class="{
+                        'bg-yellow-500': project.project_status === 'on-progress',
+                        'bg-green-500': project.project_status === 'completed',
+                        'bg-red-500': project.project_status === 'failed',
+                        'bg-gray-500': !project.project_status || project.project_status === 'NA'
+                      }"
+                      class="w-2 h-2 rounded-full mr-2"
+                    ></span>
+                    {{ project.project_status || 'NA' }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <button
+                    @click="editProject(project.project_id)"
+                    class="inline-flex items-center justify-center w-9 h-9 bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors"
+                    title="Edit Project"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr v-if="paginatedProjects.length === 0">
+                <td colspan="7" class="px-6 py-12 text-center">
+                  <div class="flex flex-col items-center justify-center">
+                    <i class="fas fa-inbox text-gray-300 dark:text-gray-600 text-5xl mb-4"></i>
+                    <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">No projects found</p>
+                    <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Try adjusting your search criteria</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-200 dark:border-gray-600">
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-700 dark:text-gray-300">
+              Showing
+              <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+              to
+              <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredProjects.length) }}</span>
+              of
+              <span class="font-medium">{{ filteredProjects.length }}</span>
+              results
+            </div>
+            <div class="flex items-center space-x-2">
+              <button
+                :disabled="currentPage === 1"
+                @click="changePage(currentPage - 1)"
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <i class="fas fa-chevron-left mr-2"></i>
+                Previous
+              </button>
+              <div class="hidden sm:flex items-center space-x-1">
+                <span class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-blue-50 dark:bg-blue-900 border border-blue-300 dark:border-blue-700 rounded-lg">
+                  Page {{ currentPage }} of {{ Math.ceil(filteredProjects.length / itemsPerPage) || 1 }}
+                </span>
+              </div>
+              <button
+                :disabled="currentPage * itemsPerPage >= filteredProjects.length"
+                @click="changePage(currentPage + 1)"
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                Next
+                <i class="fas fa-chevron-right ml-2"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Pagination Controls -->
-    <div class="flex justify-center mt-4">
-      <button 
-        :disabled="currentPage === 1" 
-        @click="changePage(currentPage - 1)" 
-        class="px-4 py-2 bg-gray-300 rounded-l-lg hover:bg-gray-400 disabled:opacity-50">
-        Previous
-      </button>
-      <span class="px-4 py-2">Page {{ currentPage }}</span>
-      <button 
-        :disabled="currentPage * itemsPerPage >= filteredProjects.length" 
-        @click="changePage(currentPage + 1)" 
-        class="px-4 py-2 bg-gray-300 rounded-r-lg hover:bg-gray-400 disabled:opacity-50">
-        Next
-      </button>
-    </div>
+    <!-- Enhanced Modal for Project Details -->
+    <transition name="modal">
+      <div
+        v-if="showModal"
+        class="fixed inset-0 z-50 overflow-y-auto"
+        @click.self="closeProjectModal"
+      >
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+          <!-- Background overlay -->
+          <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-80"></div>
+
+          <!-- Modal panel -->
+          <div class="relative inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="flex-shrink-0 w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-project-diagram text-white"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold text-white">Project Details</h2>
+                    <p class="text-blue-100 text-sm">Complete project information</p>
+                  </div>
+                </div>
+                <button
+                  @click="closeProjectModal"
+                  class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors"
+                >
+                  <i class="fas fa-times text-xl"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div v-if="selectedProject" class="px-6 py-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+              <!-- Project Overview -->
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                  Project Overview
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project Name</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.project_name || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project ID</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.project_id || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</label>
+                    <p class="mt-1">
+                      <span
+                        :class="{
+                          'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200': selectedProject.project_status === 'on-progress',
+                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': selectedProject.project_status === 'completed',
+                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': selectedProject.project_status === 'failed'
+                        }"
+                        class="px-3 py-1 inline-flex items-center text-xs font-semibold rounded-full"
+                      >
+                        {{ selectedProject.project_status || 'NA' }}
+                      </span>
+                    </p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned By</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.created_by || 'NA' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Team Information -->
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <i class="fas fa-users text-blue-500 mr-2"></i>
+                  Team Information
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Engineer</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.user?.name || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Team Members</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                      {{ selectedProject.members?.length ? selectedProject.members.join(', ') : 'NA' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Timeline -->
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
+                  Timeline
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Start Date</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.start_date) || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">End Date</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.end_date) || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Extended Date</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.extended_date) || 'NA' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contract Details -->
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <i class="fas fa-file-contract text-blue-500 mr-2"></i>
+                  Contract Details
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Title</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.contract?.title || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Timeline Category</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.contract?.time_line_category || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Start</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.contract?.start_date) || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract End</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.contract?.end_date) || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Status</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.contract?.status || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Performance Guarantee</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.contract?.performance_guarantee || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 md:col-span-2">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract PDF</label>
+                    <div class="mt-2">
+                      <button
+                        v-if="selectedProject.contract?.pdf_file"
+                        @click="downloadFile(selectedProject.contract.pdf_file)"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm"
+                      >
+                        <i class="fas fa-download mr-2"></i>
+                        Download Contract
+                      </button>
+                      <span v-else class="text-gray-400 dark:text-gray-500 text-sm">No contract available</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tender Information -->
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <i class="fas fa-gavel text-blue-500 mr-2"></i>
+                  Tender Information
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tender Type</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.tender?.tender_type || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tender Attachment</label>
+                    <div class="mt-2">
+                      <button
+                        v-if="selectedProject.tender?.attachment"
+                        @click="downloadFile(selectedProject.tender.attachment)"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm"
+                      >
+                        <i class="fas fa-download mr-2"></i>
+                        Download Attachment
+                      </button>
+                      <span v-else class="text-gray-400 dark:text-gray-500 text-sm">No attachment available</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Additional Information -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <i class="fas fa-clipboard-list text-blue-500 mr-2"></i>
+                  Additional Information
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Follow Up</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.follow_up || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created At</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.created_at) || 'NA' }}</p>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Updated</label>
+                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.updated_at) || 'NA' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3">
+              <button
+                @click="closeProjectModal"
+                class="px-6 py-2.5 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-500 font-medium transition-colors"
+              >
+                Close
+              </button>
+              <button
+                @click="editProject(selectedProject.project_id); closeProjectModal();"
+                class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              >
+                Edit Project
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -239,7 +505,7 @@ async function fetchProjects() {
       end_date: project.end_date || 'NA',
       extended_date: project.extended_date || 'NA',
       project_status: project.project_status || 'NA',
-      contract: project.contract || { 
+      contract: project.contract || {
         title: 'NA',
         time_line_category: 'NA',
         start_date: 'NA',
@@ -248,7 +514,7 @@ async function fetchProjects() {
         status: 'NA',
         performance_guarantee: 'NA'
       },
-      tender: project.tender || { 
+      tender: project.tender || {
         tender_type: 'NA',
         attachment: 'NA'
       },
@@ -365,6 +631,7 @@ function exportToExcel() {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Project Assignments');
     XLSX.writeFile(workbook, 'ProjectAssignments.xlsx');
+    toast.success('Excel file exported successfully!');
   } catch (error) {
     handleError(error);
   }
@@ -373,24 +640,47 @@ function exportToExcel() {
 // Export filtered projects data to PDF
 function exportToPDF() {
   try {
-    const doc = new jsPDF();
-    const tableData = paginatedProjects.value.map((project, index) => [
-      index + 1 + (currentPage.value - 1) * itemsPerPage.value,
+    const doc = new jsPDF('l', 'mm', 'a4');
+    
+    // Add title
+    doc.setFontSize(16);
+    doc.setTextColor(40, 40, 40);
+    doc.text('Project Assignments Report', 14, 15);
+    
+    // Add metadata
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
+    doc.text(`Total Projects: ${filteredProjects.value.length}`, 14, 27);
+    
+    const tableData = filteredProjects.value.map((project, index) => [
+      index + 1,
       project.project_name,
       project.user?.name || 'NA',
-      project.members?.length ? project.members.join(', ') : 'NA',
       project.created_by,
       formatDate(project.start_date),
       formatDate(project.end_date),
-      project.contract?.title || 'NA',
-      formatDate(project.created_at),
       project.project_status
     ]);
+    
     autoTable(doc, {
-      head: [['No', 'Project Name', 'Engineer', 'Team Members', 'Assigned By', 'Start Date', 'End Date', 'Contract Title', 'Created At', 'Project Status']],
+      startY: 32,
+      head: [['#', 'Project Name', 'Engineer', 'Assigned By', 'Start Date', 'End Date', 'Status']],
       body: tableData,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [59, 130, 246],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 247, 250]
+      },
+      margin: { top: 32 }
     });
+    
     doc.save('ProjectAssignments.pdf');
+    toast.success('PDF exported successfully!');
   } catch (error) {
     handleError(error);
   }
@@ -400,6 +690,7 @@ function exportToPDF() {
 function downloadFile(url) {
   if (url && url !== 'NA') {
     saveAs(url);
+    toast.success('Download started!');
   } else {
     toast.error('No file available for download');
   }
@@ -407,7 +698,58 @@ function downloadFile(url) {
 </script>
 
 <style scoped>
-.table-data {
-  padding: 8px 12px;
+/* Modal transition animations */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .inline-block,
+.modal-leave-active .inline-block {
+  transition: all 0.3s ease;
+}
+
+.modal-enter-from .inline-block,
+.modal-leave-to .inline-block {
+  transform: scale(0.95);
+  opacity: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
 </style>

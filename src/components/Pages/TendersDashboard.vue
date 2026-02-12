@@ -33,6 +33,20 @@
       </div>
     </div>
 
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-12">
+      <div class="text-red-600 mb-4">
+        <i class="fas fa-exclamation-circle text-4xl"></i>
+      </div>
+      <p class="text-gray-600 mb-4">{{ error }}</p>
+      <button 
+        @click="fetchDashboardData" 
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        Retry
+      </button>
+    </div>
+
     <!-- Real Content -->
     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Tenders Card -->
@@ -46,27 +60,27 @@
         <div class="card-body">
           <div class="stat-row highlight">
             <span class="label">Registered</span>
-            <span class="value">{{ totalTenders }}</span>
+            <span class="value">{{ dashboardData.tenders.registered }}</span>
           </div>
           <div class="stat-row">
             <span class="label">Assigned</span>
-            <span class="value">{{ totalAssignedTenders }}</span>
+            <span class="value">{{ dashboardData.tenders.assigned }}</span>
           </div>
           <div class="stat-row">
             <span class="label">Submitted</span>
-            <span class="value">{{ totalTenderSubmissions }}</span>
+            <span class="value">{{ dashboardData.tenders.submitted }}</span>
           </div>
           <div class="stat-row">
             <span class="label">In Progress</span>
-            <span class="value">{{ totalOnProgressTenders }}</span>
+            <span class="value">{{ dashboardData.tenders.inProgress }}</span>
           </div>
           <div class="stat-row warning">
             <span class="label">Deadline Reached</span>
-            <span class="value">{{ totalDeadlineReachedTenders }}</span>
+            <span class="value">{{ dashboardData.tenders.deadlineReached }}</span>
           </div>
           <div class="stat-row danger">
             <span class="label">Expired</span>
-            <span class="value">{{ totalExpiredTenders }}</span>
+            <span class="value">{{ dashboardData.tenders.expired }}</span>
           </div>
         </div>
       </div>
@@ -82,19 +96,19 @@
         <div class="card-body">
           <div class="stat-row highlight">
             <span class="label">Total Projects</span>
-            <span class="value">{{ totalProjects }}</span>
+            <span class="value">{{ dashboardData.projects.total }}</span>
           </div>
           <div class="stat-row">
             <span class="label">In Progress</span>
-            <span class="value">{{ totalOnProgressProjects }}</span>
+            <span class="value">{{ dashboardData.projects.inProgress }}</span>
           </div>
           <div class="stat-row success">
             <span class="label">Completed</span>
-            <span class="value">{{ totalCompletedProjects }}</span>
+            <span class="value">{{ dashboardData.projects.completed }}</span>
           </div>
           <div class="stat-row danger">
             <span class="label">Failed</span>
-            <span class="value">{{ totalFailedProjects }}</span>
+            <span class="value">{{ dashboardData.projects.failed }}</span>
           </div>
         </div>
       </div>
@@ -104,139 +118,66 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from '@/axios'  // Make sure this path is correct in your project
+import axios from '@/axios'
 
 // ── State ────────────────────────────────────────────────
 const isLoading = ref(true)
+const error = ref(null)
 
-const totalTenders              = ref(0)
-const totalAssignedTenders      = ref(0)
-const totalTenderSubmissions    = ref(0)
-const totalOnProgressTenders    = ref(0)
-const totalDeadlineReachedTenders = ref(0)
-const totalExpiredTenders       = ref(0)
-
-const totalProjects             = ref(0)
-const totalOnProgressProjects   = ref(0)
-const totalCompletedProjects    = ref(0)
-const totalFailedProjects       = ref(0)
-
-// ── Fetch Functions ──────────────────────────────────────
-const fetchTotalTenders = async () => {
-  try {
-    const { data } = await axios.get('api/count/registered-tenders')
-    totalTenders.value = Number(data.registered_tenders || 0)
-  } catch (err) {
-    console.error('Failed to load registered tenders:', err)
+const dashboardData = ref({
+  tenders: {
+    registered: 0,
+    assigned: 0,
+    submitted: 0,
+    inProgress: 0,
+    deadlineReached: 0,
+    expired: 0
+  },
+  projects: {
+    total: 0,
+    inProgress: 0,
+    completed: 0,
+    failed: 0
   }
-}
+})
 
-const fetchTotalAssignedTenders = async () => {
+// ── Fetch Dashboard Data (Single API Call) ───────────────
+const fetchDashboardData = async () => {
+  isLoading.value = true
+  error.value = null
+  
   try {
-    const { data } = await axios.get('api/count/all-assigned/tenders')
-    totalAssignedTenders.value = Number(data.assignedCount || 0)
-  } catch (err) {
-    console.error('Failed to load assigned tenders:', err)
-  }
-}
-
-const fetchTotalTenderSubmissions = async () => {
-  try {
-    const { data } = await axios.get('api/count/tenders-submissions')
-    totalTenderSubmissions.value = Number(data.submitted_tenders || 0)
-  } catch (err) {
-    console.error('Failed to load tender submissions:', err)
-  }
-}
-
-const fetchTotalOnProgressTenders = async () => {
-  try {
-    const { data } = await axios.get('api/count/on-progress/tender')
-    totalOnProgressTenders.value = Number(data.onProgressCount || 0)
-  } catch (err) {
-    console.error('Failed to load on-progress tenders:', err)
-  }
-}
-
-const fetchTotalDeadlineReachedTenders = async () => {
-  try {
-    const { data } = await axios.get('api/count/all/deadline-reached-tenders')
-    totalDeadlineReachedTenders.value = Number(data.expired_tenders || 0)
-  } catch (err) {
-    console.error('Failed to load deadline reached tenders:', err)
-  }
-}
-
-const fetchTotalExpiredTenders = async () => {
-  try {
-    const { data } = await axios.get('api/count/all-expired/tenders')
-    totalExpiredTenders.value = Number(data.expired_tenders || 0)
-  } catch (err) {
-    console.error('Failed to load expired tenders:', err)
-  }
-}
-
-const fetchTotalProjects = async () => {
-  try {
-    const { data } = await axios.get('api/count/total-projects')
-    totalProjects.value = Number(data.count_total_projects || 0)
-  } catch (err) {
-    console.error('Failed to load total projects:', err)
-  }
-}
-
-const fetchTotalOnProgressProjects = async () => {
-  try {
-    const { data } = await axios.get('api/count/all/on-progress/projects')
-    totalOnProgressProjects.value = Number(data.total_on_progress_projects || 0)
-  } catch (err) {
-    console.error('Failed to load on-progress projects:', err)
-  }
-}
-
-const fetchTotalCompletedProjects = async () => {
-  try {
-    const { data } = await axios.get('api/count/completed-projects')
-    totalCompletedProjects.value = Number(data.total_completed_projects || 0)
-  } catch (err) {
-    console.error('Failed to load completed projects:', err)
-  }
-}
-
-const fetchTotalFailedProjects = async () => {
-  try {
-    const { data } = await axios.get('api/count/failed-projects')
-    totalFailedProjects.value = Number(data.total_failed_projects || 0)
-  } catch (err) {
-    console.error('Failed to load failed projects:', err)
-  }
-}
-
-// ── Load all data ────────────────────────────────────────
-const fetchAllData = async () => {
-  isLoading.value = true; // Optimized: parallel API calls
-  try {
-    await Promise.all([
-      fetchTotalTenders(),
-      fetchTotalAssignedTenders(),
-      fetchTotalTenderSubmissions(),
-      fetchTotalOnProgressTenders(),
-      fetchTotalDeadlineReachedTenders(),
-      fetchTotalExpiredTenders(),
-      fetchTotalProjects(),
-      fetchTotalOnProgressProjects(),
-      fetchTotalCompletedProjects(),
-      fetchTotalFailedProjects()
-    ])
+    const { data } = await axios.get('api/dashboard/stats')
+    
+    // Update dashboard data - handle both direct data and nested data formats
+    const responseData = data.data || data
+    
+    dashboardData.value = {
+      tenders: {
+        registered: Number(responseData.tenders?.registered || 0),
+        assigned: Number(responseData.tenders?.assigned || 0),
+        submitted: Number(responseData.tenders?.submitted || 0),
+        inProgress: Number(responseData.tenders?.inProgress || 0),
+        deadlineReached: Number(responseData.tenders?.deadlineReached || 0),
+        expired: Number(responseData.tenders?.expired || 0)
+      },
+      projects: {
+        total: Number(responseData.projects?.total || 0),
+        inProgress: Number(responseData.projects?.inProgress || 0),
+        completed: Number(responseData.projects?.completed || 0),
+        failed: Number(responseData.projects?.failed || 0)
+      }
+    }
   } catch (err) {
     console.error('Dashboard data loading failed:', err)
+    error.value = 'Failed to load dashboard data. Please try again.'
   } finally {
     isLoading.value = false
   }
 }
 
 onMounted(() => {
-  fetchAllData()
+  fetchDashboardData()
 })
 </script>
 

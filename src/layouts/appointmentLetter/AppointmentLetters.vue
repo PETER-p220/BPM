@@ -181,6 +181,37 @@
                   </button>
                   <span v-else class="text-gray-400">No file</span>
                 </td>
+                <td class="px-4 py-4 text-sm whitespace-nowrap">
+                  <div class="flex flex-col gap-2">
+                    <!-- Status Badge -->
+                    <span
+                      :class="[
+                        'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold',
+                        appointmentLetter.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                        appointmentLetter.status === 'accepted' ? 'bg-green-100 text-green-800 border-green-200' :
+                        appointmentLetter.status === 'rejected' ? 'bg-red-100 text-red-800 border-red-200' :
+                        'bg-gray-100 text-gray-800 border-gray-200'
+                      ]"
+                    >
+                      <i 
+                        :class="[
+                          'fas fa-circle text-xs mr-1.5',
+                          appointmentLetter.status === 'pending' ? 'text-yellow-600' :
+                          appointmentLetter.status === 'accepted' ? 'text-green-600' :
+                          appointmentLetter.status === 'rejected' ? 'text-red-600' :
+                          'text-gray-600'
+                        ]"
+                      ></i>
+                      {{ appointmentLetter.status?.charAt(0).toUpperCase() + appointmentLetter.status?.slice(1) || 'N/A' }}
+                    </span>
+                    
+                    <!-- Status Date -->
+                    <div v-if="appointmentLetter.status_updated_at" class="text-xs text-gray-500">
+                      <i class="fas fa-clock mr-1"></i>
+                      Updated: {{ formatDate(appointmentLetter.status_updated_at) }}
+                    </div>
+                  </div>
+                </td>
                 <td class="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
                   <div class="flex flex-col">
                     <span class="font-medium">{{ formatDate(appointmentLetter.created_at) }}</span>
@@ -266,7 +297,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onActivated, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from '@/axios';
 import { useToast } from 'vue-toastification';
@@ -287,6 +318,11 @@ const lastUpdated = ref('');
 
 // Fetch data when component is mounted
 onMounted(async () => {
+  await fetchData();
+});
+
+// Refresh data when component is activated (when navigating back from AcceptAppointmentLetter)
+onActivated(async () => {
   await fetchData();
 });
 
@@ -405,8 +441,8 @@ function changePage(page) {
 
 // View Details
 function viewDetails(appointmentLetter) {
-  toast.info(`Viewing details for ${appointmentLetter.user?.name || 'Unknown'}`);
-  // You can implement a modal or navigation to details page here
+  // Navigate to the admin view appointment letter page with the letter ID
+  router.push(`/view-appointment-letter/${appointmentLetter.letter_id}`);
 }
 
 // Download Appointment Letter File
@@ -457,13 +493,13 @@ function handleError(error, defaultMessage = 'An unexpected error occurred') {
 function exportToExcel() {
   try {
     const data = filteredData.value.map((entry, index) => ({
-      'No': index + 1,
-      'Engineer': entry.user?.name || 'N/A',
+      No: index + 1,
+      Engineer: entry.user?.name || 'N/A',
       'Tender Title': entry.tender?.title || 'N/A',
       'Letter File': entry.letter_file ? 'Available' : 'N/A',
-      'Status': entry.status || 'N/A',
-      'Issued Date': formatDate(entry.created_at),
-      'Time': formatTime(entry.created_at)
+      Status: entry.status || 'N/A',
+      'Created At': formatDate(entry.created_at) || 'N/A',
+      'Status Updated At': formatDate(entry.status_updated_at) || 'N/A',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -484,7 +520,7 @@ function exportToExcel() {
     worksheet['!cols'] = colWidths;
 
     XLSX.writeFile(workbook, `Appointment_Letters_${new Date().toISOString().split('T')[0]}.xlsx`);
-    toast.success('Excel file exported successfully');
+    toast.success('Excel file exported successfully!');
   } catch (error) {
     handleError(error, 'Failed to export to Excel');
   }
@@ -512,12 +548,13 @@ function exportToPDF() {
       entry.tender?.title || 'N/A',
       entry.letter_file ? 'Available' : 'N/A',
       entry.status || 'N/A',
-      formatDate(entry.created_at)
+      formatDate(entry.created_at),
+      formatDate(entry.status_updated_at) || 'N/A'
     ]);
 
     autoTable(doc, {
       startY: 28,
-      head: [['#', 'Engineer', 'Tender Title', 'Letter File', 'Status', 'Issued Date']],
+      head: [['#', 'Engineer', 'Tender Title', 'Letter File', 'Status', 'Issued Date', 'Status Updated']],
       body: tableData,
       theme: 'striped',
       headStyles: {
@@ -535,18 +572,20 @@ function exportToPDF() {
         fillColor: [245, 245, 245]
       },
       columnStyles: {
-        0: { cellWidth: 15, halign: 'center' },
-        1: { cellWidth: 50 },
-        2: { cellWidth: 80 },
-        3: { cellWidth: 30 },
-        4: { cellWidth: 30 },
-        5: { cellWidth: 35 }
+        0: { cellWidth: 12, halign: 'center' },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 60 },
+        3: { cellWidth: 25 },
+        4: { cellWidth: 20 },
+        5: { cellWidth: 25 },
+        6: { cellWidth: 25 },
+        7: { cellWidth: 30 }
       },
       margin: { top: 28 }
     });
 
     doc.save(`Appointment_Letters_Report_${new Date().toISOString().split('T')[0]}.pdf`);
-    toast.success('PDF file exported successfully');
+    toast.success('PDF file exported successfully!');
   } catch (error) {
     handleError(error, 'Failed to export to PDF');
   }

@@ -511,7 +511,7 @@ const loginWithGoogle = async () => {
 
 const acceptCookies = async () => {
   try {
-    await axios.post('/api/accept-cookies')
+    // Just store consent locally - no need for backend API call
     localStorage.setItem('cookie_consent', 'true')
     cookiesAccepted.value = true
     toast.success('Cookies accepted successfully!')

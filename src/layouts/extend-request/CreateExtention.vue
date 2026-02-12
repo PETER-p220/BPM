@@ -1,305 +1,278 @@
 <template>
-    <div class="py-5 add-request" style="font-family: 'cygre', sans-serif; font-size: 17px">
-      <div class="container px-4 mx-auto">
-        <div class="w-full shadow-lg card">
-          <div class="flex items-center justify-between px-4 py-2 text-white card-header" style="background-color: #283747;">
-            <div><i class="mr-2 fa fa-plus"></i> Create Extension Request</div>
-            <button type="button" class="text-white" @click="closeModal">
-              <i class="fa fa-times"></i>
-            </button>
+  <div class="min-h-screen py-8 bg-gray-50 flex items-center justify-center">
+    <div class="w-full max-w-2xl px-4 sm:px-6 lg:px-8">
+      <!-- Card -->
+      <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200">
+        <!-- Header -->
+        <div
+          class="px-6 py-5 flex items-center justify-between text-white"
+          style="background: linear-gradient(135deg, #1e3a8a 0%, #283747 100%);"
+        >
+          <div class="flex items-center gap-3">
+            <i class="fas fa-plus-circle text-xl"></i>
+            <h2 class="text-xl font-semibold">Create Extension Request</h2>
           </div>
-  
-          <!-- Extension Request Form -->
-          <div class="p-6 bg-white card-body">
-            <h3 class="mb-4 text-lg font-semibold"></h3>
-  
+          <button
+            @click="closeModal"
+            class="p-2 rounded-full hover:bg-white/20 transition-colors"
+            aria-label="Close"
+          >
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Form Body -->
+        <div class="p-6 sm:p-8">
+          <form @submit.prevent="createExtensionRequest" class="space-y-6">
             <!-- Project Selection -->
-            <div class="row">
-              <div class="col-sm-6">
-                <label for="projectSelect" class="form-label">Select Project</label>
-                <select
-                  id="projectSelect"
-                  class="w-full px-3 py-2 border rounded form-control"
-                  v-model="requestData.project_id"
-                  @change="fetchAnalysisItems"
-                >
-                  <option value="">Select a project</option>
-                  <option v-for="project in projects" :key="project.project_id" :value="project.project_id">
-                    {{ project.project_name }}
-                  </option>
-                </select>
-              </div>
+            <div>
+              <label for="projectSelect" class="block text-sm font-medium text-gray-700 mb-1">
+                Project
+              </label>
+              <select
+                id="projectSelect"
+                v-model="requestData.project_id"
+                @change="fetchAnalysisItems"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white shadow-sm"
+                :class="{ 'text-gray-400': !requestData.project_id }"
+              >
+                <option value="" disabled>Select a project</option>
+                <option v-for="project in projects" :key="project.project_id" :value="project.project_id">
+                  {{ project.project_name }}
+                </option>
+              </select>
             </div>
-  
+
             <!-- Analysis Item Selection -->
-            <div class="row mt-4">
-              <div class="col-sm-6">
-                <label for="analysisSelect" class="form-label">Select Analysis Item</label>
-                <select
-                  id="analysisSelect"
-                  class="w-full px-3 py-2 border rounded form-control"
-                  v-model="requestData.analysis_id"
-                  :disabled="!requestData.project_id"
-                  @change="onAnalysisSelected"
+            <div>
+              <label for="analysisSelect" class="block text-sm font-medium text-gray-700 mb-1">
+                Analysis Item
+              </label>
+              <select
+                id="analysisSelect"
+                v-model="requestData.analysis_id"
+                :disabled="!requestData.project_id"
+                @change="onAnalysisSelected"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+              >
+                <option value="" disabled>Select an analysis item</option>
+                <option
+                  v-for="analysis in analysisItems"
+                  :key="analysis.analysis_id"
+                  :value="analysis.analysis_id"
                 >
-                  <option value="">Select an analysis item</option>
-                  <option v-for="analysis in analysisItems" :key="analysis.analysis_id" :value="analysis.analysis_id">
-                    {{ analysis.items?.[0] || analysis.item_description || 'N/A' }}
-                    (Qty: {{ analysis.quantity || 0 }}, Amount: {{ analysis.amount || 0 }})
-                  </option>
-                </select>
-                <div v-if="selectedAnalysis" class="mt-2 text-sm text-gray-600">
-                  <p><strong>Available Quantity:</strong> {{ selectedAnalysis.quantity || 0 }}</p>
-                  <p><strong>Available Amount:</strong> {{ selectedAnalysis.amount || 0 }}</p>
+                  {{ analysis.items?.[0] || analysis.item_description || 'N/A' }}
+                  (Qty: {{ analysis.quantity || 0 }} • Amt: {{ analysis.amount || 0 }})
+                </option>
+              </select>
+
+              <div v-if="selectedAnalysis" class="mt-3 grid grid-cols-2 gap-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                <div>
+                  <span class="font-medium">Available Quantity:</span>
+                  <span class="ml-1">{{ selectedAnalysis.quantity || 0 }}</span>
+                </div>
+                <div>
+                  <span class="font-medium">Available Amount:</span>
+                  <span class="ml-1">{{ selectedAnalysis.amount || 0 }}</span>
                 </div>
               </div>
             </div>
-  
+
             <!-- Quantity Extended -->
-            <div class="row mt-4">
-              <div class="col-sm-6">
-                <label for="quantityExtended" class="form-label">Quantity Extended</label>
-                <input
-                  type="number"
-                  id="quantityExtended"
-                  class="w-full px-3 py-2 border rounded form-control"
-                  v-model="requestData.quantity_extended"
-                  min="1"
-                  placeholder="Enter quantity to extend"
-                />
-              </div>
+            <div>
+              <label for="quantityExtended" class="block text-sm font-medium text-gray-700 mb-1">
+                Quantity Extended
+              </label>
+              <input
+                type="number"
+                id="quantityExtended"
+                v-model.number="requestData.quantity_extended"
+                min="1"
+                placeholder="Enter quantity to extend"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm"
+              />
             </div>
-  
+
             <!-- Amount Extended -->
-            <div class="row mt-4">
-              <div class="col-sm-6">
-                <label for="amountExtended" class="form-label">Amount Extended</label>
-                <input
-                  type="number"
-                  id="amountExtended"
-                  class="w-full px-3 py-2 border rounded form-control"
-                  v-model="requestData.amount_extended"
-                  min="0"
-                  step="0.01"
-                  placeholder="Enter amount eg. 4000.00"
-                />
-              </div>
+            <div>
+              <label for="amountExtended" class="block text-sm font-medium text-gray-700 mb-1">
+                Amount Extended
+              </label>
+              <input
+                type="number"
+                id="amountExtended"
+                v-model.number="requestData.amount_extended"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 4000.00"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm"
+              />
             </div>
-  
-            <!-- Reason for Extension -->
-            <div class="row mt-4">
-              <div class="col-sm-6">
-                <label for="reasonForExtend" class="form-label">Reason for Extension</label>
-                <textarea
-                  id="reasonForExtend"
-                  class="w-full px-3 py-2 border rounded form-control"
-                  v-model="requestData.reason_for_extend"
-                  placeholder="Enter reason for extension"
-                  rows="4"
-                ></textarea>
-              </div>
+
+            <!-- Reason -->
+            <div>
+              <label for="reasonForExtend" class="block text-sm font-medium text-gray-700 mb-1">
+                Reason for Extension
+              </label>
+              <textarea
+                id="reasonForExtend"
+                v-model="requestData.reason_for_extend"
+                rows="4"
+                placeholder="Please explain the reason for this extension request..."
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm resize-y"
+              ></textarea>
             </div>
-  
-            <!-- Action Buttons -->
-            <div class="flex gap-4 mt-4">
+
+            <!-- Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
               <button
-                @click="createExtensionRequest"
-                class="px-4 py-2 mt-4 text-white rounded hover:bg-blue-700"
-                style="background-color: #283747;"
-                :disabled="isLoading"
+                type="submit"
+                :disabled="isLoading || !formIsValid"
+                class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#283747] text-white font-medium rounded-lg hover:bg-[#1e2e5c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <i class="fa fa-plus"></i> Save Request
-                <span v-if="isLoading" class="flex items-center gap-2">
-                  <i class="fa fa-spinner fa-spin"></i> Loading...
-                </span>
+                <i v-if="isLoading" class="fas fa-spinner fa-spin"></i>
+                <i v-else class="fas fa-save"></i>
+                <span>{{ isLoading ? 'Submitting...' : 'Submit Request' }}</span>
               </button>
-              <span>
-                <router-link
-                  to="/user/extentions-for-project"
-                  class="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
-                >
-                  <i class="fa fa-times"></i> Cancel
-                </router-link>
-              </span>
+
+              <router-link
+                to="/user/extentions-for-project"
+                class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-all"
+              >
+                <i class="fas fa-times"></i>
+                Cancel
+              </router-link>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import axios from '@/axios';
-  import { useToast } from 'vue-toastification';
-  import { useRouter } from 'vue-router';
-  
-  const toast = useToast();
-  const router = useRouter();
-  const requestData = ref({
-    project_id: '',
-    analysis_id: '',
-    quantity_extended: null,
-    amount_extended: null,
-    reason_for_extend: '',
-  });
-  const projects = ref([]);
-  const analysisItems = ref([]);
-  const selectedAnalysis = ref(null);
-  const isLoading = ref(false);
-  
-  // Fetch projects on component mount
-  onMounted(async () => {
-    await fetchProjects();
-  });
-  
-  // Handle analysis selection
-  function onAnalysisSelected() {
-    selectedAnalysis.value = analysisItems.value.find(item => item.analysis_id === requestData.value.analysis_id) || null;
-  
-    // Show warning if no quantity/amount available
-    if (selectedAnalysis.value && (!selectedAnalysis.value.quantity || !selectedAnalysis.value.amount)) {
-      toast.warning('This analysis item has no quantity or amount values. Please ensure the analysis is properly set up before creating an extension request.');
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import axios from '@/axios';
+import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
+
+const toast = useToast();
+const router = useRouter();
+
+const requestData = ref({
+  project_id: '',
+  analysis_id: '',
+  quantity_extended: null,
+  amount_extended: null,
+  reason_for_extend: '',
+});
+
+const projects = ref([]);
+const analysisItems = ref([]);
+const selectedAnalysis = ref(null);
+const isLoading = ref(false);
+
+const formIsValid = computed(() => {
+  return (
+    requestData.value.project_id &&
+    requestData.value.analysis_id &&
+    requestData.value.quantity_extended >= 1 &&
+    requestData.value.amount_extended >= 0 &&
+    requestData.value.reason_for_extend?.trim()
+  );
+});
+
+onMounted(() => {
+  fetchProjects();
+});
+
+async function fetchProjects() {
+  try {
+    const res = await axios.get('/api/dropdown/projects');
+    if (res.data.status && Array.isArray(res.data.data)) {
+      projects.value = res.data.data;
     }
+  } catch (err) {
+    handleError(err);
   }
-  
-  // Fetch projects from API
-  async function fetchProjects() {
-    try {
-      const response = await axios.get('/api/dropdown/projects');
-      if (response.data.status && Array.isArray(response.data.data)) {
-        projects.value = response.data.data;
-      } else {
-        throw new Error('Invalid API response format');
-      }
-    } catch (error) {
-      handleError(error);
+}
+
+async function fetchAnalysisItems() {
+  analysisItems.value = [];
+  requestData.value.analysis_id = '';
+  selectedAnalysis.value = null;
+
+  if (!requestData.value.project_id) return;
+
+  try {
+    const res = await axios.get('/api/items-dropdown', {
+      params: { project_id: requestData.value.project_id },
+    });
+    if (res.data.status === 200) {
+      analysisItems.value = res.data.data;
     }
+  } catch (err) {
+    handleError(err);
   }
-  
-  // Fetch analysis items based on selected project
-  async function fetchAnalysisItems() {
-    analysisItems.value = []; // Reset analysis items
-    requestData.value.analysis_id = ''; // Reset selected analysis
-    if (!requestData.value.project_id) return;
-  
-    try {
-      const response = await axios.get('/api/items-dropdown', {
-        params: { project_id: requestData.value.project_id },
-      });
-      if (response.data.status === 200) {
-        analysisItems.value = response.data.data;
-      } else {
-        throw new Error(response.data.message || 'Failed to fetch analysis items');
-      }
-    } catch (error) {
-      handleError(error);
-    }
+}
+
+function onAnalysisSelected() {
+  selectedAnalysis.value = analysisItems.value.find(
+    (item) => item.analysis_id === requestData.value.analysis_id
+  ) || null;
+
+  if (selectedAnalysis.value && (!selectedAnalysis.value.quantity || !selectedAnalysis.value.amount)) {
+    toast.warning('This analysis item has no quantity or amount values set.');
   }
-  
-  // Create extension request
-  async function createExtensionRequest() {
-    isLoading.value = true;
-  
-    // Validation
-    if (
-      !requestData.value.project_id ||
-      !requestData.value.analysis_id ||
-      !requestData.value.quantity_extended ||
-      !requestData.value.amount_extended ||
-      !requestData.value.reason_for_extend
-    ) {
-      toast.error('Please fill in all required fields.');
-      isLoading.value = false;
-      return;
-    }
-  
-    if (requestData.value.quantity_extended < 1) {
-      toast.error('Quantity extended must be at least 1.');
-      isLoading.value = false;
-      return;
-    }
-  
-    if (requestData.value.amount_extended < 0) {
-      toast.error('Amount extended cannot be negative.');
-      isLoading.value = false;
-      return;
-    }
-  
-    if (requestData.value.reason_for_extend.trim() === '') {
-      toast.error('Reason for extension cannot be empty.');
-      isLoading.value = false;
-      return;
-    }
-  
-    const payload = {
-      project_id: requestData.value.project_id,
-      analysis_id: requestData.value.analysis_id,
-      quantity_extended: requestData.value.quantity_extended,
-      amount_extended: requestData.value.amount_extended,
-      reason_for_extend: requestData.value.reason_for_extend,
-    };
-  
-    try {
-      const response = await axios.post('/api/extend-request', payload);
-  
-      if (response.data.status) {
-        toast.success(response.data.message);
-        router.push('/user/extentions-for-project');
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      handleError(error);
-    } finally {
-      isLoading.value = false;
-    }
+}
+
+async function createExtensionRequest() {
+  if (!formIsValid.value) {
+    toast.error('Please complete all required fields correctly.');
+    return;
   }
-  
-  // Handle errors
-  function handleError(error) {
-    let message = 'An unexpected error occurred.';
-    if (error.response) {
-      if (error.response.status === 400 && error.response.data.errors) {
-        message = Object.values(error.response.data.errors).flat().join(' ');
-      } else if (error.response.data && error.response.data.message) {
-        message = error.response.data.message;
-        if (error.response.data.results?.extend_request?.error) {
-          message += ': ' + error.response.data.results.extend_request.error;
-        }
-      } else if (error.response.status === 500) {
-        message = error.response.data.message || 'Server error occurred.';
-      }
-    } else if (error.request) {
-      message = 'No response from the server. Please check your connection.';
+
+  isLoading.value = true;
+
+  const payload = { ...requestData.value };
+
+  try {
+    const res = await axios.post('/api/extend-request', payload);
+
+    if (res.data.status) {
+      toast.success(res.data.message || 'Extension request created successfully');
+      router.push('/user/extentions-for-project');
     } else {
-      message = error.message;
+      toast.error(res.data.message || 'Failed to create request');
     }
-    toast.error(message);
+  } catch (err) {
+    handleError(err);
+  } finally {
+    isLoading.value = false;
   }
-  
-  // Close modal
-  function closeModal() {
-    router.push('/user/requests');
+}
+
+function handleError(error) {
+  let message = 'An error occurred. Please try again.';
+  if (error.response?.data?.message) {
+    message = error.response.data.message;
+  } else if (error.response?.data?.errors) {
+    message = Object.values(error.response.data.errors).flat().join(' • ');
   }
-  </script>
-  
-  <style scoped>
-  .add-request .card {
-    border-radius: 8px;
-  }
-  
-  .card-header {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-  }
-  
-  .form-control {
-    transition: border-color 0.2s;
-  }
-  
-  .form-control:focus {
-    border-color: #283747;
-    outline: none;
-  }
-  </style>
+  toast.error(message);
+}
+
+function closeModal() {
+  router.push('/user/requests');
+}
+</script>
+
+<style scoped>
+/* Optional: Add subtle focus ring improvements */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+</style>

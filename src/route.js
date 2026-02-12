@@ -741,6 +741,13 @@ const routes = [
                 meta:{ requiresAuth: true, allowedRoles: [1] }
             },
             {
+                path:'/view-appointment-letter/:letter_id',
+                name:'ViewAppointmentLetter',
+                component:  AcceptAppointmentLetter,
+                props:true,
+                meta:{ requiresAuth: true, allowedRoles: [1] }
+            },
+            {
                 path:'/assigned-projects',
                 name:'AllAssignedProjects',
                 component:AllAssignedProjectsVue,

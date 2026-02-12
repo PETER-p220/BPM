@@ -1,1429 +1,457 @@
 <template>
-  <div class="engineers-page">
-    <!-- Header Section -->
-    <div class="page-header">
-      <div class="header-content">
-        <div class="title-section">
-          <h1 class="page-title">Engineers & Projects</h1>
-          <p class="page-subtitle">Overview of project assignments and performance metrics</p>
+  <div class="py-8 md:py-10 bg-gray-50 dark:bg-gray-950 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            Engineers With Projects
+          </h1>
+          <p class="mt-1 text-gray-600 dark:text-gray-400">
+            Overview of engineers and their assigned projects
+          </p>
         </div>
-        
-        <div class="header-actions">
-          <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
+      </div>
+
+      <!-- Search & Export Controls -->
+      <div class="bg-white dark:bg-gray-900 shadow-sm rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="relative flex-1">
             <input
-              type="text"
               v-model="filter"
-              placeholder="Search by name or email..."
-              class="search-input"
+              type="text"
+              placeholder="Search engineer name or email..."
+              class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
             />
+            <svg
+              class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
           </div>
-          
-          <div class="export-buttons">
+
+          <div class="flex items-center gap-3 flex-wrap">
             <button
-              v-if="filteredUsers.length"
               @click="exportToExcel"
-              class="btn-export btn-excel"
+              :disabled="isExporting || isLoading || !filteredUsers.length"
+              class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow-sm transition disabled:opacity-50"
             >
-              <i class="fas fa-file-excel"></i>
-              <span>Excel</span>
+              <i class="fas fa-file-excel mr-2"></i>
+              Excel
             </button>
+
             <button
-              v-if="filteredUsers.length"
               @click="exportToPDF"
-              class="btn-export btn-pdf"
+              :disabled="isExporting || isLoading || !filteredUsers.length"
+              class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-sm transition disabled:opacity-50"
             >
-              <i class="fas fa-file-pdf"></i>
-              <span>PDF</span>
+              <i class="fas fa-file-pdf mr-2"></i>
+              PDF
             </button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Stats Overview -->
-    <div class="stats-overview">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-          <i class="fas fa-users"></i>
-        </div>
-        <div class="stat-content">
-          <p class="stat-label">Total Engineers</p>
-          <p class="stat-value">{{ filteredUsers.length }}</p>
-        </div>
+      <!-- Loading State -->
+      <div v-if="isLoading" class="bg-white dark:bg-gray-900 shadow-sm rounded-xl p-12 text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-indigo-600 border-gray-200 dark:border-gray-700"></div>
+        <p class="mt-4 text-gray-600 dark:text-gray-400">Loading engineers data...</p>
       </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon" style="background: red;">
-          <i class="fas fa-project-diagram"></i>
-        </div>
-        <div class="stat-content">
-          <p class="stat-label">Total Projects</p>
-          <p class="stat-value">{{ totalProjects }}</p>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #f59e0b;">
-          <i class="fas fa-tasks"></i>
-        </div>
-        <div class="stat-content">
-          <p class="stat-label">In Progress</p>
-          <p class="stat-value">{{ totalInProgress }}</p>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon" style="background: green;">
-          <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="stat-content">
-          <p class="stat-label">Completed</p>
-          <p class="stat-value">{{ totalCompleted }}</p>
-        </div>
-      </div>
-    </div>
 
-    <!-- Engineers List -->
-    <div class="engineers-container">
-      <div
-        v-for="user in paginatedUsers"
-        :key="user.user_id"
-        @click="openModal(user)"
-        class="engineer-card"
-      >
-        <div class="engineer-header">
-          <div class="engineer-avatar">
-            <i class="fas fa-user-tie"></i>
-          </div>
-          <div class="engineer-info">
-            <h3 class="engineer-name">{{ user.name || 'N/A' }}</h3>
-            <p class="engineer-email">{{ user.email || 'N/A' }}</p>
-          </div>
-          <div class="engineer-badge">
-            <span class="badge" :class="getBadgeClass(user.status)">
-              {{ user.status || 'N/A' }}
-            </span>
-          </div>
-        </div>
-        
-        <div class="engineer-stats">
-          <div class="mini-stat">
-            <i class="fas fa-folder-open"></i>
-            <div>
-              <p class="mini-stat-value">{{ user.total_projects || 0 }}</p>
-              <p class="mini-stat-label">Total</p>
-            </div>
-          </div>
-          
-          <div class="mini-stat">
-            <i class="fas fa-spinner" style="color: #3b82f6;"></i>
-            <div>
-              <p class="mini-stat-value">{{ user.on_progress_projects || 0 }}</p>
-              <p class="mini-stat-label">Active</p>
-            </div>
-          </div>
-          
-          <div class="mini-stat">
-            <i class="fas fa-check" style="color: #10b981;"></i>
-            <div>
-              <p class="mini-stat-value">{{ user.completed_projects || 0 }}</p>
-              <p class="mini-stat-label">Done</p>
-            </div>
-          </div>
-          
-          <div class="mini-stat">
-            <i class="fas fa-times" style="color: #ef4444;"></i>
-            <div>
-              <p class="mini-stat-value">{{ user.failed_projects || 0 }}</p>
-              <p class="mini-stat-label">Failed</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="progress-bar-container">
-          <div class="progress-label">
-            <span>Completion Rate</span>
-            <span class="progress-percentage">{{ getCompletionRate(user) }}%</span>
-          </div>
-          <div class="progress-bar">
-            <div 
-              class="progress-fill" 
-              :style="{ width: getCompletionRate(user) + '%' }"
-            ></div>
-          </div>
+      <!-- Empty State -->
+      <div v-else-if="filteredUsers.length === 0" class="bg-white dark:bg-gray-900 shadow-sm rounded-xl p-12 text-center">
+        <i class="fas fa-users-slash text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+        <h3 class="text-xl font-medium text-gray-700 dark:text-gray-300">No engineers found</h3>
+        <p class="mt-2 text-gray-500 dark:text-gray-400">
+          {{ filter ? 'Try adjusting your search.' : 'No engineers with projects yet.' }}
+        </p>
+      </div>
+
+      <!-- Main Table -->
+      <div v-else class="bg-white dark:bg-gray-900 shadow-sm rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+            <thead class="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">No</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Engineer Name</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Projects</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">In Progress</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Completed</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Failed</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-gray-900">
+              <tr
+                v-for="(user, index) in paginatedUsers"
+                :key="user.user_id"
+                @click="openModal(user)"
+                class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
+              >
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  {{ index + 1 + (currentPage - 1) * itemsPerPage }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {{ user.name || '—' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                  {{ user.email || '—' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                  {{ user.total_projects || 0 }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-yellow-600 dark:text-yellow-400">
+                  {{ user.on_progress_projects || 0 }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-green-600 dark:text-green-400">
+                  {{ user.completed_projects || 0 }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-red-600 dark:text-red-400">
+                  {{ user.failed_projects || 0 }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  <span
+                    class="inline-flex px-3 py-1 text-xs font-medium rounded-full"
+                    :class="user.status === 'is_active' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'"
+                  >
+                    {{ user.status === 'is_active' ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+              </tr>
+
+              <!-- Empty row if no data (fallback) -->
+              <tr v-if="paginatedUsers.length === 0">
+                <td colspan="8" class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
+                  No engineers match your search
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
 
-    <!-- Pagination -->
-    <div v-if="filteredUsers.length" class="pagination">
-      <button
-        :disabled="currentPage === 1"
-        @click="changePage(currentPage - 1)"
-        class="pagination-btn"
-      >
-        <i class="fas fa-chevron-left"></i>
-        Previous
-      </button>
-      
-      <div class="pagination-info">
-        <span class="current-page">Page {{ currentPage }}</span>
-        <span class="total-pages">of {{ totalPages }}</span>
+      <!-- Pagination -->
+      <div v-if="filteredUsers.length > 0" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+          {{ Math.min(currentPage * itemsPerPage, filteredUsers.length) }} of
+          {{ filteredUsers.length }} engineers
+        </p>
+
+        <div class="flex items-center gap-2">
+          <button
+            :disabled="currentPage === 1"
+            @click="changePage(currentPage - 1)"
+            class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
+          >
+            Previous
+          </button>
+          <button
+            :disabled="currentPage * itemsPerPage >= filteredUsers.length"
+            @click="changePage(currentPage + 1)"
+            class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
+          >
+            Next
+          </button>
+        </div>
       </div>
-      
-      <button
-        :disabled="currentPage >= totalPages"
-        @click="changePage(currentPage + 1)"
-        class="pagination-btn"
-      >
-        Next
-        <i class="fas fa-chevron-right"></i>
-      </button>
-    </div>
 
-    <!-- Modal -->
-    <transition name="modal">
+      <!-- Engineer Details Modal -->
       <div
         v-if="selectedUser"
-        class="modal-overlay"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4"
         @click="closeModal"
       >
         <div
-          class="modal-container"
+          class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
           @click.stop
         >
-          <div class="modal-header">
-            <div class="modal-title-section">
-              <h2 class="modal-title">Engineer Details</h2>
-              <p class="modal-subtitle">Comprehensive project overview and performance metrics</p>
-            </div>
-            <button @click="closeModal" class="modal-close">
-              <i class="fas fa-times"></i>
+          <div class="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center justify-between z-10">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Engineer Details</h2>
+            <button @click="closeModal" class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 text-2xl">
+              ×
             </button>
           </div>
 
-          <div class="modal-content">
-            <!-- Engineer Profile -->
-            <div class="profile-section">
-              <div class="profile-header">
-                <div class="profile-avatar-large">
-                  <i class="fas fa-user-tie"></i>
-                </div>
-                <div class="profile-details">
-                  <h3>{{ selectedUser.name || 'N/A' }}</h3>
-                  <p class="profile-email">{{ selectedUser.email || 'N/A' }}</p>
-                  <div class="profile-meta">
-                    <span class="meta-item">
-                      <i class="fas fa-briefcase"></i>
-                      {{ selectedUser.role || 'N/A' }}
-                    </span>
-                    <span class="meta-item">
-                      <i class="fas fa-building"></i>
-                      {{ selectedUser.department || 'N/A' }}
-                    </span>
-                    <span class="badge" :class="getBadgeClass(selectedUser.status)">
-                      {{ selectedUser.status || 'N/A' }}
-                    </span>
-                  </div>
-                </div>
+          <div class="p-6 space-y-6">
+            <!-- Basic Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Name</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.name || '—' }}</p>
               </div>
-
-              <!-- Performance Stats -->
-              <div class="performance-grid">
-                <div class="perf-card total">
-                  <i class="fas fa-project-diagram"></i>
-                  <div>
-                    <p class="perf-value">{{ selectedUser.total_projects || 0 }}</p>
-                    <p class="perf-label">Total Projects</p>
-                  </div>
-                </div>
-                
-                <div class="perf-card progress">
-                  <i class="fas fa-spinner"></i>
-                  <div>
-                    <p class="perf-value">{{ selectedUser.on_progress_projects || 0 }}</p>
-                    <p class="perf-label">In Progress</p>
-                  </div>
-                </div>
-                
-                <div class="perf-card completed">
-                  <i class="fas fa-check-circle"></i>
-                  <div>
-                    <p class="perf-value">{{ selectedUser.completed_projects || 0 }}</p>
-                    <p class="perf-label">Completed</p>
-                  </div>
-                </div>
-                
-                <div class="perf-card failed">
-                  <i class="fas fa-times-circle"></i>
-                  <div>
-                    <p class="perf-value">{{ selectedUser.failed_projects || 0 }}</p>
-                    <p class="perf-label">Failed</p>
-                  </div>
-                </div>
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Email</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.email || '—' }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Status</p>
+                <span
+                  class="inline-flex px-3 py-1 text-sm font-medium rounded-full"
+                  :class="selectedUser.status === 'is_active' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'"
+                >
+                  {{ selectedUser.status === 'is_active' ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Role</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.role || '—' }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Department</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.department || '—' }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Total Projects</p>
+                <p class="text-xl font-bold text-indigo-600 dark:text-indigo-400">{{ selectedUser.total_projects || 0 }}</p>
               </div>
             </div>
 
-            <!-- Projects List -->
-            <div class="projects-section">
-              <h3 class="section-title">
-                <i class="fas fa-folder-open"></i>
-                Assigned Projects
-              </h3>
-              
-              <div v-if="selectedUser.projects && selectedUser.projects.length" class="projects-list">
+            <!-- Project Summary Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-gray-50 dark:bg-gray-800 p-5 rounded-lg">
+              <div class="text-center">
+                <p class="text-sm text-gray-600 dark:text-gray-400">In Progress</p>
+                <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ selectedUser.on_progress_projects || 0 }}</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-600 dark:text-gray-400">Completed</p>
+                <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ selectedUser.completed_projects || 0 }}</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-600 dark:text-gray-400">Failed</p>
+                <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ selectedUser.failed_projects || 0 }}</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-600 dark:text-gray-400">Total</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ selectedUser.total_projects || 0 }}</p>
+              </div>
+            </div>
+
+            <!-- Assigned Projects List -->
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Assigned Projects</h3>
+
+              <div v-if="selectedUser.projects?.length" class="space-y-4">
                 <div
                   v-for="project in selectedUser.projects"
                   :key="project.project_id"
-                  class="project-card"
+                  class="p-5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
                 >
-                  <div class="project-header">
-                    <h4 class="project-name">{{ project.project_name || 'N/A' }}</h4>
-                    <span class="project-status" :class="getProjectStatusClass(project.project_status)">
-                      {{ project.project_status || 'N/A' }}
-                    </span>
-                  </div>
-                  
-                  <div class="project-details-grid">
-                    <div class="detail-item">
-                      <i class="fas fa-calendar-alt"></i>
-                      <div>
-                        <p class="detail-label">Start Date</p>
-                        <p class="detail-value">{{ formatDate(project.start_date) }}</p>
-                      </div>
-                    </div>
-                    
-                    <div class="detail-item">
-                      <i class="fas fa-calendar-check"></i>
-                      <div>
-                        <p class="detail-label">End Date</p>
-                        <p class="detail-value">{{ formatDate(project.end_date) }}</p>
-                      </div>
-                    </div>
-                    
-                    <div class="detail-item" v-if="project.extended_date">
-                      <i class="fas fa-calendar-plus"></i>
-                      <div>
-                        <p class="detail-label">Extended Date</p>
-                        <p class="detail-value">{{ formatDate(project.extended_date) }}</p>
-                      </div>
-                    </div>
-                    
-                    <div class="detail-item">
-                      <i class="fas fa-user-plus"></i>
-                      <div>
-                        <p class="detail-label">Created By</p>
-                        <p class="detail-value">{{ project.created_by || 'N/A' }}</p>
+                  <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div>
+                      <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        {{ project.project_name || 'Untitled Project' }}
+                      </h4>
+                      <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        <span class="font-medium">Status:</span>
+                        <span :class="getStatusClass(project.project_status)" class="ml-2 px-2.5 py-0.5 text-xs font-medium rounded-full">
+                          {{ project.project_status || '—' }}
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Team Members -->
-                  <div v-if="project.members && project.members.length" class="team-section">
-                    <p class="team-label">
-                      <i class="fas fa-users"></i>
-                      Team Members
+                  <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <p class="text-gray-600 dark:text-gray-400">Start Date</p>
+                      <p class="font-medium">{{ project.start_date || '—' }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-600 dark:text-gray-400">End Date</p>
+                      <p class="font-medium">{{ project.end_date || '—' }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-600 dark:text-gray-400">Extended Date</p>
+                      <p class="font-medium">{{ project.extended_date || '—' }}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-600 dark:text-gray-400">Created By</p>
+                      <p class="font-medium">{{ project.created_by || '—' }}</p>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 text-sm">
+                    <p>
+                      <span class="text-gray-600 dark:text-gray-400 font-medium">Team Members:</span>
+                      {{ project.members?.length ? project.members.join(', ') : 'None assigned' }}
                     </p>
-                    <div class="team-members">
-                      <span v-for="(member, index) in project.members" :key="index" class="member-tag">
-                        {{ member }}
-                      </span>
-                    </div>
                   </div>
 
-                  <!-- Contract Info -->
-                  <div v-if="project.contract" class="contract-info">
-                    <div class="info-header">
-                      <i class="fas fa-file-contract"></i>
-                      <span>Contract Information</span>
+                  <div v-if="project.contract || project.tender" class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div v-if="project.contract">
+                      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Contract</p>
+                      <p class="text-gray-600 dark:text-gray-400">{{ project.contract.title || '—' }}</p>
+                      <p class="text-xs mt-1">Status: {{ project.contract.status || '—' }}</p>
                     </div>
-                    <div class="info-grid">
-                      <div class="info-item">
-                        <span class="info-label">Title:</span>
-                        <span class="info-value">{{ project.contract.title || 'N/A' }}</span>
-                      </div>
-                      <div class="info-item">
-                        <span class="info-label">Status:</span>
-                        <span class="info-value">{{ project.contract.status || 'N/A' }}</span>
-                      </div>
-                      <div class="info-item">
-                        <span class="info-label">Timeline:</span>
-                        <span class="info-value">{{ project.contract.time_line_category || 'N/A' }}</span>
-                      </div>
-                      <div class="info-item">
-                        <span class="info-label">Guarantee:</span>
-                        <span class="info-value">{{ project.contract.performance_guarantee || 'N/A' }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Tender Info -->
-                  <div v-if="project.tender" class="tender-info">
-                    <div class="info-header">
-                      <i class="fas fa-gavel"></i>
-                      <span>Tender Information</span>
-                    </div>
-                    <div class="info-grid">
-                      <div class="info-item">
-                        <span class="info-label">Type:</span>
-                        <span class="info-value">{{ project.tender.tender_type || 'N/A' }}</span>
-                      </div>
-                      <div class="info-item" v-if="project.tender.attachment">
-                        <span class="info-label">Attachment:</span>
-                        <span class="info-value">{{ project.tender.attachment }}</span>
-                      </div>
+                    <div v-if="project.tender">
+                      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Tender</p>
+                      <p class="text-gray-600 dark:text-gray-400">{{ project.tender.title || '—' }}</p>
                     </div>
                   </div>
                 </div>
               </div>
-              
-              <div v-else class="no-projects">
-                <i class="fas fa-folder-open"></i>
-                <p>No projects assigned to this engineer</p>
-              </div>
+
+              <p v-else class="text-gray-500 dark:text-gray-400 italic mt-4">
+                No projects assigned to this engineer yet.
+              </p>
             </div>
+          </div>
+
+          <div class="sticky bottom-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-6 py-4 flex justify-end">
+            <button
+              @click="closeModal"
+              class="px-6 py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition"
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>
-    </transition>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from '@/axios';
-import { useToast } from 'vue-toastification';
-import * as XLSX from '@e965/xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { ref, computed, onMounted } from 'vue'
+import axios from '@/axios'
+import { useToast } from 'vue-toastification'
+import * as XLSX from 'xlsx'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
-const router = useRouter();
-const toast = useToast();
+const toast = useToast()
 
-const users = ref([]);
-const filter = ref('');
-const currentPage = ref(1);
-const itemsPerPage = 9;
-const selectedUser = ref(null);
+const users = ref([])
+const filter = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 10
+const selectedUser = ref(null)
+const isLoading = ref(false)
+const isExporting = ref(false)
 
-onMounted(async () => {
-  await fetchUsers();
-});
+onMounted(() => {
+  fetchUsers()
+})
 
 async function fetchUsers() {
+  isLoading.value = true
   try {
-    const response = await axios.get('/api/users-with-project-summary');
+    const response = await axios.get('/api/users-with-project-summary')
     if (response.data.status) {
-      users.value = response.data.data;
+      users.value = response.data.data || []
     } else {
-      throw new Error(response.data.message);
+      throw new Error(response.data.message)
     }
   } catch (error) {
-    handleError(error);
+    toast.error(error.response?.data?.message || 'Failed to load engineers data')
+  } finally {
+    isLoading.value = false
   }
 }
 
 const filteredUsers = computed(() => {
+  const term = filter.value.toLowerCase().trim()
+  if (!term) return users.value
+
   return users.value.filter(user =>
-    (user.name || 'N/A').toLowerCase().includes(filter.value.toLowerCase()) ||
-    (user.email || 'N/A').toLowerCase().includes(filter.value.toLowerCase())
-  );
-});
+    user.name?.toLowerCase().includes(term) ||
+    user.email?.toLowerCase().includes(term)
+  )
+})
 
 const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return filteredUsers.value.slice(start, start + itemsPerPage);
-});
-
-const totalPages = computed(() => {
-  return Math.ceil(filteredUsers.value.length / itemsPerPage);
-});
-
-const totalProjects = computed(() => {
-  return users.value.reduce((sum, user) => sum + (user.total_projects || 0), 0);
-});
-
-const totalInProgress = computed(() => {
-  return users.value.reduce((sum, user) => sum + (user.on_progress_projects || 0), 0);
-});
-
-const totalCompleted = computed(() => {
-  return users.value.reduce((sum, user) => sum + (user.completed_projects || 0), 0);
-});
+  const start = (currentPage.value - 1) * itemsPerPage
+  return filteredUsers.value.slice(start, start + itemsPerPage)
+})
 
 function changePage(page) {
-  if (page > 0 && page <= totalPages.value) {
-    currentPage.value = page;
-  }
+  if (page < 1 || page > Math.ceil(filteredUsers.value.length / itemsPerPage)) return
+  currentPage.value = page
 }
 
 function openModal(user) {
-  selectedUser.value = user;
+  selectedUser.value = user
 }
 
 function closeModal() {
-  selectedUser.value = null;
+  selectedUser.value = null
 }
 
-function getBadgeClass(status) {
-  const statusLower = (status || '').toLowerCase();
-  if (statusLower === 'active') return 'badge-active';
-  if (statusLower === 'inactive') return 'badge-inactive';
-  return 'badge-default';
-}
-
-function getProjectStatusClass(status) {
-  const statusLower = (status || '').toLowerCase();
-  if (statusLower.includes('complete')) return 'status-completed';
-  if (statusLower.includes('progress') || statusLower.includes('active')) return 'status-progress';
-  if (statusLower.includes('fail')) return 'status-failed';
-  return 'status-default';
-}
-
-function getCompletionRate(user) {
-  const total = user.total_projects || 0;
-  if (total === 0) return 0;
-  const completed = user.completed_projects || 0;
-  return Math.round((completed / total) * 100);
-}
-
-function formatDate(date) {
-  if (!date) return 'N/A';
-  return new Date(date).toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'short', 
-    day: 'numeric' 
-  });
-}
-
-function handleError(error) {
-  let message = 'An unexpected error occurred';
-  if (error.response) {
-    message = error.response.data.message || error.response.statusText;
-  } else if (error.request) {
-    message = 'No response from server';
-  } else {
-    message = error.message;
+function getStatusClass(status) {
+  const classes = {
+    'on-progress': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300',
+    completed: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
+    failed: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
   }
-  toast.error(message);
+  return classes[status?.toLowerCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
 }
 
-function exportToExcel() {
-  const exportData = filteredUsers.value.map((user, index) => ({
-    No: index + 1,
-    Name: user.name || 'N/A',
-    Email: user.email || 'N/A',
-    Status: user.status || 'N/A',
-    Role: user.role || 'N/A',
-    Department: user.department || 'N/A',
-    'Total Projects': user.total_projects || 0,
-    'On Progress Projects': user.on_progress_projects || 0,
-    'Completed Projects': user.completed_projects || 0,
-    'Failed Projects': user.failed_projects || 0,
-    'Completion Rate': getCompletionRate(user) + '%'
-  }));
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Engineers Project Summary');
-  XLSX.writeFile(wb, 'engineers_project_summary.xlsx');
+async function exportToExcel() {
+  isExporting.value = true
+  try {
+    const data = filteredUsers.value.map((user, index) => ({
+      No: index + 1,
+      Name: user.name || '—',
+      Email: user.email || '—',
+      Status: user.status === 'is_active' ? 'Active' : 'Inactive',
+      Role: user.role || '—',
+      Department: user.department || '—',
+      'Total Projects': user.total_projects || 0,
+      'On Progress': user.on_progress_projects || 0,
+      Completed: user.completed_projects || 0,
+      Failed: user.failed_projects || 0
+    }))
+
+    const ws = XLSX.utils.json_to_sheet(data)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Engineers')
+    XLSX.writeFile(wb, `Engineers_With_Projects_${new Date().toISOString().slice(0,10)}.xlsx`)
+  } catch (err) {
+    toast.error('Failed to export to Excel')
+  } finally {
+    isExporting.value = false
+  }
 }
 
 function exportToPDF() {
-  const doc = new jsPDF();
-  
-  // Add title
-  doc.setFontSize(18);
-  doc.text('Engineers & Projects Report', 14, 20);
-  doc.setFontSize(11);
-  doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 28);
-  
-  const tableData = filteredUsers.value.map((user, index) => [
-    index + 1,
-    user.name || 'N/A',
-    user.email || 'N/A',
-    user.total_projects || 0,
-    user.on_progress_projects || 0,
-    user.completed_projects || 0,
-    user.failed_projects || 0,
-    getCompletionRate(user) + '%'
-  ]);
+  isExporting.value = true
+  try {
+    const doc = new jsPDF()
+    doc.setFontSize(18)
+    doc.text('Engineers With Projects Report', 14, 20)
 
-  autoTable(doc, {
-    startY: 35,
-    head: [['No', 'Name', 'Email', 'Total', 'Active', 'Done', 'Failed', 'Rate']],
-    body: tableData,
-    theme: 'grid',
-    headStyles: { fillColor: [99, 102, 241] },
-    styles: { fontSize: 9 }
-  });
+    const tableData = filteredUsers.value.map((user, index) => [
+      index + 1,
+      user.name || '—',
+      user.email || '—',
+      user.status === 'is_active' ? 'Active' : 'Inactive',
+      user.role || '—',
+      user.department || '—',
+      user.total_projects || 0,
+      user.on_progress_projects || 0,
+      user.completed_projects || 0,
+      user.failed_projects || 0
+    ])
 
-  doc.save('engineers_project_summary.pdf');
+    autoTable(doc, {
+      head: [['No', 'Name', 'Email', 'Status', 'Role', 'Department', 'Total Projects', 'In Progress', 'Completed', 'Failed']],
+      body: tableData,
+      startY: 30,
+      styles: { fontSize: 9, cellPadding: 3 },
+      headStyles: { fillColor: [40, 58, 83] },
+      alternateRowStyles: { fillColor: [245, 247, 250] }
+    })
+
+    doc.save(`Engineers_With_Projects_${new Date().toISOString().slice(0,10)}.pdf`)
+  } catch (err) {
+    toast.error('Failed to export to PDF')
+  } finally {
+    isExporting.value = false
+  }
 }
 </script>
-
-<style scoped>
-.engineers-page {
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
-  padding: 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-}
-
-/* Header */
-.page-header {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.title-section {
-  flex: 1;
-  min-width: 250px;
-}
-
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 0.5rem 0;
-  letter-spacing: -0.02em;
-}
-
-.page-subtitle {
-  font-size: 0.9375rem;
-  color: #64748b;
-  margin: 0;
-}
-
-.header-actions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.search-container {
-  position: relative;
-  min-width: 280px;
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.875rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  font-size: 0.875rem;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.625rem 0.875rem 0.625rem 2.5rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  background: #f8fafc;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #6366f1;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.export-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-export {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: white;
-}
-
-.btn-excel {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
-
-.btn-excel:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.btn-pdf {
-  background: red;
-}
-
-.btn-pdf:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(185, 26, 26, 0.3);
-}
-
-/* Stats Overview */
-.stats-overview {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-}
-
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-}
-
-.stat-content {
-  flex: 1;
-}
-
-.stat-label {
-  font-size: 0.8125rem;
-  color: #64748b;
-  margin: 0 0 0.25rem 0;
-  font-weight: 500;
-}
-
-.stat-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0;
-  line-height: 1;
-}
-
-/* Engineers Grid */
-.engineers-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 2rem;
-}
-
-.engineer-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-
-.engineer-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  border-color: #6366f1;
-}
-
-.engineer-header {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.engineer-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  background: rgb(45, 8, 137);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-}
-
-.engineer-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.engineer-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 0.25rem 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.engineer-email {
-  font-size: 0.8125rem;
-  color: #64748b;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.engineer-badge {
-  flex-shrink: 0;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.625rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.badge-active {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.badge-inactive {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.badge-default {
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.engineer-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.mini-stat {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem;
-  background: #f8fafc;
-  border-radius: 8px;
-}
-
-.mini-stat i {
-  font-size: 1rem;
-  color: #64748b;
-}
-
-.mini-stat-value {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0;
-  line-height: 1;
-}
-
-.mini-stat-label {
-  font-size: 0.6875rem;
-  color: #64748b;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.progress-bar-container {
-  margin-top: 0.75rem;
-}
-
-.progress-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.8125rem;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.progress-percentage {
-  color: #6366f1;
-  font-weight: 600;
-}
-
-.progress-bar {
-  height: 6px;
-  background: #f1f5f9;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.pagination-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #6366f1;
-  color: #6366f1;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.current-page {
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.total-pages {
-  color: #64748b;
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-  backdrop-filter: blur(4px);
-}
-
-.modal-container {
-  background: white;
-  border-radius: 16px;
-  max-width: 900px;
-  width: 100%;
-  max-height: 85vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 1.5rem;
-  border-bottom: 1px solid #f1f5f9;
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 10;
-  border-radius: 16px 16px 0 0;
-}
-
-.modal-title-section {
-  flex: 1;
-}
-
-.modal-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 0.25rem 0;
-}
-
-.modal-subtitle {
-  font-size: 0.875rem;
-  color: #64748b;
-  margin: 0;
-}
-
-.modal-close {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: none;
-  background: #f1f5f9;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.modal-close:hover {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.modal-content {
-  padding: 1.5rem;
-}
-
-/* Profile Section */
-.profile-section {
-  margin-bottom: 2rem;
-}
-
-.profile-header {
-  display: flex;
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
-  padding: 1.25rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-radius: 12px;
-}
-
-.profile-avatar-large {
-  width: 80px;
-  height: 80px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 2rem;
-  flex-shrink: 0;
-}
-
-.profile-details {
-  flex: 1;
-}
-
-.profile-details h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 0.375rem 0;
-}
-
-.profile-email {
-  font-size: 0.9375rem;
-  color: #64748b;
-  margin: 0 0 0.75rem 0;
-}
-
-.profile-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.meta-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.875rem;
-  color: #475569;
-  padding: 0.375rem 0.75rem;
-  background: white;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
-}
-
-.meta-item i {
-  color: #94a3b8;
-  font-size: 0.75rem;
-}
-
-.performance-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-}
-
-.perf-card {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  padding: 1rem;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-}
-
-.perf-card i {
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.perf-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1;
-}
-
-.perf-label {
-  font-size: 0.8125rem;
-  color: #64748b;
-  margin: 0.25rem 0 0 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.perf-card.total { background: white; color: black; }
-.perf-card.total i { color: #3b82f6; }
-
-.perf-card.progress { background: white; color: black; }
-.perf-card.progress i { color: black; }
-
-.perf-card.completed { background: white; color: black; }
-.perf-card.completed i { color: #10b981; }
-
-.perf-card.failed { background: white; color: black; }
-.perf-card.failed i { color: #ef4444; }
-
-/* Projects Section */
-.projects-section {
-  margin-top: 2rem;
-}
-
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 1rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.section-title i {
-  color: #6366f1;
-}
-
-.projects-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.project-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.25rem;
-}
-
-.project-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.project-name {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0;
-  flex: 1;
-}
-
-.project-status {
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  flex-shrink: 0;
-}
-
-.status-completed {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status-progress {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.status-failed {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.status-default {
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.project-details-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.875rem;
-  margin-bottom: 1rem;
-}
-
-.detail-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.625rem;
-}
-
-.detail-item i {
-  color: #6366f1;
-  margin-top: 0.25rem;
-  font-size: 0.875rem;
-}
-
-.detail-label {
-  font-size: 0.75rem;
-  color: #64748b;
-  margin: 0 0 0.25rem 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.detail-value {
-  font-size: 0.875rem;
-  color: #1e293b;
-  font-weight: 500;
-  margin: 0;
-}
-
-.team-section {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.team-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #475569;
-  margin: 0 0 0.625rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-}
-
-.team-label i {
-  color: #6366f1;
-}
-
-.team-members {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.member-tag {
-  padding: 0.375rem 0.75rem;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 0.8125rem;
-  color: #475569;
-}
-
-.contract-info,
-.tender-info {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.info-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 0.75rem;
-}
-
-.info-header i {
-  color: #6366f1;
-}
-
-.info-grid {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.info-item {
-  display: flex;
-  gap: 0.5rem;
-  font-size: 0.8125rem;
-}
-
-.info-label {
-  color: #64748b;
-  font-weight: 500;
-  min-width: 100px;
-}
-
-.info-value {
-  color: #1e293b;
-  font-weight: 500;
-}
-
-.no-projects {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: #94a3b8;
-}
-
-.no-projects i {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.no-projects p {
-  font-size: 0.9375rem;
-  margin: 0;
-}
-
-/* Modal Transitions */
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-active .modal-container,
-.modal-leave-active .modal-container {
-  transition: transform 0.2s ease;
-}
-
-.modal-enter-from .modal-container,
-.modal-leave-to .modal-container {
-  transform: scale(0.95);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .engineers-page {
-    padding: 1rem;
-  }
-
-  .page-title {
-    font-size: 1.5rem;
-  }
-
-  .header-content {
-    flex-direction: column;
-  }
-
-  .search-container {
-    min-width: 100%;
-  }
-
-  .export-buttons {
-    width: 100%;
-  }
-
-  .btn-export {
-    flex: 1;
-  }
-
-  .stats-overview {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-
-  .engineers-container {
-    grid-template-columns: 1fr;
-  }
-
-  .engineer-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .performance-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .project-details-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
