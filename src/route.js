@@ -225,6 +225,7 @@ import Followup from "./layouts/assignProjects/Followup.vue";
 import UpdateFollowup from "./layouts/assignProjects/UpdateFollowup.vue";
 import AccManageRequests from "./layouts/requests/AccManageRequests.vue";
 import AccManageExtendedRequests from "./layouts/extend-request/AccManageExtendedRequests.vue";
+import AccManageInvoices from "./layouts/invoices/AccManageInvoices.vue";
 
 const baseURL = '/';
 
@@ -1548,6 +1549,13 @@ const routes = [
                 path: '/approve/extended-request',
                 name: 'AccManageExtendedRequests',
                 component:  AccManageExtendedRequests,  
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [5] }
+            },
+            {
+                path: '/manage/invoices',
+                name: 'AccManageInvoices',
+                component:  AccManageInvoices,  
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [5] }
             },

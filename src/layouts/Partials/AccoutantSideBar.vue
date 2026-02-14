@@ -205,6 +205,21 @@ const navigations = ref([
     ]
   },
   {
+    icon: "fas fa-file-invoice-dollar",
+    label: "Invoices",
+    name: "InvoicesManagement",
+    active: false,
+    children: [
+      {
+        icon: "fas fa-plus-circle",
+        label: "Manage Invoices",
+        name: "AccManageInvoices",
+        path: "AccManageInvoices",
+        active: false
+      }
+    ]
+  },
+  {
     icon: "fas fa-upload",
     label: "Updates",
     name: "UpdatesManagement",
