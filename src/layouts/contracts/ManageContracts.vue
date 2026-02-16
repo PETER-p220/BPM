@@ -19,7 +19,6 @@
           </router-link>
         </div>
       </div>
-
       <!-- Filters and Actions Bar -->
       <div class="p-4 mb-6 bg-white rounded-lg shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -37,7 +36,6 @@
               />
             </div>
           </div>
-
           <!-- Action Buttons -->
           <div class="flex gap-3">
             <button 
@@ -247,8 +245,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, computed, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import axios from '@/axios';
 import { useToast } from 'vue-toastification';
 import * as XLSX from '@e965/xlsx';
@@ -256,6 +254,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 const router = useRouter();
+const route = useRoute();
 const toast = useToast();
 
 const contracts = ref([]);
@@ -270,8 +269,13 @@ onMounted(async () => {
 async function fetchContracts() {
   isLoading.value = true;
   try {
-    const response = await axios.get('api/contracts');
-    contracts.value = response.data.data.map(contract => ({
+    console.log('Fetching contracts...');
+    const timestamp = Date.now();
+    const response = await axios.get(`api/contracts?t=${timestamp}`);
+    console.log('API Response:', response.data);
+    console.log('Raw data array:', response.data.data);
+    
+    const processedData = response.data.data.map(contract => ({
       contract_id: contract.contract_id,
       title: contract.title || 'N/A',
       user: contract.user || { name: 'N/A' },
@@ -283,6 +287,17 @@ async function fetchContracts() {
       pdf_file: contract.pdf_file || null,
       created_at: contract.created_at || 'N/A'
     }));
+    
+    console.log('Processed data array:', processedData);
+    console.log('First contract details:', processedData[0]);
+    
+    // Force reactivity update
+    contracts.value = [];
+    contracts.value = processedData;
+    
+    console.log('Final contracts.value:', contracts.value);
+    console.log('Contracts length:', contracts.value.length);
+    
     updateLastUpdated();
     toast.success('Contracts loaded successfully');
   } catch (error) {
@@ -414,6 +429,17 @@ function handleError(error) {
   toast.error(message);
   console.error('Error:', error);
 }
+
+// Watch for route changes to refresh data when returning from edit
+watch(() => route.query.refresh, (newRefreshValue) => {
+  console.log('Watch triggered - refresh value:', newRefreshValue);
+  if (newRefreshValue) {
+    console.log('Refreshing contracts...');
+    fetchContracts();
+    // Clear the refresh parameter
+    router.replace({ query: {} });
+  }
+});
 
 // Export Functions
 function exportToExcel() {

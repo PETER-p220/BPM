@@ -1,40 +1,25 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 px-4 py-8 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl">
-
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-          Engineers With Projects
-        </h1>
-        <p class="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
-          Overview of engineers and their assigned project statistics
-        </p>
-      </div>
-
-      <!-- Search + Export -->
-      <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div class="relative flex-1 max-w-md">
-          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input
-            v-model="filter"
-            type="text"
-            placeholder="Search by engineer name or email..."
-            class="block w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 sm:text-sm"
-          />
+      <div class="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+            Engineers With Projects
+          </h1>
+          <p class="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
+            Overview of engineers and their assigned project statistics
+          </p>
         </div>
 
         <div class="flex flex-wrap gap-3">
           <button
             v-if="filteredUsers.length"
             @click="exportToExcel"
-            class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            :disabled="exporting"
+            class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           >
-            <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Export Excel
@@ -43,9 +28,10 @@
           <button
             v-if="filteredUsers.length"
             @click="exportToPDF"
-            class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            :disabled="exporting"
+            class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           >
-            <svg class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Export PDF
@@ -53,72 +39,82 @@
         </div>
       </div>
 
-      <!-- Main Table Card -->
+      <!-- Search -->
+      <div class="mb-6">
+        <div class="relative max-w-md">
+          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            v-model="filter"
+            type="text"
+            placeholder="Search by name or email..."
+            class="block w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/30 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 sm:text-sm transition-all"
+          />
+          <button
+            v-if="filter"
+            @click="filter = ''"
+            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table / Card -->
       <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-800">
+            <thead class="bg-gray-50 dark:bg-gray-800/50">
               <tr>
-                <th class="w-12 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  No
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Engineer Name
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Email
-                </th>
-                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Total Projects
-                </th>
-                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  On Progress
-                </th>
-                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Completed
-                </th>
-                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Failed
-                </th>
-                <th class="w-32 px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Actions
-                </th>
+                <th class="w-12 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">No</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Engineer</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Email</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Total</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Progress</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Completed</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Failed</th>
+                <th class="w-32 px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
               <tr
                 v-for="(user, index) in paginatedUsers"
                 :key="user.user_id"
-                class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors cursor-pointer"
+                class="group hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors cursor-pointer"
                 @click="openModal(user)"
               >
                 <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                   {{ index + 1 + (currentPage - 1) * itemsPerPage }}
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {{ user.name || 'N/A' }}
+                  {{ user.name || '—' }}
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                  {{ user.email || 'N/A' }}
+                  {{ user.email || '—' }}
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-gray-900 dark:text-gray-100">
                   {{ user.total_projects || 0 }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-center text-sm text-amber-600 dark:text-amber-400">
+                <td class="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-amber-600 dark:text-amber-400">
                   {{ user.on_progress_projects || 0 }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-center text-sm text-green-600 dark:text-green-400">
+                <td class="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-green-600 dark:text-green-400">
                   {{ user.completed_projects || 0 }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-center text-sm text-red-600 dark:text-red-400">
+                <td class="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-red-600 dark:text-red-400">
                   {{ user.failed_projects || 0 }}
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-center text-sm">
                   <button
                     @click.stop="openModal(user)"
-                    class="text-teal-600 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300 font-medium"
+                    class="text-teal-600 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300 font-medium transition-colors"
                   >
-                    View Details
+                    View
                   </button>
                 </td>
               </tr>
@@ -126,9 +122,9 @@
           </table>
         </div>
 
-        <!-- Empty State -->
+        <!-- Empty / Loading State -->
         <div
-          v-if="paginatedUsers.length === 0"
+          v-if="!isLoading && paginatedUsers.length === 0"
           class="py-16 text-center text-gray-500 dark:text-gray-400"
         >
           <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -138,24 +134,29 @@
             {{ filter ? 'No matching engineers found' : 'No engineers with projects yet' }}
           </p>
         </div>
+
+        <div v-else-if="isLoading" class="py-20 text-center">
+          <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-gray-300 border-t-teal-600"></div>
+          <p class="mt-4 text-gray-600 dark:text-gray-400">Loading engineers...</p>
+        </div>
       </div>
 
       <!-- Pagination -->
-      <div v-if="filteredUsers.length > itemsPerPage" class="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
-        <div class="text-sm text-gray-600 dark:text-gray-300">
+      <div v-if="filteredUsers.length > itemsPerPage" class="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
+        <div class="text-sm text-gray-600 dark:text-gray-300 order-2 sm:order-1">
           Showing
           <span class="font-medium text-gray-900 dark:text-gray-100">
-            {{ (currentPage - 1) * itemsPerPage + 1 }}–{{ Math.min(currentPage * itemsPerPage, filteredUsers.length) }}
+            {{ (currentPage - 1) * itemsPerPage + 1 }} – {{ Math.min(currentPage * itemsPerPage, filteredUsers.length) }}
           </span>
           of
           <span class="font-medium text-gray-900 dark:text-gray-100">{{ filteredUsers.length }}</span>
         </div>
 
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 order-1 sm:order-2">
           <button
             :disabled="currentPage === 1"
             @click="changePage(currentPage - 1)"
-            class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+            class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -177,9 +178,9 @@
           </button>
 
           <button
-            :disabled="currentPage * itemsPerPage >= filteredUsers.length"
+            :disabled="currentPage >= totalPages"
             @click="changePage(currentPage + 1)"
-            class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+            class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -188,23 +189,23 @@
         </div>
       </div>
 
-      <!-- User Details Modal -->
+      <!-- Detail Modal -->
       <div
         v-if="selectedUser"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm transition-opacity duration-300"
         @click="closeModal"
       >
         <div
-          class="w-full max-w-4xl rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-900"
+          class="w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900 sm:p-8"
           @click.stop
         >
-          <div class="mb-5 flex items-center justify-between">
+          <div class="mb-6 flex items-center justify-between">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Engineer Details: {{ selectedUser.name || 'N/A' }}
+              Engineer: {{ selectedUser.name || '—' }}
             </h2>
             <button
               @click="closeModal"
-              class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+              class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <svg class="h-6 w-6 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -212,10 +213,10 @@
             </button>
           </div>
 
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <DetailItem label="Name" :value="selectedUser.name" />
             <DetailItem label="Email" :value="selectedUser.email" />
-            <DetailItem label="Status" :value="selectedUser.status" />
+            <DetailItem label="Status" :value="selectedUser.status" badge />
             <DetailItem label="Role" :value="selectedUser.role" />
             <DetailItem label="Department" :value="selectedUser.department" />
             <DetailItem label="Total Projects" :value="selectedUser.total_projects" />
@@ -224,19 +225,19 @@
             <DetailItem label="Failed" :value="selectedUser.failed_projects" color="red" />
           </div>
 
-          <!-- Projects List -->
-          <div class="mt-8">
-            <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <!-- Projects Section -->
+          <div class="mt-10">
+            <h3 class="mb-5 text-lg font-semibold text-gray-900 dark:text-gray-100">
               Assigned Projects ({{ selectedUser.projects?.length || 0 }})
             </h3>
 
-            <div v-if="selectedUser.projects?.length" class="space-y-4">
+            <div v-if="selectedUser.projects?.length" class="space-y-5">
               <div
                 v-for="project in selectedUser.projects"
                 :key="project.project_id"
-                class="rounded-lg border border-gray-200 p-5 dark:border-gray-700"
+                class="rounded-xl border border-gray-200 p-6 dark:border-gray-700 transition-all hover:border-teal-200 dark:hover:border-teal-800/30"
               >
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <DetailItem label="Project Name" :value="project.project_name" />
                   <DetailItem label="Status" :value="project.project_status" badge />
                   <DetailItem label="Start Date" :value="formatDate(project.start_date)" />
@@ -253,15 +254,16 @@
                 </div>
               </div>
             </div>
-            <p v-else class="text-gray-500 dark:text-gray-400 italic">
+
+            <p v-else class="text-center text-gray-500 dark:text-gray-400 italic py-8">
               No projects assigned to this engineer.
             </p>
           </div>
 
-          <div class="mt-8 flex justify-end">
+          <div class="mt-10 flex justify-end">
             <button
               @click="closeModal"
-              class="rounded-lg border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+              class="rounded-lg border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
             >
               Close
             </button>
@@ -276,7 +278,7 @@
 import { ref, onMounted, computed } from 'vue'
 import axios from '@/axios'
 import { useToast } from 'vue-toastification'
-import * as XLSX from '@e965/xlsx'
+import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
@@ -287,6 +289,7 @@ const filter = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 10
 const selectedUser = ref(null)
+const exporting = ref(false)
 
 onMounted(async () => {
   await fetchUsers()
@@ -295,9 +298,7 @@ onMounted(async () => {
 async function fetchUsers() {
   try {
     const { data } = await axios.get('/api/users-with-project-summary')
-    if (data.status) {
-      users.value = data.data
-    }
+    if (data.status) users.value = data.data || []
   } catch (err) {
     toast.error('Failed to load engineer data')
     console.error(err)
@@ -305,11 +306,11 @@ async function fetchUsers() {
 }
 
 const filteredUsers = computed(() => {
-  if (!filter.value) return users.value
+  if (!filter.value.trim()) return users.value
   const term = filter.value.toLowerCase()
-  return users.value.filter(user =>
-    (user.name || '').toLowerCase().includes(term) ||
-    (user.email || '').toLowerCase().includes(term)
+  return users.value.filter(u =>
+    (u.name || '').toLowerCase().includes(term) ||
+    (u.email || '').toLowerCase().includes(term)
   )
 })
 
@@ -318,7 +319,7 @@ const paginatedUsers = computed(() => {
   return filteredUsers.value.slice(start, start + itemsPerPage)
 })
 
-const totalPages = computed(() => Math.ceil(filteredUsers.value.length / itemsPerPage))
+const totalPages = computed(() => Math.ceil(filteredUsers.value.length / itemsPerPage) || 1)
 
 const visiblePages = computed(() => {
   const total = totalPages.value
@@ -342,50 +343,85 @@ function closeModal() {
 }
 
 function formatDate(date) {
-  if (!date) return '—'
-  return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
+  return date ? new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'
 }
 
 function exportToExcel() {
-  const data = filteredUsers.value.map((u, i) => ({
-    No: i + 1,
-    Name: u.name || 'N/A',
-    Email: u.email || 'N/A',
-    Status: u.status || 'N/A',
-    Role: u.role || 'N/A',
-    Department: u.department || 'N/A',
-    'Total Projects': u.total_projects || 0,
-    'On Progress': u.on_progress_projects || 0,
-    Completed: u.completed_projects || 0,
-    Failed: u.failed_projects || 0
-  }))
+  exporting.value = true
+  try {
+    const data = filteredUsers.value.map((u, i) => ({
+      No: i + 1,
+      Name: u.name || '—',
+      Email: u.email || '—',
+      Status: u.status || '—',
+      Role: u.role || '—',
+      Department: u.department || '—',
+      'Total Projects': u.total_projects || 0,
+      'On Progress': u.on_progress_projects || 0,
+      Completed: u.completed_projects || 0,
+      Failed: u.failed_projects || 0
+    }))
 
-  const ws = XLSX.utils.json_to_sheet(data)
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Engineers')
-  XLSX.writeFile(wb, 'engineers_with_projects.xlsx')
+    const ws = XLSX.utils.json_to_sheet(data)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Engineers')
+    XLSX.writeFile(wb, 'engineers_with_projects.xlsx')
+    toast.success('Excel exported')
+  } catch (err) {
+    toast.error('Export failed')
+  } finally {
+    exporting.value = false
+  }
 }
 
 function exportToPDF() {
-  const doc = new jsPDF()
-  autoTable(doc, {
-    head: [['No', 'Name', 'Email', 'Status', 'Role', 'Dept', 'Total', 'Progress', 'Completed', 'Failed']],
-    body: filteredUsers.value.map((u, i) => [
-      i + 1,
-      u.name || 'N/A',
-      u.email || 'N/A',
-      u.status || 'N/A',
-      u.role || 'N/A',
-      u.department || 'N/A',
-      u.total_projects || 0,
-      u.on_progress_projects || 0,
-      u.completed_projects || 0,
-      u.failed_projects || 0
-    ]),
-    styles: { fontSize: 8 },
-    headStyles: { fillColor: [45, 55, 72] }
-  })
-  doc.save('engineers_with_projects.pdf')
+  exporting.value = true
+  try {
+    const doc = new jsPDF()
+    autoTable(doc, {
+      head: [['No', 'Name', 'Email', 'Status', 'Role', 'Dept', 'Total', 'Progress', 'Completed', 'Failed']],
+      body: filteredUsers.value.map((u, i) => [
+        i + 1,
+        u.name || '—',
+        u.email || '—',
+        u.status || '—',
+        u.role || '—',
+        u.department || '—',
+        u.total_projects || 0,
+        u.on_progress_projects || 0,
+        u.completed_projects || 0,
+        u.failed_projects || 0
+      ]),
+      styles: { fontSize: 8, cellPadding: 3 },
+      headStyles: { fillColor: [45, 55, 72], textColor: 255 },
+      margin: { top: 20 }
+    })
+    doc.save('engineers_with_projects.pdf')
+    toast.success('PDF exported')
+  } catch (err) {
+    toast.error('Export failed')
+  } finally {
+    exporting.value = false
+  }
 }
 </script>
 
+<style scoped>
+/* Skeleton shimmer effect */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Modal fade-in */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+</style>

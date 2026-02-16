@@ -353,6 +353,13 @@ const navigations = ref([
         active: false,
       },
       { 
+        icon: "fas fa-edit text-blue-600",
+        label: "Department Updates",
+        name: "DepartmentUpdates",
+        path: "DepartmentUpdates",
+        active: false,
+      },
+      { 
         icon: "fas fa-print text-blue-700",
         label: "Attendance",
         name: "AdminViewAttendance",

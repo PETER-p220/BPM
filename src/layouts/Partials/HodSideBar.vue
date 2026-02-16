@@ -169,6 +169,7 @@ const navigations = ref([
     children: [
       { icon: 'fas fa-plus-circle', label: 'Submit Update', name: 'HodSubmitUpdate' },
       { icon: 'fas fa-list', label: 'View / Manage Updates', name: 'HodViewUpdate' },
+      { icon: 'fas fa-edit', label: 'Department Updates', name: 'DepartmentUpdates' },
     ],
   },
 

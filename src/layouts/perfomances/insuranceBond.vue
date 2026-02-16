@@ -9,7 +9,7 @@
             <p class="text-gray-600">Manage and view all insurance bond records</p>
           </div>
           <router-link to="/create/insurance-bond">
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg shadow-blue-600/30 transition-all duration-200 flex items-center gap-2 hover:scale-105">
+            <button class="bg-slate-800 hover:bg-slate-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg shadow-slate-600/30 transition-all duration-200 flex items-center gap-2 hover:scale-105">
               <i class="fas fa-plus"></i>
               <span>Create Insurance Bond</span>
             </button>
@@ -29,7 +29,7 @@
               type="text"
               v-model="filter"
               placeholder="Search by tender, email, or date..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition"
             />
           </div>
 
@@ -86,14 +86,14 @@
               <tr
                 v-for="(insuranceBond, index) in paginatedData"
                 :key="insuranceBond.insurance_id"
-                class="hover:bg-blue-50/50 transition-colors duration-150"
+                class="hover:bg-slate-50/50 transition-colors duration-150"
               >
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                   {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-800">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div class="w-2 h-2 bg-slate-500 rounded-full"></div>
                     <span class="font-medium">{{ insuranceBond.tender.title }}</span>
                   </div>
                 </td>
@@ -170,7 +170,7 @@
                   :class="[
                     'px-4 py-2 rounded-lg border transition',
                     page === currentPage
-                      ? 'bg-blue-600 text-white border-blue-600 font-semibold'
+                      ? 'bg-slate-800 text-white border-slate-600 font-semibold'
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                   ]"
                 >

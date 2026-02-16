@@ -12,9 +12,9 @@
           <input
             type="text"
             id="titles"
-            v-model="form.titles"
+            v-model="form.titles[0]"
             class="form-input"
-            placeholder="Enter update titles (comma separated)"
+            placeholder="Enter update titles"
             required
           />
         </div>
@@ -29,8 +29,7 @@
             rows="4"
             required
           ></textarea>
-        </div>
-
+        </div>  
         <div class="form-group">
           <label for="priority" class="form-label">Priority</label>
           <select id="priority" v-model="form.priority" class="form-select" required>
@@ -69,7 +68,7 @@
             <span class="file-size">{{ formatFileSize(form.update_file.size) }}</span>
           </div>
         </div>
-
+   
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
             <span v-if="!isSubmitting">Submit Update</span>
@@ -108,9 +107,35 @@ const submitUpdate = async () => {
   
   try {
     const formData = new FormData();
-    formData.append('titles', form.value.titles.join(','));
+    
+    // Debug: Log the form data
+    console.log('Form data before submission:', form.value);
+    
+    // Send titles as array instead of string
+    if (Array.isArray(form.value.titles)) {
+      form.value.titles.forEach((title, index) => {
+        if (title) {
+          formData.append(`titles[${index}]`, title);
+        }
+      });
+    } else {
+      // If titles is somehow not an array, convert it
+      const titlesArray = [form.value.titles];
+      titlesArray.forEach((title, index) => {
+        if (title) {
+          formData.append(`titles[${index}]`, title);
+        }
+      });
+    }
+    
     formData.append('description', form.value.description);
     formData.append('priority', form.value.priority);
+    
+    // Debug: Log FormData contents
+    console.log('FormData contents:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
     
     if (form.value.update_photo) {
       formData.append('update_photo', form.value.update_photo);
@@ -144,11 +169,7 @@ const handlePhotoChange = (event) => {
   const file = event.target.files[0];
   if (file && file.type.startsWith('image/')) {
     form.value.update_photo = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      form.value.update_photo = e.target.result;
-    };
-    reader.readAsDataURL(file);
+    // Only store the file, not the data URL
   }
 };
 

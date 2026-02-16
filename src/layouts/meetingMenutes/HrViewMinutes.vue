@@ -5,37 +5,48 @@
       <p class="page-subtitle">View and manage meeting minutes</p>
     </div>
 
-    <div class="filters-section">
-      <div class="filter-group">
-        <label for="date_filter" class="filter-label">
-          <i class="fas fa-calendar-alt"></i> Date
-        </label>
-        <input
-          type="date"
-          id="date_filter"
-          v-model="filters.date"
-          class="filter-input"
-          @change="fetchMinutes"
-        />
+    <div class="controls-section">
+      <div class="filters-section">
+        <div class="filter-group">
+          <label for="date_filter" class="filter-label">
+            <i class="fas fa-calendar-alt"></i> Date
+          </label>
+          <input
+            type="date"
+            id="date_filter"
+            v-model="filters.date"
+            class="filter-input"
+            @change="fetchMinutes"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label for="search_filter" class="filter-label">
+            <i class="fas fa-search"></i> Search
+          </label>
+          <input
+            type="text"
+            id="search_filter"
+            v-model="filters.search"
+            class="filter-input"
+            placeholder="Title, attendees..."
+            @input="debouncedFetchMinutes"
+          />
+        </div>
       </div>
 
-      <div class="filter-group">
-        <label for="search_filter" class="filter-label">
-          <i class="fas fa-search"></i> Search
-        </label>
-        <input
-          type="text"
-          id="search_filter"
-          v-model="filters.search"
-          class="filter-input"
-          placeholder="Title, attendees..."
-          @input="debouncedFetchMinutes"
-        />
+      <div class="export-buttons">
+        <button class="btn btn-export pdf" @click="exportToPDF">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button class="btn btn-export excel" @click="exportToExcel">
+          <i class="fas fa-file-excel"></i> Export Excel
+        </button>
       </div>
     </div>
 
     <div class="table-container" v-if="!isLoading">
-      <div v-if="minutes.length === 0" class="empty-state">
+      <div v-if="paginatedMinutes.length === 0" class="empty-state">
         <i class="fas fa-file-alt"></i>
         <p>No meeting minutes found.</p>
       </div>
@@ -44,8 +55,14 @@
         <table class="minutes-table">
           <thead>
             <tr>
-              <th>Title</th>
-              <th>Date</th>
+              <th @click="sortByColumn('meeting_title')" class="sortable">
+                Title
+                <i :class="sortIcon('meeting_title')"></i>
+              </th>
+              <th @click="sortByColumn('meeting_date')" class="sortable">
+                Date
+                <i :class="sortIcon('meeting_date')"></i>
+              </th>
               <th>Attendees</th>
               <th>Agenda</th>
               <th>Decisions</th>
@@ -54,7 +71,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="minute in minutes" :key="minute.minutes_id">
+            <tr v-for="minute in paginatedMinutes" :key="minute.minutes_id" class="table-row">
               <td class="title">
                 <strong>{{ minute.meeting_title || 'Untitled' }}</strong>
               </td>
@@ -73,15 +90,18 @@
                 </div>
               </td>
               <td class="text-cell">
-                <div class="truncated">{{ minute.agenda || '-' }}</div>
+                <div class="truncated" :title="minute.agenda">{{ minute.agenda || '-' }}</div>
               </td>
               <td class="text-cell">
-                <div class="truncated">{{ minute.decisions || '-' }}</div>
+                <div class="truncated" :title="minute.decisions">{{ minute.decisions || '-' }}</div>
               </td>
               <td class="text-cell">
-                <div class="truncated">{{ minute.next_meeting || '-' }}</div>
+                <div class="truncated" :title="minute.next_meeting">{{ minute.next_meeting || '-' }}</div>
               </td>
               <td class="actions">
+                <button class="btn btn-view" @click="viewMinute(minute)">
+                  <i class="fas fa-eye"></i>
+                </button>
                 <button class="btn btn-edit" @click="editMinute(minute)">
                   <i class="fas fa-edit"></i>
                 </button>
@@ -92,6 +112,26 @@
             </tr>
           </tbody>
         </table>
+
+        <div class="pagination" v-if="totalPages > 1">
+          <button 
+            class="pagination-btn" 
+            :disabled="currentPage === 1" 
+            @click="currentPage--"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span class="pagination-info">
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+          <button 
+            class="pagination-btn" 
+            :disabled="currentPage === totalPages" 
+            @click="currentPage++"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -107,87 +147,230 @@
       <button class="toast-close" @click="hideToast">×</button>
     </div>
 
-    <!-- Edit Modal and Delete Modal remain the same – omitted here for brevity -->
-    <!-- You can keep them exactly as they were -->
+    <!-- View Modal -->
+    <div v-if="showViewModal" class="modal-overlay" @click="closeViewModal">
+      <div class="modal-content" @click.stop>
+        <h3 class="modal-title">{{ selectedMinute.meeting_title || 'Untitled' }}</h3>
+        <div class="modal-body">
+          <p><strong>Date:</strong> {{ formatDate(selectedMinute.meeting_date) || '-' }}</p>
+          <p><strong>Attendees:</strong></p>
+          <ul>
+            <li v-for="(attendee, i) in getAttendeesList(selectedMinute.attendees)" :key="i">
+              {{ attendee }}
+            </li>
+          </ul>
+          <p><strong>Agenda:</strong> {{ selectedMinute.agenda || '-' }}</p>
+          <p><strong>Discussion:</strong> {{ selectedMinute.discussion || '-' }}</p>
+          <p><strong>Decisions:</strong> {{ selectedMinute.decisions || '-' }}</p>
+          <p><strong>Next Meeting:</strong> {{ selectedMinute.next_meeting || '-' }}</p>
+        </div>
+        <button class="btn btn-close" @click="closeViewModal">Close</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from '@/axios';
-import { debounce } from 'lodash'; // add lodash if not already present, or write simple debounce
+import { ref, computed, onMounted } from 'vue'
+import axios from '@/axios'
+import { debounce } from 'lodash'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import * as XLSX from 'xlsx'
 
-const minutes = ref([]);
-const isLoading = ref(true);
-const toast = ref({ show: false, message: '', type: 'success' });
+const minutes = ref([])
+const isLoading = ref(true)
+const toast = ref({ show: false, message: '', type: 'success' })
 
 const filters = ref({
   date: '',
   search: ''
-});
+})
+
+const sortBy = ref('meeting_date')
+const sortDesc = ref(true)
+const currentPage = ref(1)
+const itemsPerPage = 10
+
+const showViewModal = ref(false)
+const selectedMinute = ref({})
 
 const fetchMinutes = async () => {
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    const params = new URLSearchParams();
-    if (filters.value.date) params.append('date', filters.value.date);
-    if (filters.value.search) params.append('search', filters.value.search);
+    const params = new URLSearchParams()
+    if (filters.value.date) params.append('date', filters.value.date)
+    if (filters.value.search) params.append('search', filters.value.search)
 
-    const response = await axios.get(`/api/meeting-minutes?${params}`);
-    minutes.value = response.data.status === true ? response.data.data || [] : [];
+    const response = await axios.get(`/api/meeting-minutes?${params}`)
+    minutes.value = response.data.status === true ? response.data.data || [] : []
   } catch (error) {
-    console.error('Error fetching minutes:', error);
-    minutes.value = [];
+    console.error('Error fetching minutes:', error)
+    minutes.value = []
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
-// Optional: debounce search to avoid too many requests
-const debouncedFetchMinutes = debounce(fetchMinutes, 500);
+const debouncedFetchMinutes = debounce(fetchMinutes, 500)
+
+const sortedMinutes = computed(() => {
+  const list = [...minutes.value]
+  return list.sort((a, b) => {
+    let valA = a[sortBy.value]
+    let valB = b[sortBy.value]
+
+    if (sortBy.value === 'meeting_date') {
+      valA = valA ? new Date(valA) : null
+      valB = valB ? new Date(valB) : null
+    }
+
+    if (valA === null) return 1
+    if (valB === null) return -1
+    if (valA < valB) return sortDesc.value ? 1 : -1
+    if (valA > valB) return sortDesc.value ? -1 : 1
+    return 0
+  })
+})
+
+const sortByColumn = (column) => {
+  if (sortBy.value === column) {
+    sortDesc.value = !sortDesc.value
+  } else {
+    sortBy.value = column
+    sortDesc.value = false
+  }
+}
+
+const sortIcon = (column) => {
+  if (sortBy.value !== column) return 'fas fa-sort'
+  return sortDesc.value ? 'fas fa-sort-down' : 'fas fa-sort-up'
+}
+
+const totalPages = computed(() => Math.ceil(sortedMinutes.value.length / itemsPerPage) || 1)
+
+const paginatedMinutes = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  return sortedMinutes.value.slice(start, start + itemsPerPage)
+})
 
 const formatDate = (dateString) => {
-  if (!dateString) return '-';
+  if (!dateString) return '-'
   return new Date(dateString).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
-  });
-};
+  })
+}
 
 const getAttendeesList = (str) => {
-  return str ? str.split('\n').map(s => s.trim()).filter(Boolean) : [];
-};
+  return str ? str.split('\n').map(s => s.trim()).filter(Boolean) : []
+}
 
 const showToast = (msg, type = 'success') => {
-  toast.value = { show: true, message: msg, type };
-  setTimeout(hideToast, 3500);
-};
+  toast.value = { show: true, message: msg, type }
+  setTimeout(hideToast, 3500)
+}
 
 const hideToast = () => {
-  toast.value.show = false;
-};
+  toast.value.show = false
+}
 
-const toastIcon = () => {
+const toastIcon = computed(() => {
   const icons = {
     success: 'fas fa-check-circle',
     error: 'fas fa-exclamation-circle',
     warning: 'fas fa-exclamation-triangle'
-  };
-  return icons[toast.value.type] || 'fas fa-info-circle';
-};
+  }
+  return icons[toast.value.type] || 'fas fa-info-circle'
+})
+
+const viewMinute = (minute) => {
+  selectedMinute.value = { ...minute }
+  showViewModal.value = true
+}
+
+const closeViewModal = () => {
+  showViewModal.value = false
+}
 
 const editMinute = (minute) => {
-  // your existing edit logic
-  console.log('Editing:', minute);
-};
+  console.log('Edit:', minute)
+  // → implement your edit logic here
+}
 
 const deleteMinute = (id) => {
-  // your existing delete logic
-  console.log('Deleting:', id);
-};
+  console.log('Delete:', id)
+  // → implement your delete logic here (confirm + API call)
+}
 
-onMounted(fetchMinutes);
+const exportToPDF = () => {
+  const doc = new jsPDF({ orientation: 'landscape' })
+
+  doc.setFontSize(16)
+  doc.text('HR Meeting Minutes', 14, 20)
+
+  const tableData = sortedMinutes.value.map(minute => [
+    minute.meeting_title || 'Untitled',
+    formatDate(minute.meeting_date) || '-',
+    getAttendeesList(minute.attendees).join(', '),
+    minute.agenda || '-',
+    minute.decisions || '-',
+    minute.next_meeting || '-'
+  ])
+
+  autoTable(doc, {
+    head: [['Title', 'Date', 'Attendees', 'Agenda', 'Decisions', 'Next Meeting']],
+    body: tableData,
+    startY: 30,
+    theme: 'striped',
+    styles: {
+      fontSize: 8,
+      cellPadding: 3,
+      overflow: 'linebreak',
+      halign: 'left'
+    },
+    headStyles: {
+      fillColor: [59, 130, 246],
+      textColor: 255,
+      fontStyle: 'bold'
+    },
+    columnStyles: {
+      0: { cellWidth: 45 },  // Title
+      1: { cellWidth: 28 },  // Date
+      2: { cellWidth: 55 },  // Attendees
+      3: { cellWidth: 60 },  // Agenda
+      4: { cellWidth: 60 },  // Decisions
+      5: { cellWidth: 45 }   // Next Meeting
+    },
+    margin: { top: 30, left: 14, right: 14, bottom: 20 }
+  })
+
+  doc.save('hr-meeting-minutes.pdf')
+  showToast('PDF exported successfully', 'success')
+}
+
+const exportToExcel = () => {
+  const data = sortedMinutes.value.map(minute => ({
+    Title: minute.meeting_title || 'Untitled',
+    Date: formatDate(minute.meeting_date) || '-',
+    Attendees: getAttendeesList(minute.attendees).join(', '),
+    Agenda: minute.agenda || '-',
+    Decisions: minute.decisions || '-',
+    'Next Meeting': minute.next_meeting || '-'
+  }))
+
+  const ws = XLSX.utils.json_to_sheet(data)
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Meeting Minutes')
+
+  XLSX.writeFile(wb, 'hr-meeting-minutes.xlsx')
+  showToast('Excel exported successfully', 'success')
+}
+
+onMounted(() => {
+  fetchMinutes()
+})
 </script>
 
 <style scoped>
@@ -213,10 +396,19 @@ onMounted(fetchMinutes);
   font-size: 0.95rem;
 }
 
+.controls-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
 .filters-section {
   display: flex;
   gap: 1.25rem;
-  margin-bottom: 1.5rem;
+  flex: 1;
   flex-wrap: wrap;
 }
 
@@ -246,6 +438,38 @@ onMounted(fetchMinutes);
   border-color: #3b82f6;
   outline: none;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.export-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-export {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.15s;
+}
+
+.btn-export.pdf {
+  background: #dc2626;
+}
+
+.btn-export.pdf:hover {
+  background: #b91c1c;
+}
+
+.btn-export.excel {
+  background: #15803d;
+}
+
+.btn-export.excel:hover {
+  background: #166534;
 }
 
 .table-container {
@@ -281,9 +505,28 @@ onMounted(fetchMinutes);
   letter-spacing: 0.4px;
 }
 
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable i {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
 .minutes-table td {
   color: #475569;
   vertical-align: top;
+}
+
+.table-row:nth-child(even) {
+  background: #f9fafb;
+}
+
+.table-row:hover {
+  background: #f1f5f9;
 }
 
 .title strong {
@@ -317,10 +560,13 @@ onMounted(fetchMinutes);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  cursor: help;
 }
 
 .actions {
   white-space: nowrap;
+  display: flex;
+  gap: 0.4rem;
 }
 
 .btn {
@@ -332,10 +578,18 @@ onMounted(fetchMinutes);
   transition: all 0.15s;
 }
 
+.btn-view {
+  background: #6366f1;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #4f46e5;
+}
+
 .btn-edit {
   background: #3b82f6;
   color: white;
-  margin-right: 0.4rem;
 }
 
 .btn-edit:hover {
@@ -349,6 +603,38 @@ onMounted(fetchMinutes);
 
 .btn-delete:hover {
   background: #dc2626;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pagination-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: #64748b;
+  font-size: 0.9rem;
 }
 
 .empty-state,
@@ -379,7 +665,6 @@ onMounted(fetchMinutes);
   to { transform: rotate(360deg); }
 }
 
-/* Toast – keep your existing toast styles or use this minimal version */
 .toast {
   position: fixed;
   top: 1.5rem;
@@ -397,4 +682,61 @@ onMounted(fetchMinutes);
 
 .toast.success { border-left-color: #10b981; }
 .toast.error { border-left-color: #ef4444; }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+}
+
+.modal-body p {
+  margin-bottom: 1rem;
+  color: #475569;
+}
+
+.modal-body ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.btn-close {
+  background: #6b7280;
+  color: white;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+}
+
+.btn-close:hover {
+  background: #4b5563;
+}
+
+@media (max-width: 1024px) {
+  .controls-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
 </style>

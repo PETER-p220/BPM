@@ -208,31 +208,11 @@ const navigations = ref([
         name: "UserManageUpdates",
         path: "UserUpdates",
         active: false
-      }
-    ]
-  },
-  {
-    icon: "fas fa-calendar-alt text-indigo-500",
-    label: "Meetings",
-    name: "MeetingsManagement",
-    active: false,
-    children: [
-      {
-        icon: "fas fa-plus text-purple-500",
-        label: "Create Attendance",
-        name: "UserCreateAttendance",
-        path: "MyAttendance",
-        active: false
       },
-      {
-        icon: "fas fa-plus text-green-500",
-        label: "Create Minutes",
-        name: "UserCreateMinutes",
-        path: "MeetingMenutes",
-        active: false
-      }
+      
     ]
   },
+  
   {
     icon: 'fas fa-ellipsis-h text-gray-500',
     label: 'Others',

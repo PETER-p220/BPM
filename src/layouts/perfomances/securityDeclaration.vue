@@ -16,12 +16,9 @@
           
           <!-- Create Button & Stats -->
           <div class="flex flex-col sm:flex-row gap-4">
-            <div class="bg-white rounded-lg shadow-md px-6 py-4 border border-gray-200">
-              <p class="text-sm text-gray-500 mb-1">Total Declarations</p>
-              <p class="text-2xl font-bold text-gray-800">{{ filteredData.length }}</p>
-            </div>
+           
             <router-link to="/create/security-declaration">
-              <button class="bg-slate-800 hover:bg-slate-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg shadow-slate-600/30 transition-all duration-200 flex items-center gap-2 hover:scale-105 h-full">
+              <button class="bg-slate-800 hover:bg-slate-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg shadow-slate-600/30 transition-all duration-200 flex items-center gap-2 hover:scale-105 h-14">
                 <i class="fas fa-plus"></i>
                 <span>Create Declaration</span>
               </button>

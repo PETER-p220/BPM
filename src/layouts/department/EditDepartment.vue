@@ -1,116 +1,174 @@
 <template>
-    <div class="py-5 edit-department" style="font-family: 'Trirong', sans-serif; font-size: 17px">
-      <div class="container px-4 mx-auto">
-        <div class="w-full shadow-lg card">
-          <div class="flex items-center justify-between px-4 py-2 text-white card-header" style="background-color: #283747;">
-            <div><i class="mr-2 fa fa-edit"></i> Edit Department</div>
-            <button type="button" class="text-white" @click="closeModal">
-              <i class="fa fa-times"></i>
-            </button>
-          </div>
-  
-          <!-- Edit Department Form -->
-          <div class="p-6 bg-white card-body">
-            <h3 class="mb-4 text-lg font-semibold"></h3>
-  
-            <div v-if="!isLoading" class="grid grid-cols-1 gap-4">
-              <div>
-                <label for="departmentName" class="font-semibold form-label">Department Name</label>
-                <input type="text" id="departmentName" class="w-full px-3 py-2 border rounded form-control" v-model="departmentData.name" />
-              </div>
-              <div class="mt-4">
-                <label for="departmentLocation" class="font-semibold form-label">Location</label>
-                <textarea id="departmentLocation" class="w-full px-3 py-2 border rounded form-control" v-model="departmentData.location" rows="3"></textarea>
-              </div>
+  <div class="edit-department min-h-screen bg-gray-50/40 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl">
+      <!-- Card -->
+      <div class="overflow-hidden rounded-xl border bg-white shadow-sm">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b bg-gray-50/80 px-6 py-4">
+          <div class="flex items-center gap-3">
+            <div class="rounded-lg bg-blue-100 p-2 text-blue-700">
+              <i class="fa fa-building"></i>
             </div>
-  
-            <div class="flex gap-4 mt-4">
-              <button 
-                @click="updateDepartment"
-                class="px-4 py-2 mt-4 text-white rounded hover:bg-blue-700" 
-                style="background-color: #283747;"
-                :disabled="isLoading" 
-              >
-                Save changes
-                <span> <!-- Loading Spinner -->
-                  <span v-if="isLoading" class="flex items-center gap-2 mt-4">
-                    <i class="fa fa-spinner fa-spin"></i> Loading...
-                  </span></span>
-              </button>
-              
-              <span>
-                <router-link to="/departments" class="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
-  <i class="fa fa-times"></i> Cancel
-</router-link>
+            <h2 class="text-xl font-semibold text-gray-900">Edit Department</h2>
+          </div>
 
-              </span>
+          <button
+            type="button"
+            class="rounded-full p-2 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors"
+            @click="closeModal"
+          >
+            <i class="fa fa-times text-xl"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="px-6 py-8">
+          <div v-if="isLoading" class="flex justify-center py-12">
+            <div class="flex items-center gap-3 text-gray-500">
+              <i class="fa fa-spinner fa-spin text-xl"></i>
+              <span>Loading department data...</span>
+            </div>
+          </div>
+
+          <div v-else class="space-y-6">
+            <!-- Name -->
+            <div>
+              <label
+                for="departmentName"
+                class="block text-sm font-medium text-gray-700 mb-1.5"
+              >
+                Department Name
+              </label>
+              <input
+                id="departmentName"
+                v-model="departmentData.name"
+                type="text"
+                class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                placeholder="e.g. Human Resources"
+              />
+            </div>
+
+            <!-- Location -->
+            <div>
+              <label
+                for="departmentLocation"
+                class="block text-sm font-medium text-gray-700 mb-1.5"
+              >
+                Location / Address
+              </label>
+              <textarea
+                id="departmentLocation"
+                v-model="departmentData.location"
+                rows="3"
+                class="block w-full rounded-lg border border-gray-700/20 px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-y transition"
+                placeholder="Building name, floor, room number, etc."
+              />
             </div>
           </div>
         </div>
+
+        <!-- Footer / Actions -->
+        <div class="flex items-center justify-end gap-4 border-t bg-gray-50/60 px-6 py-5">
+          <router-link
+            to="/departments"
+            class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition"
+          >
+            <i class="fa fa-times"></i>
+            Cancel
+          </router-link>
+
+          <button
+            type="button"
+            @click="updateDepartment"
+            :disabled="isLoading || !departmentData.name.trim()"
+            class="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            <span v-if="isLoading">
+              <i class="fa fa-spinner fa-spin"></i>
+              Saving...
+            </span>
+            <span v-else>
+              <i class="fa fa-check"></i>
+              Save Changes
+            </span>
+          </button>
+        </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import axios from '@/axios';
-  import { useRoute, useRouter } from 'vue-router';
-  import { useToast } from 'vue-toastification';
-  
-  const toast = useToast();
-  const route = useRoute();
-  const router = useRouter();
-  
-  const departmentData = ref({ name: '', location: '' });
-  const isLoading = ref(false); // Loading state
-  
-  onMounted(async () => {
-    await fetchDepartmentData();
-  });
-  
-  async function fetchDepartmentData() {
-  isLoading.value = true; // Set loading to true
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import axios from '@/axios'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
+const route = useRoute()
+const router = useRouter()
+
+const departmentData = ref({
+  name: '',
+  location: ''
+})
+
+const isLoading = ref(false)
+
+onMounted(async () => {
+  await fetchDepartmentData()
+})
+
+async function fetchDepartmentData() {
+  isLoading.value = true
   try {
-    const response = await axios.get(`api/departments/${route.params.department_id}`); // Use department_id
-    departmentData.value = response.data.data; // Access the 'data' property from the response and set it to departmentData
-  } catch (error) {
-    handleError(error);
+    const res = await axios.get(`/api/departments/${route.params.department_id}`)
+    departmentData.value = res.data.data || res.data
+  } catch (err) {
+    handleError(err)
   } finally {
-    isLoading.value = false; // Set loading to false after request is complete
+    isLoading.value = false
   }
 }
 
-  
-  async function updateDepartment() {
-    isLoading.value = true; // Set loading to true while updating
-    try {
-      const response = await axios.put(`api/departments/${route.params.department_id}`, departmentData.value); // Use department_id
-      toast.success('Department updated successfully');
-      router.push('/departments');
-    } catch (error) {
-      handleError(error);
-    } finally {
-      isLoading.value = false; // Set loading to false after request is complete
-    }
+async function updateDepartment() {
+  if (!departmentData.value.name.trim()) {
+    toast.warning('Department name is required')
+    return
   }
-  
-  function handleError(error) {
-    let message = 'An unexpected error occurred';
-    if (error.response && error.response.data && error.response.data.message) {
-      message = error.response.data.message;
-    } else if (error.request) {
-      message = 'No response from the server. Please check your connection.';
-    } else {
-      message = error.message;
-    }
-    toast.error(message);
+
+  isLoading.value = true
+  try {
+    await axios.put(`/api/departments/${route.params.department_id}`, departmentData.value)
+    toast.success('Department updated successfully')
+    router.push('/departments')
+  } catch (err) {
+    handleError(err)
+  } finally {
+    isLoading.value = false
   }
-  </script>
-  
-  <style scoped>
-  .edit-department {
-    font-family: 'Euclid Circular', sans-serif;
-    font-size: 12px;
+}
+
+function handleError(error) {
+  let msg = 'Something went wrong'
+  if (error?.response?.data?.message) {
+    msg = error.response.data.message
+  } else if (error?.message) {
+    msg = error.message
   }
-  </style>
-  
+  toast.error(msg)
+}
+
+function closeModal() {
+  router.push('/departments')
+}
+</script>
+
+<style scoped>
+/* Optional: smoother focus ring for accessibility */
+input:focus,
+textarea:focus {
+  outline: none;
+  ring: 2px solid theme('colors.blue.500');
+}
+</style>

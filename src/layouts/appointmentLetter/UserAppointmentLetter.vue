@@ -10,6 +10,66 @@
       </div>
     </div>
 
+    <!-- Status Summary Cards -->
+    <div class="grid grid-cols-1 gap-4 mb-6 md:grid-cols-3">
+      <div class="p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 border-l-4 border-yellow-500 rounded-lg shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-yellow-800">Pending Review</p>
+            <p class="text-2xl font-bold text-yellow-900">{{ statusCounts.pending }}</p>
+            <p class="text-xs text-yellow-700 mt-1">Awaiting your response</p>
+          </div>
+          <div class="p-3 bg-yellow-200 rounded-full">
+            <i class="text-xl text-yellow-700 fas fa-hourglass-half"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-gradient-to-br from-green-50 to-green-100 border-l-4 border-green-500 rounded-lg shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-green-800">Accepted</p>
+            <p class="text-2xl font-bold text-green-900">{{ statusCounts.accepted }}</p>
+            <p class="text-xs text-green-700 mt-1">Successfully accepted</p>
+          </div>
+          <div class="p-3 bg-green-200 rounded-full">
+            <i class="text-xl text-green-700 fas fa-check-circle"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-gradient-to-br from-red-50 to-red-100 border-l-4 border-red-500 rounded-lg shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-red-800">Rejected</p>
+            <p class="text-2xl font-bold text-red-900">{{ statusCounts.rejected }}</p>
+            <p class="text-xs text-red-700 mt-1">Declined offers</p>
+          </div>
+          <div class="p-3 bg-red-200 rounded-full">
+            <i class="text-xl text-red-700 fas fa-times-circle"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert for Pending Letters -->
+    <div 
+      v-if="statusCounts.pending > 0" 
+      class="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg shadow-sm animate-pulse"
+    >
+      <div class="flex items-center gap-3">
+        <i class="text-2xl text-yellow-600 fas fa-exclamation-triangle"></i>
+        <div>
+          <p class="font-semibold text-yellow-900">
+            You have {{ statusCounts.pending }} pending appointment {{ statusCounts.pending === 1 ? 'letter' : 'letters' }}
+          </p>
+          <p class="text-sm text-yellow-800">
+            Please review and respond to maintain your application status.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <!-- Controls -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <input
@@ -20,6 +80,16 @@
       />
 
       <div class="flex flex-wrap gap-3">
+        <select
+          v-model="statusFilter"
+          class="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-sm"
+        >
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="accepted">Accepted</option>
+          <option value="rejected">Rejected</option>
+        </select>
+
         <button
           @click="exportToExcel"
           class="flex items-center gap-2 px-5 py-2.5 bg-white border border-green-600 text-green-700 font-medium rounded-lg hover:bg-green-50 transition-colors shadow-sm"
@@ -50,14 +120,26 @@
     <!-- Table -->
     <div class="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
       <table class="w-full min-w-max divide-y divide-gray-200">
-        <thead class="bg-gray-100">
+        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
           <tr>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">No</th>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tender</th>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Letter File</th>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Issued Date</th>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              #
+            </th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              Tender Details
+            </th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              Letter Document
+            </th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              Timeline
+            </th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 bg-white">
@@ -75,9 +157,10 @@
           <tr v-else-if="paginatedData.length === 0">
             <td colspan="6" class="px-6 py-16 text-center text-gray-500">
               <div class="flex flex-col items-center gap-3">
-                <i class="fas fa-inbox text-4xl text-gray-300"></i>
-                <p>No appointment letters found</p>
-                <p class="text-sm" v-if="filter">Try adjusting your search</p>
+                <i class="fas fa-inbox text-5xl text-gray-300"></i>
+                <p class="text-lg font-medium text-gray-900">No appointment letters found</p>
+                <p class="text-sm" v-if="filter || statusFilter">Try adjusting your search criteria</p>
+                <p class="text-sm text-gray-600" v-else>Your appointment letters will appear here once issued</p>
               </div>
             </td>
           </tr>
@@ -88,35 +171,73 @@
             v-for="(letter, index) in paginatedData"
             :key="letter.letter_id"
             class="hover:bg-gray-50 transition-colors"
+            :class="{ 'bg-yellow-50': letter.status === 'pending' }"
           >
-            <td class="px-6 py-4 text-gray-700 whitespace-nowrap">
+            <td class="px-6 py-4 text-gray-700 whitespace-nowrap font-medium">
               {{ (currentPage - 1) * itemsPerPage + index + 1 }}
             </td>
-            <td class="px-6 py-4 text-gray-900 font-medium">
-              {{ letter.tender?.title || '—' }}
+            
+            <!-- Tender Details -->
+            <td class="px-6 py-4">
+              <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                  <i class="text-blue-500 fas fa-file-contract"></i>
+                  <span class="font-semibold text-gray-900">{{ letter.tender?.title || '—' }}</span>
+                </div>
+                <div class="mt-1 text-xs text-gray-500">
+                  <i class="fas fa-hashtag mr-1"></i>
+                  ID: {{ letter.tender?.tender_id || 'N/A' }}
+                </div>
+                <div v-if="letter.tender?.location" class="mt-1 text-xs text-gray-500">
+                  <i class="fas fa-map-marker-alt mr-1"></i>
+                  {{ letter.tender.location }}
+                </div>
+              </div>
             </td>
+            
+            <!-- Status -->
             <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                :class="[
-                  'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold',
-                  letter.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
-                  letter.status === 'accepted' ? 'bg-green-100 text-green-800 border border-green-200' :
-                  letter.status === 'rejected' ? 'bg-red-100 text-red-800 border border-red-200' :
-                  'bg-gray-100 text-gray-800 border border-gray-200'
-                ]"
-              >
-                <i 
+              <div class="flex flex-col gap-2">
+                <!-- Status Badge -->
+                <span
                   :class="[
-                    'fas fa-circle text-xs mr-1.5',
-                    letter.status === 'pending' ? 'text-yellow-600' :
-                    letter.status === 'accepted' ? 'text-green-600' :
-                    letter.status === 'rejected' ? 'text-red-600' :
-                    'text-gray-600'
+                    'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold w-fit',
+                    letter.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200 animate-pulse' :
+                    letter.status === 'accepted' ? 'bg-green-100 text-green-800 border border-green-200' :
+                    letter.status === 'rejected' ? 'bg-red-100 text-red-800 border border-red-200' :
+                    'bg-gray-100 text-gray-800 border border-gray-200'
                   ]"
-                ></i>
-                {{ letter.status ? letter.status.charAt(0).toUpperCase() + letter.status.slice(1) : 'N/A' }}
-              </span>
+                >
+                  <i 
+                    :class="[
+                      'fas text-xs mr-1.5',
+                      letter.status === 'pending' ? 'fa-clock text-yellow-600' :
+                      letter.status === 'accepted' ? 'fa-check-circle text-green-600' :
+                      letter.status === 'rejected' ? 'fa-times-circle text-red-600' :
+                      'fa-circle text-gray-600'
+                    ]"
+                  ></i>
+                  {{ letter.status ? letter.status.charAt(0).toUpperCase() + letter.status.slice(1) : 'N/A' }}
+                </span>
+
+                <!-- Action Required Badge for Pending -->
+                <span 
+                  v-if="letter.status === 'pending'" 
+                  class="inline-flex items-center px-2 py-1 text-xs font-medium text-orange-800 bg-orange-100 border border-orange-200 rounded-full w-fit animate-bounce"
+                >
+                  <i class="mr-1 fas fa-exclamation-circle"></i>
+                  Action Required
+                </span>
+
+                <!-- Status Updated Time -->
+                <div v-if="letter.status_updated_at && letter.status !== 'pending'" class="text-xs text-gray-500">
+                  <i class="mr-1 fas fa-history"></i>
+                  {{ formatRelativeTime(letter.status_updated_at) }}
+                </div>
+              </div>
             </td>
+            
+            <!-- Letter Document -->
             <td class="px-6 py-4">
               <button
                 v-if="letter.letter_file"
@@ -126,31 +247,76 @@
                 <i class="fas fa-download"></i>
                 Download PDF
               </button>
-              <span v-else class="text-gray-400 text-sm">No file</span>
+              <span v-else class="text-gray-400 text-sm flex items-center gap-2">
+                <i class="fas fa-file-slash"></i>
+                No file available
+              </span>
             </td>
-            <td class="px-6 py-4 text-gray-600 whitespace-nowrap">
-              <div class="flex flex-col">
-                <span class="font-medium">{{ formatDate(letter.created_at) }}</span>
-                <span class="text-xs text-gray-500">{{ formatTime(letter.created_at) }}</span>
+            
+            <!-- Timeline -->
+            <td class="px-6 py-4">
+              <div class="flex flex-col gap-1.5 text-xs">
+                <!-- Issued Date -->
+                <div class="flex items-center text-gray-600">
+                  <i class="mr-2 fas fa-calendar-plus text-blue-500 w-4"></i>
+                  <div>
+                    <span class="font-medium text-gray-700">Issued:</span>
+                    <span class="ml-1">{{ formatDate(letter.created_at) }}</span>
+                    <div class="text-gray-500">{{ formatTime(letter.created_at) }}</div>
+                  </div>
+                </div>
+                
+                <!-- Response Date (if accepted or rejected) -->
+                <div 
+                  v-if="letter.status_updated_at && letter.status !== 'pending'" 
+                  class="flex items-center text-gray-600"
+                >
+                  <i 
+                    :class="[
+                      'mr-2 fas w-4',
+                      letter.status === 'accepted' ? 'fa-check text-green-500' : 'fa-times text-red-500'
+                    ]"
+                  ></i>
+                  <div>
+                    <span class="font-medium text-gray-700">
+                      {{ letter.status === 'accepted' ? 'Accepted:' : 'Rejected:' }}
+                    </span>
+                    <span class="ml-1">{{ formatDate(letter.status_updated_at) }}</span>
+                    <div class="text-gray-500">{{ formatTime(letter.status_updated_at) }}</div>
+                  </div>
+                </div>
+                
+                <!-- Pending Indicator -->
+                <div v-if="letter.status === 'pending'" class="flex items-center text-yellow-600 font-medium">
+                  <i class="mr-2 fas fa-hourglass-half w-4"></i>
+                  <span>Awaiting your response</span>
+                </div>
               </div>
             </td>
+            
+            <!-- Actions -->
             <td class="px-6 py-4">
-              <router-link
-                v-if="letter.status === 'pending'"
-                :to="{ name: 'AcceptAppointmentLetter', params: { letter_id: letter.letter_id } }"
-                class="inline-flex items-center justify-center px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-              >
-                <i class="fas fa-check mr-1.5"></i>
-                Accept
-              </router-link>
-              <button
-                v-else
-                @click="viewDetails(letter)"
-                class="inline-flex items-center justify-center px-5 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <i class="fas fa-eye mr-1.5"></i>
-                View
-              </button>
+              <div class="flex items-center justify-center gap-2">
+                <!-- Accept Button for Pending -->
+                <router-link
+                  v-if="letter.status === 'pending'"
+                  :to="{ name: 'AcceptAppointmentLetter', params: { letter_id: letter.letter_id } }"
+                  class="inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                  <i class="fas fa-check-circle mr-2"></i>
+                  Review & Accept
+                </router-link>
+                
+                <!-- View Details Button for Non-Pending -->
+                <button
+                  v-else
+                  @click="viewDetails(letter)"
+                  class="inline-flex items-center justify-center px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <i class="fas fa-eye mr-2"></i>
+                  View Details
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -211,14 +377,18 @@
     </div>
 
     <!-- Last Updated -->
-    <div v-if="lastUpdated" class="text-xs text-center text-gray-500 pt-2">
-      Last updated: {{ lastUpdated }}
+    <div v-if="lastUpdated" class="flex items-center justify-between text-xs text-gray-500 pt-2">
+      <span>Last updated: {{ lastUpdated }}</span>
+      <span class="flex items-center gap-2">
+        <i class="fas fa-circle text-green-500 animate-pulse"></i>
+        Auto-refresh enabled
+      </span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onActivated } from 'vue';
+import { ref, onMounted, computed, onActivated, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from '@/axios';
 import { useToast } from 'vue-toastification';
@@ -232,32 +402,73 @@ const toast = useToast();
 
 const appointmentLetters = ref([]);
 const filter = ref('');
+const statusFilter = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 10;
 const isLoading = ref(false);
 const lastUpdated = ref('');
+let refreshInterval = null;
+
+// Status counts for dashboard
+const statusCounts = computed(() => {
+  return {
+    pending: appointmentLetters.value.filter(l => l.status === 'pending').length,
+    accepted: appointmentLetters.value.filter(l => l.status === 'accepted').length,
+    rejected: appointmentLetters.value.filter(l => l.status === 'rejected').length
+  };
+});
 
 onMounted(async () => {
   await fetchData();
+  startAutoRefresh();
 });
 
-// Refresh data when component is activated (when navigating back)
 onActivated(async () => {
   await fetchData();
+  if (!refreshInterval) {
+    startAutoRefresh();
+  }
 });
 
-async function fetchData() {
-  isLoading.value = true;
+onUnmounted(() => {
+  stopAutoRefresh();
+});
+
+function startAutoRefresh() {
+  // Refresh every 30 seconds
+  refreshInterval = setInterval(async () => {
+    await fetchData(true); // Silent refresh
+  }, 30000);
+}
+
+function stopAutoRefresh() {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+  }
+}
+
+async function fetchData(silent = false) {
+  if (!silent) {
+    isLoading.value = true;
+  }
+  
   try {
-    // Fetch only current user's appointment letters using correct route name
     const response = await axios.get('api/logged-user-appointment-letters');
     appointmentLetters.value = response.data.data || [];
     updateLastUpdated();
-    toast.success('Your appointment letters loaded successfully');
+    
+    if (!silent) {
+      toast.success('Your appointment letters loaded successfully');
+    }
   } catch (error) {
-    handleError(error);
+    if (!silent) {
+      handleError(error);
+    }
   } finally {
-    isLoading.value = false;
+    if (!silent) {
+      isLoading.value = false;
+    }
   }
 }
 
@@ -270,6 +481,25 @@ function updateLastUpdated() {
     hour: '2-digit',
     minute: '2-digit'
   });
+}
+
+// Format relative time
+function formatRelativeTime(dateString) {
+  if (!dateString) return '';
+  
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  
+  return formatDate(dateString);
 }
 
 async function downloadLetterFile(fileUrl) {
@@ -321,15 +551,26 @@ function formatTime(dateString) {
 }
 
 const filteredData = computed(() => {
-  if (!filter.value.trim()) return appointmentLetters.value;
-
-  const search = filter.value.toLowerCase().trim();
-  return appointmentLetters.value.filter((entry) => {
-    return (
-      entry.tender?.title?.toLowerCase().includes(search) ||
-      entry.status?.toLowerCase().includes(search)
-    );
-  });
+  let result = appointmentLetters.value;
+  
+  // Apply text filter
+  if (filter.value.trim()) {
+    const search = filter.value.toLowerCase().trim();
+    result = result.filter((entry) => {
+      return (
+        entry.tender?.title?.toLowerCase().includes(search) ||
+        entry.status?.toLowerCase().includes(search) ||
+        entry.tender?.tender_id?.toLowerCase().includes(search)
+      );
+    });
+  }
+  
+  // Apply status filter
+  if (statusFilter.value) {
+    result = result.filter(entry => entry.status === statusFilter.value);
+  }
+  
+  return result;
 });
 
 const paginatedData = computed(() => {
@@ -386,10 +627,12 @@ function exportToExcel() {
   try {
     const data = filteredData.value.map((entry, index) => ({
       No: index + 1,
-      Tender: entry.tender?.title || 'N/A',
+      'Tender Title': entry.tender?.title || 'N/A',
+      'Tender ID': entry.tender?.tender_id || 'N/A',
       Status: entry.status || 'N/A',
-      LetterFile: entry.letter_file ? 'Available' : 'N/A',
-      IssuedDate: formatDate(entry.created_at) || 'N/A',
+      'Letter File': entry.letter_file ? 'Available' : 'N/A',
+      'Issued Date': formatDate(entry.created_at) || 'N/A',
+      'Status Updated': formatDate(entry.status_updated_at) || 'N/A',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -426,6 +669,7 @@ function exportToPDF() {
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+    doc.text(`Total: ${filteredData.value.length} | Pending: ${statusCounts.value.pending} | Accepted: ${statusCounts.value.accepted} | Rejected: ${statusCounts.value.rejected}`, 14, 33);
 
     const tableData = filteredData.value.map((entry, index) => [
       index + 1,
@@ -433,13 +677,14 @@ function exportToPDF() {
       entry.status || 'N/A',
       entry.letter_file ? 'Available' : 'N/A',
       formatDate(entry.created_at) || 'N/A',
+      formatDate(entry.status_updated_at) || 'N/A'
     ]);
 
     autoTable(doc, {
-      head: [['No', 'Tender Title', 'Status', 'Letter File', 'Issued Date']],
+      head: [['No', 'Tender Title', 'Status', 'Letter', 'Issued', 'Updated']],
       body: tableData,
-      startY: 35,
-      styles: { fontSize: 10 },
+      startY: 38,
+      styles: { fontSize: 9 },
       headStyles: { fillColor: [34, 153, 84] },
       alternateRowStyles: { fillColor: [240, 244, 248] },
     });
@@ -454,12 +699,39 @@ function exportToPDF() {
 
 <style scoped>
 /* Smooth transitions */
-button, a, input {
+button, a, input, select {
   transition: all 0.2s ease-in-out;
 }
 
 /* Table row hover effect */
 tbody tr {
   transition: background-color 0.15s ease;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s ease-in-out infinite;
 }
 </style>

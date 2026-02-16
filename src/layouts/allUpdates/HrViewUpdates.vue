@@ -1,298 +1,375 @@
 <template>
-  <div class="view-updates-container">
-    <div class="page-header">
-      <h2 class="page-title">HR Updates</h2>
-      <p class="page-subtitle">View and manage HR updates</p>
-    </div>
-
-    <div class="updates-list" v-if="!isLoading">
-      <div v-if="updates.length === 0" class="empty-state">
-        <i class="fas fa-inbox"></i>
-        <p>No updates found</p>
-      </div>
-      
-      <div v-else class="updates-grid">
-        <div
-          v-for="update in updates"
-          :key="update.id"
-          class="update-card"
-        >
-          <div class="update-header">
-            <h3 class="update-title">{{ update.title }}</h3>
-            <span class="update-priority" :class="getPriorityClass(update.priority)">
-              {{ update.priority }}
-            </span>
+  <div class="min-h-screen bg-gray-50" style="font-family: 'cygre', sans-serif">
+    <!-- Header Section -->
+    <div class="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+      <div class="container mx-auto px-4 py-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Project Updates</h1>
+            <p class="text-sm text-gray-600 mt-1">View and manage all project updates</p>
           </div>
-          
-          <div class="update-content">
-            <p class="update-description">{{ update.description }}</p>
-            <div class="update-meta">
-              <span class="update-date">
-                <i class="fas fa-calendar"></i>
-                {{ formatDate(update.created_at) }}
-              </span>
-              <span class="update-author">
-                <i class="fas fa-user"></i>
-                {{ update.author || 'HR Admin' }}
-              </span>
-            </div>
-          </div>
-          
-          <div class="update-actions">
-            <button class="btn btn-sm btn-primary" @click="editUpdate(update)">
-              <i class="fas fa-edit"></i>
-              Edit
+          <router-link to="/hr-createupdate">
+            <button 
+              class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md"
+              style="background-color: #2e4053"
+            >
+              <i class="fas fa-plus"></i>
+              <span>Submit Update</span>
             </button>
-            <button class="btn btn-sm btn-danger" @click="deleteUpdate(update.id)">
-              <i class="fas fa-trash"></i>
-              Delete
-            </button>
-          </div>
+          </router-link>
         </div>
       </div>
     </div>
 
-    <div v-else class="loading-state">
-      <div class="loading-spinner"></div>
-      <p>Loading updates...</p>
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex items-center justify-center py-20">
+        <div class="text-center">
+          <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+          <p class="text-gray-600">Loading updates...</p>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="updates.length === 0" class="flex items-center justify-center py-20">
+        <div class="text-center max-w-md">
+          <div class="mb-4">
+            <i class="fas fa-inbox text-6xl text-gray-300"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">No Updates Yet</h3>
+          <p class="text-gray-600 mb-6">Start by creating your first project update</p>
+          <router-link to="/hr-createupdate">
+            <button 
+              class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-all font-medium"
+              style="background-color: #2e4053"
+            >
+              <i class="fas fa-plus"></i>
+              <span>Create First Update</span>
+            </button>
+          </router-link>
+        </div>
+      </div>
+
+      <!-- Updates Grid -->
+      <div v-else>
+        <!-- Stats Summary -->
+        <div class="mb-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
+                <i class="fas fa-clipboard-list text-blue-600 text-xl"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Total Updates</p>
+                <p class="text-2xl font-bold text-gray-900">{{ updates.length }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
+                <i class="fas fa-file-alt text-green-600 text-xl"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">With Files</p>
+                <p class="text-2xl font-bold text-gray-900">{{ updatesWithFiles }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
+                <i class="fas fa-image text-purple-600 text-xl"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">With Images</p>
+                <p class="text-2xl font-bold text-gray-900">{{ updatesWithImages }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg">
+                <i class="fas fa-clock text-orange-600 text-xl"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Latest Update</p>
+                <p class="text-sm font-semibold text-gray-900">{{ formatRelativeDate(latestUpdate) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Updates Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div
+            v-for="(update, index) in updates"
+            :key="index"
+            class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer group"
+            @click="viewUpdateDetails(update.chat_id)"
+          >
+            <!-- Image Section -->
+            <div class="relative h-48 bg-gray-100 overflow-hidden">
+              <img 
+                v-if="update.update_photo" 
+                :src="update.update_photo" 
+                class="object-cover w-full h-full transition-transform group-hover:scale-105" 
+                alt="Update Image"
+                @error="handleImageError"
+              />
+              <div v-else class="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200">
+                <i class="fas fa-file-alt text-4xl text-gray-400"></i>
+              </div>
+              
+              <!-- Overlay badges -->
+              <div class="absolute top-3 right-3 flex gap-2">
+                <span v-if="update.update_file" class="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700 flex items-center gap-1">
+                  <i class="fas fa-paperclip text-gray-500"></i>
+                  File
+                </span>
+              </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="p-5">
+              <!-- Title -->
+              <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors">
+                {{ update.title }}
+              </h3>
+
+              <!-- User Info -->
+              <div class="flex items-center gap-2 mb-3 text-sm text-gray-600">
+                <div class="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
+                  <i class="fas fa-user text-blue-600 text-xs"></i>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-900">{{ update.user_name }}</p>
+                  <p class="text-xs text-gray-500">{{ formatDate(update.created_at) }}</p>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <p 
+                v-if="update.description" 
+                class="text-sm text-gray-600 mb-4 line-clamp-3"
+              >
+                {{ update.description }}
+              </p>
+              <p v-else class="text-sm text-gray-400 italic mb-4">
+                No description available
+              </p>
+
+              <!-- Action Buttons -->
+              <div class="flex gap-2 pt-4 border-t border-gray-100">
+                <button
+                  @click.stop="viewUpdateDetails(update.chat_id)"
+                  class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 text-white rounded-lg transition-all font-medium text-sm"
+                  style="background-color: #2e4053"
+                >
+                  <i class="fas fa-eye"></i>
+                  <span>View Details</span>
+                </button>
+                
+                <button 
+                  v-if="update.update_file"
+                  @click.stop="downloadFile(update.update_file, getFileName(update.update_file))"
+                  class="inline-flex items-center justify-center px-4 py-2 bg-teal-50 text-teal-700 rounded-lg hover:bg-teal-100 transition-all font-medium text-sm"
+                  title="Download file"
+                >
+                  <i class="fas fa-download"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from '@/axios';
+import { useToast } from 'vue-toastification';
 
+const router = useRouter();
+const toast = useToast();
 const updates = ref([]);
 const isLoading = ref(true);
 
-const fetchUpdates = async () => {
-  isLoading.value = true;
-  
-  try {
-    const response = await axios.get('/api/updates');
-    updates.value = response.data.data || [];
-  } catch (error) {
-    console.error('Error fetching updates:', error);
-    updates.value = [];
-  } finally {
-    isLoading.value = false;        
-  }
-};
-
-const getPriorityClass = (priority) => {
-  const classes = {
-    low: 'priority-low',
-    medium: 'priority-medium',
-    high: 'priority-high'
-  };
-  return classes[priority] || 'priority-medium';
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString();
-};
-
-const editUpdate = (update) => {
-  // Navigate to edit page or open modal
-  console.log('Edit update:', update);
-};
-
-const deleteUpdate = async (id) => {
-  if (confirm('Are you sure you want to delete this update?')) {
-    try {
-      await axios.delete(`/api/updates/${id}`);
-      updates.value = updates.value.filter(u => u.id !== id);
-      alert('Update deleted successfully');
-    } catch (error) {
-      console.error('Error deleting update:', error);
-      alert('Failed to delete update');
-    }
-  }
-};
-
-onMounted(() => {
-  fetchUpdates();
+// Computed statistics
+const updatesWithFiles = computed(() => {
+  return updates.value.filter(update => update.update_file).length;
 });
+
+const updatesWithImages = computed(() => {
+  return updates.value.filter(update => update.update_photo).length;
+});
+
+const latestUpdate = computed(() => {
+  if (updates.value.length === 0) return null;
+  return updates.value.reduce((latest, update) => {
+    return new Date(update.created_at) > new Date(latest.created_at) ? update : latest;
+  }).created_at;
+});
+
+// Fetch data when component is mounted
+onMounted(async () => {
+  await fetchUpdates();
+});
+
+// Fetch project updates for current user only
+async function fetchUpdates() {
+  isLoading.value = true;
+  try {
+    const response = await axios.get('api/my/updates');
+    // Sort by created_at descending (newest first)
+    updates.value = response.data.data
+      .map(update => ({
+        chat_id: update.chat_id,
+        title: update.title,
+        user_name: update.user.name,
+        created_at: update.created_at,
+        update_photo: update.update_photo,
+        description: update.description,
+        update_file: update.update_file,
+      }))
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  } catch (error) {
+    handleError(error);
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+// Navigate to update details page with chat_id
+function viewUpdateDetails(chat_id) {
+  router.push({ name: 'EditUserUpdate', params: { chat_id } });
+}
+
+// Download file function
+async function downloadFile(fileUrl, fileName) {
+  try {
+    // Create a download link
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileName || 'download';
+    link.target = '_blank';
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('Download started');
+  } catch (error) {
+    console.error('Download error:', error);
+    toast.error('Failed to download file');
+  }
+}
+
+// Extract filename from URL
+function getFileName(fileUrl) {
+  if (!fileUrl) return 'download';
+  
+  // Extract filename from URL path
+  const urlParts = fileUrl.split('/');
+  const fileName = urlParts[urlParts.length - 1];
+  
+  // Remove any query parameters
+  return fileName.split('?')[0];
+}
+
+// Handle image loading errors
+function handleImageError(event) {
+  event.target.style.display = 'none';
+}
+
+// Handle errors and display as toast messages
+function handleError(error) {
+  let message = 'An unexpected error occurred';
+  if (error.response) {
+    message = error.response.data.message || error.response.statusText;
+  } else if (error.request) {
+    message = 'No response from the server. Please check your connection.';
+  } else {
+    message = error.message;
+  }
+  toast.error(message);
+}
+
+// Format date to a readable format
+function formatDate(date) {
+  const d = new Date(date);
+  const options = { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  return d.toLocaleDateString('en-US', options);
+}
+
+// Format relative date for latest update
+function formatRelativeDate(date) {
+  if (!date) return 'N/A';
+  
+  const now = new Date();
+  const updateDate = new Date(date);
+  const diffTime = Math.abs(now - updateDate);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+  const diffMinutes = Math.floor(diffTime / (1000 * 60));
+  
+  if (diffMinutes < 60) {
+    return `${diffMinutes}m ago`;
+  } else if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  } else if (diffDays < 7) {
+    return `${diffDays}d ago`;
+  } else {
+    return formatDate(date);
+  }
+}
 </script>
 
 <style scoped>
-.view-updates-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+/* Line clamp utility for text truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.page-header {
-  text-align: center;
-  margin-bottom: 2rem;
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 
-.page-subtitle {
-  color: #6b7280;
-  font-size: 0.875rem;
+/* Hover effects */
+.group:hover {
+  transform: translateY(-4px);
 }
 
-.updates-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-}
-
-.update-card {
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.update-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.update-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.update-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-}
-
-.update-priority {
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.priority-low {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.priority-medium {
-  background: #fed7aa;
-  color: #d97706;
-}
-
-.priority-high {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.update-content {
-  margin-bottom: 1rem;
-}
-
-.update-description {
-  color: #4b5563;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-}
-
-.update-meta {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.update-date,
-.update-author {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.update-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-sm {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
-}
-
-.btn-primary {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #2563eb;
-}
-
-.btn-danger {
-  background: #ef4444;
-  color: white;
-}
-
-.btn-danger:hover {
-  background: #dc2626;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 3rem;
-  color: #6b7280;
-}
-
-.empty-state i {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.loading-state {
-  text-align: center;
-  padding: 3rem;
-  color: #6b7280;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #f3f4f6;
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Sticky header */
+.sticky {
+  position: sticky;
+  top: 0;
 }
 </style>

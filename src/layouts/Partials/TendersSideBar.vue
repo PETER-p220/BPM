@@ -141,20 +141,37 @@ const navigations = ref([
         path: 'insuranceBond',
       },
       {
-        icon: 'fas fa-lock',
+        icon: 'fas fa-lock', 
         label: 'Security Declarations',
         name: 'securityDeclaration',
         path: 'securityDeclaration',
       },
     ],
   },
-
-  {
-    icon: 'fas fa-ellipsis-h',
-    label: 'Others',
-    name: 'Others',
-    path: 'Others',
+{
+    icon: "fas fa-upload",
+    label: "Updates",
+    name: "UpdatesManagement",
+    active: false,
+    children: [
+      {
+        icon: "fas fa-plus-circle",
+        label: "Submit Update",
+        name: "TenderUserCreateUpdate",
+        path: "TenderUserCreateUpdate",
+        active: false
+      },
+      {
+        icon: "fas fa-list",
+        label: "Manage Updates",
+        name: "TenderUserViewUpdates",
+        path: "TenderUserViewUpdates",
+        active: false
+      },
+     
+    ]
   },
+  
 ]);
 
 const clickNavigation = (item, index) => {

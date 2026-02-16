@@ -3,7 +3,7 @@
     <!-- Compact Header -->
     <div class="dashboard-header">
       <div class="header-content">
-        <h1 class="dashboard-title">Admin Dashboard</h1>
+        <h1 class="dashboard-title">Hr Dashboard</h1>
         <p class="dashboard-subtitle">System-wide metrics and overview</p>
       </div>
       <div class="header-stats">
@@ -109,7 +109,7 @@
               <i class="fas fa-inbox"></i>
             </div>
             <div class="header-text">
-              <h3 class="card-title">Requests</h3>
+              <h3 class="card-title">Requests </h3>
               <span class="card-badge">{{ totalRequests }} Total</span>
             </div>
           </div>

@@ -1,174 +1,235 @@
 <template>
-    <div class="container p-6 mx-auto" style="font-family: 'cygre', serif; font-size: 17px">
-      <h1 class="mb-8 text-3xl font-semibold text-center">Update Details</h1>
-      <div v-if="chat" class="p-6 bg-white rounded-lg shadow-lg">
-        <div class="mb-8">
-          <div v-if="chat.update_photo" class="relative w-full mb-6 overflow-hidden rounded-lg h-80">
-            <img
-              :src="chat.update_photo"
-              alt="Chat Image"
-              class="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-            />
+  <div class="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-3xl font-bold text-gray-900 mb-10 text-center">
+        Update Details
+      </h1>
+
+      <div
+        v-if="chat"
+        class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200"
+      >
+        <!-- Image Section -->
+        <div class="relative">
+          <img
+            v-if="chat.update_photo"
+            :src="chat.update_photo"
+            alt="Update photo"
+            class="w-full h-80 object-cover transition-transform duration-500 hover:scale-[1.02]"
+          />
+          <div
+            v-else
+            class="h-80 bg-gray-100 flex items-center justify-center text-gray-400 text-lg"
+          >
+            No image available
           </div>
-          <p v-else class="text-center text-gray-500">No image available</p>
         </div>
-        <div class="mb-6">
-          <h2 class="mb-4 text-2xl font-medium text-gray-800"><strong class="font-semibold">Title:</strong>{{ chat.title }}</h2>
-          <p><strong class="font-semibold">Created At:</strong> {{ new Date(chat.created_at).toLocaleString() }}</p>
-          <p class="mt-4 text-gray-700"><strong class="font-semibold">Description:</strong> {{ chat.description }}</p>
+
+        <!-- Content -->
+        <div class="p-8">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+            {{ chat.title }}
+          </h2>
+
+          <div class="space-y-4 text-gray-700">
+            <p class="text-sm text-gray-500">
+              <span class="font-medium text-gray-700">Created:</span>
+              {{ new Date(chat.created_at).toLocaleString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              }) }}
+            </p>
+
+            <div>
+              <h3 class="font-medium text-gray-800 mb-2">Description</h3>
+              <p class="whitespace-pre-line leading-relaxed">
+                {{ chat.description || 'No description provided.' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <div class="mt-8 flex justify-end">
+            <button
+              @click="showModal = true"
+              class="inline-flex items-center px-6 py-3 bg-indigo-700 text-white font-medium rounded-lg shadow-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+              Edit Update
+            </button>
+          </div>
         </div>
-  
-        <!-- Edit Button -->
-        <button
-          class="px-4 py-2 text-white rounded hover:bg-blue-600"
-          @click="showModal = true"
-          style="background-color: #283747;">
-          Edit Update
-        </button>
       </div>
-      <div v-else class="text-center">
-        <p>Loading...</p>
+
+      <div v-else class="text-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+        <p class="text-gray-600 text-lg">Loading update details...</p>
       </div>
-  
-      <!-- Modal -->
+
+      <!-- Edit Modal -->
       <div
         v-if="showModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 backdrop-blur-sm"
       >
-        <div class="p-6 bg-white rounded-lg shadow-lg w-[500px]">
-          <h2 class="mb-4 text-xl font-semibold">Edit Update</h2>
-          <form @submit.prevent="saveChanges">
-            <div class="mb-4">
-              <label for="title" class="block mb-1 font-medium">Title</label>
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+          <div class="px-8 pt-8 pb-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900">
+              Edit Update
+            </h2>
+          </div>
+
+          <form @submit.prevent="saveChanges" class="p-8 space-y-6">
+            <div>
+              <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+                Title
+              </label>
               <input
                 v-model="form.title"
                 type="text"
                 id="title"
-                class="w-full px-3 py-2 border rounded"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                required
               />
             </div>
-  
-            <div class="mb-4">
-              <label for="description" class="block mb-1 font-medium">Description</label>
+
+            <div>
+              <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
               <textarea
                 v-model="form.description"
                 id="description"
-                class="w-full px-3 py-2 border rounded"
+                rows="6"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-y"
               ></textarea>
             </div>
-  
-            <!-- Flex container for buttons -->
-            <div class="flex justify-between mt-4">
+
+            <div class="flex justify-end gap-4 pt-4 border-t border-gray-200">
               <button
                 type="button"
-                class="px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
                 @click="cancelEdit"
+                class="px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
               >
                 Cancel
               </button>
+
               <button
                 type="submit"
-                class="px-4 py-2 text-white rounded hover:bg-blue-600"
-                style="background-color: #283747;">
-                Save Changes
-                <span v-if="isLoading" class="ml-2 spinner-border spinner-border-sm">
-                  <svg class="w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v2a6 6 0 100 12v2a8 8 0 01-8-8z"></path>
-                  </svg>
-                  Loading...
-                </span>
+                :disabled="isLoading"
+                class="inline-flex items-center px-6 py-3 bg-indigo-700 text-white font-medium rounded-lg shadow-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <svg
+                  v-if="isLoading"
+                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span v-if="isLoading">Saving...</span>
+                <span v-else>Save Changes</span>
               </button>
             </div>
           </form>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, reactive, onMounted } from 'vue';
-  import { useToast } from 'vue-toastification';
-  import { useRouter, useRoute } from 'vue-router';
-  import axios from '@/axios';
-  
-  const route = useRoute();
-  const router = useRouter();
-  const chat_id = route.params.chat_id; // Get chat_id from the route parameters
-  const chat = ref(null);  // Holds chat details
-  const showModal = ref(false);  // To toggle modal visibility
-  const isLoading = ref(false);  // For loading indicator
-  const toast = useToast();  // Toast instance
-  const form = reactive({
-    title: '', // Title for editing
-    description: '', // Description for editing
-  });
-  
-  // Fetch chat details on mount
-  onMounted(async () => {
-    await fetchChatDetails();
-  });
-  
-  async function fetchChatDetails() {
-    try {
-      const response = await axios.get(`api/updates/${chat_id}`); // Ensure the correct endpoint
-      if (response.data.status === 'success') {
-        const data = response.data.data; // Access 'data' correctly here
-        chat.value = {
-          update_photo: data.update_photo,
-          title: data.title,
-          created_at: data.created_at,
-          description: data.description,
-        };
-  
-        // Populate form fields with the existing chat data
-        form.title = data.title;
-        form.description = data.description;
-      } else {
-        console.error('Failed to fetch chat details:', response.data.message);
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { useToast } from 'vue-toastification'
+import { useRouter, useRoute } from 'vue-router'
+import axios from '@/axios'
+
+const route = useRoute()
+const router = useRouter()
+const chat_id = route.params.chat_id
+
+const chat = ref(null)
+const showModal = ref(false)
+const isLoading = ref(false)
+const toast = useToast()
+
+const form = reactive({
+  title: '',
+  description: ''
+})
+
+onMounted(async () => {
+  await fetchChatDetails()
+})
+
+async function fetchChatDetails() {
+  try {
+    const response = await axios.get(`api/updates/${chat_id}`)
+    if (response.data.status === 'success') {
+      const data = response.data.data
+      chat.value = {
+        update_photo: data.update_photo,
+        title: data.title,
+        created_at: data.created_at,
+        description: data.description
       }
-    } catch (error) {
-      console.error('Error fetching chat details:', error);
-      toast.error('An error occurred while fetching chat details.');
+      form.title = data.title
+      form.description = data.description
+    } else {
+      toast.error(response.data.message || 'Failed to load update')
     }
+  } catch (error) {
+    console.error(error)
+    toast.error('Could not load update details')
   }
-  
-  // Save edited chat data
-  async function saveChanges() {
-    isLoading.value = true;
-    try {
-      const response = await axios.put(`/api/updates/${chat_id}`, {
-        title: form.title,
-        description: form.description,
-      });
-  
-      if (response.data.status === 'success') {
-        toast.success('Chat updated successfully');
-        showModal.value = false; // Close modal on success
-  
-        // Update the chat details in the UI with the newly saved data
-        chat.value.title = form.title;
-        chat.value.description = form.description;
-      } else {
-        toast.error('Failed to update chat');
+}
+
+async function saveChanges() {
+  if (!form.title.trim()) {
+    toast.warning('Title is required')
+    return
+  }
+
+  isLoading.value = true
+
+  try {
+    const response = await axios.put(`/api/updates/${chat_id}`, {
+      title: form.title,
+      description: form.description
+    })
+
+    if (response.data.status === 'success') {
+      toast.success('Update saved successfully')
+      showModal.value = false
+
+      // Update displayed data
+      if (chat.value) {
+        chat.value.title = form.title
+        chat.value.description = form.description
       }
-    } catch (error) {
-      console.error('Error saving changes:', error);
-      toast.error('Failed to save changes');
-    } finally {
-      isLoading.value = false;
+    } else {
+      toast.error(response.data.message || 'Failed to save changes')
     }
+  } catch (error) {
+    console.error(error)
+    toast.error('Error while saving changes')
+  } finally {
+    isLoading.value = false
   }
-  
-  // Cancel edit and navigate to '/user/update'
-  function cancelEdit() {
-    router.push('/user/update'); // Navigate to the desired path
+}
+
+function cancelEdit() {
+  const userRole = localStorage.getItem('userRole')
+  if (userRole === '6') {
+    router.push('/hr-view-updates')
+  } else {
+    router.push('/user/update')
   }
-  </script>
-  
-  <style scoped>
-  .spinner-border {
-    border-top-color: #fff;
-  }
-  </style>
-  
+}
+</script>

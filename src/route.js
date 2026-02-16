@@ -93,6 +93,7 @@ import HodEditUpdateVue from "./layouts/allUpdates/HodEditUpdate.vue";
 import TenderUserViewUpdatesVue from "./layouts/allUpdates/TenderUserViewUpdates.vue";
 import TenderUserSubmitUpdatesVue from "./layouts/allUpdates/TenderUserSubmitUpdates.vue";
 import TenderUserEditUpdatesVue from "./layouts/allUpdates/TenderUserEditUpdates.vue";
+import TenderUserCreateUpdateVue from "./layouts/allUpdates/TenderUserCreateUpdate.vue";
 import AccntantViewUpdateVue from "./layouts/allUpdates/AccntantViewUpdate.vue";
 import AccntantEditUpdateVue from "./layouts/allUpdates/AccntantEditUpdate.vue";
 import AccntantSubmitUpdateVue from "./layouts/allUpdates/AccntantCreateUpdate.vue";
@@ -226,6 +227,7 @@ import UpdateFollowup from "./layouts/assignProjects/UpdateFollowup.vue";
 import AccManageRequests from "./layouts/requests/AccManageRequests.vue";
 import AccManageExtendedRequests from "./layouts/extend-request/AccManageExtendedRequests.vue";
 import AccManageInvoices from "./layouts/invoices/AccManageInvoices.vue";
+import DepartmentUpdates from "./layouts/updates/DepartmentUpdates.vue";
 
 const baseURL = '/';
 
@@ -265,6 +267,7 @@ const routes = [
                 component: AddUser,
                 meta: { requiresAuth: true, allowedRoles: [1] }
             },
+            
             {
                 path: '/edit-user/:user_id',  
                 name: 'EditUser',
@@ -957,7 +960,7 @@ const routes = [
                 name:'EditUserUpdate',
                 component: EditUserUpdateVue,
                 props:true,
-               meta: { requiresAuth: true, allowedRoles: [3] }
+               meta: { requiresAuth: true, allowedRoles: [3, 6] }
             },
             {
                 path:'/user/schedules',
@@ -1175,6 +1178,19 @@ const routes = [
                 meta: { requiresAuth: true, allowedRoles: [4] }
             },
             {
+                path:'/tenderuser-createupdate',
+                name:'TenderUserCreateUpdate',
+                component: TenderUserCreateUpdateVue,
+                meta: { requiresAuth: true, allowedRoles: [4] }
+            },
+            {
+                path: '/department-updates',
+                name: 'DepartmentUpdates',
+                component: DepartmentUpdates,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [2, 3, 4, 5, 6] }
+            },
+            {
                 path:'/awarded/tenders',
                 name:'ManageAwardedTenders',
                 component:ManageAwardedTenders,
@@ -1369,13 +1385,13 @@ const routes = [
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
             {
-                path: 'hod/view-update',
+                path: '/hod/view-update',
                 name: 'HodViewUpdate',
                 component: HodViewUpdateVue,
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
             {
-                path: 'hod/submit-update',
+                path: '/hod/submit-update',
                 name: 'HodSubmitUpdate',
                 component: HodSubmitUpdateVue,
                 meta: { requiresAuth: true, allowedRoles: [2] }
@@ -1388,9 +1404,10 @@ const routes = [
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
             {
-                path: 'hod/get-requests',
-                name: 'HodGetAllRequests',
-                component: HodGetAllRequests,
+                path: '/department-updates',
+                name: 'DepartmentUpdates',
+                component: DepartmentUpdates,
+                props: true,
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
             {
@@ -1559,6 +1576,13 @@ const routes = [
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [5] }
             },
+            {
+                path: '/department-updates',
+                name: 'DepartmentUpdates',
+                component: DepartmentUpdates,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [2, 3, 4, 5, 6] }
+            },
         ],
     },
 
@@ -1663,6 +1687,13 @@ const routes = [
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
             {
+                path: '/department-updates',
+                name: 'DepartmentUpdates',
+                component: DepartmentUpdates,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
                 path: '/hr-create-attendance',
                 name: 'HrCreateAttendance',
                 component: HrCreateAttendance,
@@ -1685,6 +1716,13 @@ const routes = [
                 name: 'HrViewMinutes',
                 component: HrViewMinutes,
                 meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
+                path: '/edituser-update/:chat_id',
+                name: 'EditUserUpdate',
+                component: EditUserUpdateVue,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [3, 6] }
             },
         ],
     },

@@ -238,6 +238,13 @@ const navigations = ref([
         name: "AccntantViewUpdate",
         path: "AccntantViewUpdate",
         active: false
+      },
+      {
+        icon: "fas fa-edit",
+        label: "Department Updates",
+        name: "DepartmentUpdates",
+        path: "DepartmentUpdates",
+        active: false
       }
     ]
   },

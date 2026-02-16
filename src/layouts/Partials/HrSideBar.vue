@@ -237,7 +237,8 @@ const navigations = ref([
         name: "HrViewUpdates",
         path: "HrViewUpdates",
         active: false
-      }
+      },
+      
     ]
   },
   {
