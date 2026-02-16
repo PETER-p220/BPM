@@ -169,21 +169,9 @@ const navigations = ref([
     children: [
       { icon: 'fas fa-plus-circle', label: 'Submit Update', name: 'HodSubmitUpdate' },
       { icon: 'fas fa-list', label: 'View / Manage Updates', name: 'HodViewUpdate' },
-      { icon: 'fas fa-edit', label: 'Department Updates', name: 'DepartmentUpdates' },
     ],
   },
 
-  {
-    icon: 'fas fa-users text-indigo-400',
-    label: 'Meetings',
-    active: false,
-    children: [
-      { icon: 'fas fa-user-check', label: 'Manage Attendance', name: 'HodManageAllAttendance' },
-      { icon: 'fas fa-plus', label: 'Create Attendance', name: 'HodCreateAttendance' },
-      { icon: 'fas fa-file-alt', label: 'Meeting Minutes', name: 'HodGetMinutes' },
-      { icon: 'fas fa-plus', label: 'Create Minutes', name: 'HodCreateUpdate' },
-    ],
-  },
 ])
 
 function handleClick(item, index) {

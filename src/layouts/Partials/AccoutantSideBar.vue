@@ -239,44 +239,8 @@ const navigations = ref([
         path: "AccntantViewUpdate",
         active: false
       },
-      {
-        icon: "fas fa-edit",
-        label: "Department Updates",
-        name: "DepartmentUpdates",
-        path: "DepartmentUpdates",
-        active: false
-      }
+      
     ]
-  },
-  {
-    icon: "fas fa-users",
-    label: "Meetings",
-    name: "MeetingsManagement",
-    active: false,
-    children: [
-      {
-        icon: "fas fa-user-check",
-        label: "Create Attendance",
-        name: "AccntntCreateAttendance",
-        path: "AccntntCreateAttendance",
-        active: false
-      },
-      {
-        icon: "fas fa-file-alt",
-        label: "Create Minutes",
-        name: "AccntntCreateMinutes",
-        path: "AccntntCreateMinutes",
-        active: false
-      }
-    ]
-  },
-  {},
-  {
-    icon: 'fas fa-ellipsis-h',
-    label: 'Others',
-    name: 'Others',
-    path: 'Others',
-    active: false
   },
 ]);
 

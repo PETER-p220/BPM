@@ -16,13 +16,23 @@
               <i class="text-white fa fa-user-plus"></i>
               <h2 class="text-lg font-semibold text-white">User Information</h2>
             </div>
-            <router-link 
-              to="/users" 
-              class="text-white transition-colors hover:text-gray-200"
-              aria-label="Close"
-            >
-              <i class="fa fa-times"></i>
-            </router-link>
+            <div class="flex items-center gap-3">
+              <button 
+                @click="showRoleGuide = true"
+                class="text-white hover:text-gray-200 transition-colors flex items-center gap-2 text-sm"
+                title="View Role Assignment Guide"
+              >
+                <i class="fas fa-question-circle"></i>
+                Role Guide
+              </button>
+              <router-link 
+                to="/users" 
+                class="text-white transition-colors hover:text-gray-200"
+                aria-label="Close"
+              >
+                <i class="fa fa-times"></i>
+              </router-link>
+            </div>
           </div>
         </div>
 
@@ -86,6 +96,7 @@
                 <select
                   id="newUserRole"
                   v-model="newUserData.role_id"
+                  @change="onRoleChange"
                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   required
                   :disabled="isLoading || isLoadingRoles"
@@ -99,6 +110,21 @@
                   <i class="fas fa-spinner fa-spin" v-if="isLoadingRoles"></i>
                   {{ isLoadingRoles ? 'Loading roles...' : 'Assign user role and permissions' }}
                 </p>
+                
+                <!-- Role Information Display -->
+                <div v-if="selectedRole" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div class="flex items-start gap-2">
+                    <i class="fas fa-info-circle text-blue-600 mt-0.5"></i>
+                    <div class="flex-1">
+                      <h4 class="text-sm font-semibold text-blue-900">{{ selectedRole.category.toUpperCase() }} Role</h4>
+                      <p class="text-xs text-blue-700 mt-1">{{ selectedRole.description }}</p>
+                      <div v-if="selectedRole.dashboard" class="mt-2">
+                        <span class="text-xs font-medium text-blue-800">Dashboard: </span>
+                        <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded">{{ selectedRole.dashboard }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- Status -->
@@ -200,6 +226,9 @@
 
     </div>
   </div>
+
+  <!-- Role Guide Modal -->
+  <RoleGuide v-if="showRoleGuide" @close="showRoleGuide = false" />
 </template>
 
 <script setup>
@@ -207,6 +236,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from '@/axios';
 import { useToast } from 'vue-toastification';
+import RoleGuide from '@/components/RoleGuide.vue';
 
 const toast = useToast();
 const router = useRouter();
@@ -222,6 +252,8 @@ const newUserData = ref({
 
 const roles = ref([]);
 const departments = ref([]);
+const selectedRole = ref(null);
+const showRoleGuide = ref(false);
 const isLoading = ref(false);
 const isLoadingRoles = ref(false);
 const isLoadingDepartments = ref(false);
@@ -278,6 +310,11 @@ function getDepartmentName(departmentId) {
   if (!departmentId) return null;
   const department = departments.value.find(d => d.department_id === departmentId);
   return department ? department.name : null;
+}
+
+// Handle role change
+function onRoleChange() {
+  selectedRole.value = roles.value.find(role => role.role_id === newUserData.value.role_id) || null;
 }
 
 // Add new user function
