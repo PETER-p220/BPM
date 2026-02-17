@@ -93,6 +93,24 @@
               </div>
             </div>
 
+            <!-- Rejection Reason (only show when rejected) -->
+            <div v-if="appointmentLetterData.status === 'rejected'">
+              <label for="rejection_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                Reason for Rejection <span class="text-red-500">*</span>
+              </label>
+              <textarea
+                id="rejection_reason"
+                v-model="appointmentLetterData.rejection_reason"
+                rows="4"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all bg-white shadow-sm"
+                placeholder="Please provide a reason for rejecting this appointment letter..."
+                :disabled="isLoading"
+              ></textarea>
+              <p class="mt-1 text-sm text-gray-600">
+                This reason will be recorded and visible to administrators.
+              </p>
+            </div>
+
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 pt-6">
               <button
@@ -138,9 +156,11 @@ const router = useRouter();
 
 const appointmentLetterData = ref({
   letter_id: '',
+  user_id: '',
   tender: { title: '' },
   letter_file: '',
   status: 'accepted',
+  rejection_reason: '',
 });
 
 const isLoading = ref(false);
@@ -151,8 +171,16 @@ onMounted(async () => {
 
 async function fetchAppointmentLetter() {
   try {
-    const response = await axios.get(`api/appointment-letter/${route.params.letter_id}`);
-    appointmentLetterData.value = response.data.data || {};
+    const response = await axios.get(`api/logged-user-appointment-letters`);
+    const allLetters = response.data.data || [];
+    const foundLetter = allLetters.find(letter => letter.letter_id == route.params.letter_id);
+    
+    if (foundLetter) {
+      appointmentLetterData.value = foundLetter;
+    } else {
+      throw new Error('Appointment letter not found');
+    }
+    
     // Ensure status has a default if missing
     if (!appointmentLetterData.value.status) {
       appointmentLetterData.value.status = 'accepted';
@@ -168,23 +196,26 @@ async function updateAppointmentLetter() {
     return;
   }
 
+  // Validate rejection reason if status is rejected
+  if (appointmentLetterData.value.status === 'rejected' && !appointmentLetterData.value.rejection_reason?.trim()) {
+    toast.error('Please provide a reason for rejection');
+    return;
+  }
+
   isLoading.value = true;
 
   try {
-    const response = await axios.put(`api/appointment-letter/${route.params.letter_id}`, {
-      status: appointmentLetterData.value.status,
-    });
-
-    const emailResults = response.data.results?.email?.details || [];
-    const failedEmails = emailResults.filter(r => !r.status);
-
-    if (failedEmails.length > 0) {
-      toast.warning(
-        `Decision saved, but some notifications failed: ${failedEmails.map(r => r.message).join('; ')}`
-      );
+    let response;
+    
+    if (appointmentLetterData.value.status === 'accepted') {
+      response = await axios.post(`api/appointment-letter/${route.params.letter_id}/accept`);
     } else {
-      toast.success(response.data.message || 'Decision submitted successfully');
+      response = await axios.post(`api/appointment-letter/${route.params.letter_id}/reject`, {
+        rejection_reason: appointmentLetterData.value.rejection_reason.trim()
+      });
     }
+
+    toast.success(response.data.message || 'Decision submitted successfully');
 
     // Check user role and redirect accordingly
     const userRole = localStorage.getItem('user_role'); // or however you store user role
