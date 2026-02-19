@@ -1,109 +1,137 @@
 <template>
-  <div class="p-4 space-y-4" style="font-family: 'cygre', sans-serif; font-size: 17px">
-    <PageHeader subtitle=" Requests">
-      <div class="flex flex-col sm:flex-row sm:space-x-2"></div>
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 space-y-6 font-sans">
+    <!-- Header -->
+    <PageHeader subtitle="View & Manage Purchase Requests">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3">
+        <!-- You can add extra header actions here if needed -->
+      </div>
     </PageHeader>
 
-    <div class="flex items-center mb-4 space-x-4">
+    <!-- Controls: Search + Export -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
       <input
-        type="text"
         v-model="filter"
-        placeholder="Search..."
-        class="w-full p-2 border rounded sm:w-auto"
+        type="text"
+        placeholder="Search engineer, item, vendor, status..."
+        class="w-full sm:w-80 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
       />
-      <button
-        @click="exportToExcel"
-        class="flex items-center p-2 space-x-2 text-white rounded hover:bg-green-600"
-        style="background-color: white; color: #229954; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px"
-      >
-        Export to Excel
-        <span class="ml-2" aria-hidden="true"
-          ><i class="fas fa-file-excel" style="color: #edbb99"></i
-        ></span>
-      </button>
-      <button
-        @click="exportToPDF"
-        class="flex items-center p-2 space-x-2 text-white rounded hover:bg-green-600"
-        style="background-color: white; color: #229954; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px"
-      >
-        Export to PDF
-        <span class="ml-2" aria-hidden="true"><i class="fas fa-file-pdf"></i></span>
-      </button>
+
+      <div class="flex flex-wrap gap-3">
+        <button
+          @click="exportToExcel"
+          :disabled="isExporting"
+          class="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-green-700 dark:text-green-400 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 shadow-sm transition disabled:opacity-50"
+        >
+          <i class="fas fa-file-excel"></i>
+          Excel
+        </button>
+
+        <button
+          @click="exportToPDF"
+          :disabled="isExporting"
+          class="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-red-700 dark:text-red-400 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 shadow-sm transition disabled:opacity-50"
+        >
+          <i class="fas fa-file-pdf"></i>
+          PDF
+        </button>
+      </div>
     </div>
 
-    <div class="space-y-4">
+    <!-- Loading state -->
+    <div v-if="loading" class="text-center py-12 text-gray-500 dark:text-gray-400">
+      <div class="animate-spin inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mb-3"></div>
+      <p>Loading purchase requests...</p>
+    </div>
+
+    <!-- No data -->
+    <div v-else-if="filteredProjects.length === 0" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-10 text-center text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+      <i class="fas fa-inbox text-5xl opacity-40 mb-4"></i>
+      <h3 class="text-lg font-medium">No requests found</h3>
+      <p class="mt-2">Try adjusting your search or check back later.</p>
+    </div>
+
+    <!-- Projects & Tables -->
+    <div v-else class="space-y-8">
       <div
         v-for="project in filteredProjects"
         :key="project.project_id"
-        class="shadow-lg rounded-lg bg-white dark:bg-dark-header"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
       >
-        <div
-          class="px-6 py-3 bg-gray-50 dark:bg-neutral-700 rounded-t-lg"
-          style="box-shadow: rgba(0, 0, 0, 0.2) 0px -3px 0px inset"
-        >
-          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            Project: {{ project.project_name }}
+        <!-- Project Header -->
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+            {{ project.project_name }}
           </h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {{ project.requests.length }} request{{ project.requests.length !== 1 ? 's' : '' }}
+          </p>
         </div>
+
+        <!-- Table -->
         <div class="overflow-x-auto">
-          <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-neutral-700">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700/30">
               <tr>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">No</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Engineer</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Item Description</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Vendor Name</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Vendor Account</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Vendor Contact</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Quantity</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Amount</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Status</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Rejection Reason</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Created At</th>
-                <th class="px-6 py-3 text-sm text-left text-gray-500 dark:text-gray-200">Action</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">No</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Engineer</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Item</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Vendor</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell">Contact</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Qty</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden lg:table-cell">Rejection</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200 dark:bg-dark-header dark:divide-gray-700">
-              <tr v-for="(request, index) in project.requests" :key="request.request_for_id">
-                <td class="table-data">{{ index + 1 }}</td>
-                <td class="table-data">{{ request.user?.name || 'N/A' }}</td>
-                <td class="table-data">{{ request.analysis?.item_description || 'N/A' }}</td>
-                <td class="table-data">{{ request.VendorName || 'N/A' }}</td>
-                <td class="table-data">{{ request.VendorAccountNumber || 'N/A' }}</td>
-                <td class="table-data">{{ request.VendorContact || 'N/A' }}</td>
-                <td class="table-data">{{ request.quantity_purchased || 'N/A' }}</td>
-                <td class="table-data">{{ request.amount_purchased || 'N/A' }}</td>
-                <td class="table-data">
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr
+                v-for="(request, idx) in project.requests"
+                :key="request.request_for_id"
+                class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors"
+              >
+                <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ idx + 1 }}</td>
+                <td class="px-5 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ request.user?.name || '—' }}</td>
+                <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-300 max-w-xs truncate" :title="request.analysis?.item_description || '—'">
+                  {{ request.analysis?.item_description || '—' }}
+                </td>
+                <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{ request.VendorName || '—' }}</td>
+                <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300 hidden md:table-cell">{{ request.VendorContact || '—' }}</td>
+                <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{ request.quantity_purchased || '—' }}</td>
+                <td class="px-5 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {{ request.amount_purchased ? formatCurrency(request.amount_purchased) : '—' }}
+                </td>
+                <td class="px-5 py-4 whitespace-nowrap">
                   <span
-                    :class="{
-                      'px-2 py-1 rounded text-white': true,
-                      'bg-yellow-500': request.status === 'pending',
-                      'bg-green-500': request.status === 'accepted',
-                      'bg-red-500': request.status === 'rejected',
-                    }"
+                    :class="statusBadgeClasses(request.status)"
+                    class="inline-flex px-2.5 py-1 text-xs font-medium rounded-full"
                   >
                     {{ request.status.charAt(0).toUpperCase() + request.status.slice(1) }}
                   </span>
                 </td>
-                <td class="table-data">
-                  <span v-if="request.status === 'rejected' && request.rejection_reason">
-                    {{ request.rejection_reason }}
-                    <span
-                      class="ml-1 cursor-pointer"
-                      @click="showRejectionReason(request.rejection_reason)"
-                      title="View rejection reason"
-                    >
-                      <i class="fas fa-info-circle"></i>
-                    </span>
-                  </span>
-                  <span v-else>-</span>
+                <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-300 hidden lg:table-cell max-w-xs truncate" :title="request.rejection_reason || '—'">
+                  {{ request.status === 'rejected' && request.rejection_reason ? request.rejection_reason : '—' }}
                 </td>
-                <td class="table-data">{{ formatDate(request.created_at) }}</td>
-                <td class="table-data">
-                  <div v-if="request.status === 'pending'" class="flex space-x-2">
-                   
+                <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ formatDate(request.created_at) }}</td>
+                <td class="px-5 py-4 whitespace-nowrap text-center text-sm">
+                  <div v-if="request.status === 'pending'" class="flex items-center justify-center gap-2">
+                    <button
+                      @click="openDialog(request, 'accepted')"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-md transition shadow-sm"
+                      title="Approve request"
+                    >
+                      <i class="fas fa-check"></i> Approve
+                    </button>
+                    <button
+                      @click="openDialog(request, 'rejected')"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-md transition shadow-sm"
+                      title="Reject request"
+                    >
+                      <i class="fas fa-times"></i> Reject
+                    </button>
                   </div>
-                  <span v-else>-</span>
+                  <span v-else class="text-gray-400 dark:text-gray-500">—</span>
                 </td>
               </tr>
             </tbody>
@@ -112,39 +140,55 @@
       </div>
     </div>
 
-    <!-- Dialog for Approve/Reject -->
-    <div v-if="showDialog" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-dark-header rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold mb-4">
-          {{ dialogStatus === 'accepted' ? 'Approve' : 'Reject' }} Request
-        </h3>
-        <p class="mb-4">Are you sure you want to {{ dialogStatus === 'accepted' ? 'approve' : 'reject' }} this request?</p>
-        <div v-if="dialogStatus === 'rejected'" class="mb-4">
-          <label for="rejection_reason" class="block text-sm font-medium text-gray-700 dark:text-gray-200"
-            >Rejection Reason (required)</label
-          >
-          <textarea
-            v-model="rejectionReason"
-            id="rejection_reason"
-            class="w-full p-2 border rounded dark:bg-neutral-700 dark:text-gray-200"
-            rows="4"
-            placeholder="Enter reason for rejection..."
-            required
-          ></textarea>
+    <!-- Approve / Reject Dialog -->
+    <div
+      v-if="showDialog"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+    >
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+        <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            {{ dialogStatus === 'accepted' ? 'Approve' : 'Reject' }} Request
+          </h3>
         </div>
-        <div class="flex justify-end space-x-2">
+
+        <div class="p-6 space-y-5">
+          <p class="text-gray-600 dark:text-gray-300">
+            Are you sure you want to <strong>{{ dialogStatus === 'accepted' ? 'approve' : 'reject' }}</strong> this purchase request?
+          </p>
+
+          <div v-if="dialogStatus === 'rejected'">
+            <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Rejection Reason <span class="text-red-500">*</span>
+            </label>
+            <textarea
+              id="reason"
+              v-model="rejectionReason"
+              rows="4"
+              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none resize-y"
+              placeholder="Please provide a clear reason for rejection..."
+              :class="{ 'border-red-500': rejectionError }"
+            ></textarea>
+            <p v-if="rejectionError" class="mt-1.5 text-sm text-red-600 dark:text-red-400">
+              Rejection reason is required
+            </p>
+          </div>
+        </div>
+
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
           <button
-            @click="showDialog = false"
-            class="px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300 dark:bg-neutral-600 dark:text-gray-200"
+            @click="closeDialog"
+            class="px-5 py-2.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg transition font-medium"
           >
             Cancel
           </button>
           <button
             @click="submitStatus"
-            class="px-4 py-2 text-white rounded"
-            :class="dialogStatus === 'accepted' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'"
-            :disabled="dialogStatus === 'rejected' && !rejectionReason.trim()"
+            :disabled="submitting || (dialogStatus === 'rejected' && !rejectionReason.trim())"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-white transition shadow-sm disabled:opacity-60"
+            :class="dialogStatus === 'accepted' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'"
           >
+            <span v-if="submitting" class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
             {{ dialogStatus === 'accepted' ? 'Approve' : 'Reject' }}
           </button>
         </div>
@@ -154,234 +198,232 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from '@/axios';
-import { useToast } from 'vue-toastification';
-import * as XLSX from '@e965/xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { ref, computed, onMounted } from 'vue'
+import { useToast } from 'vue-toastification'
+import axios from '@/axios'
+import * as XLSX from '@e965/xlsx'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
-const router = useRouter();
-const toast = useToast();
+const toast = useToast()
 
-const purchaseRequests = ref([]);
-const filter = ref('');
-const showDialog = ref(false);
-const dialogStatus = ref('');
-const selectedRequest = ref(null);
-const rejectionReason = ref('');
+const purchaseRequests = ref([])
+const filter = ref('')
+const loading = ref(false)
+const showDialog = ref(false)
+const dialogStatus = ref('')
+const selectedRequest = ref(null)
+const rejectionReason = ref('')
+const rejectionError = ref(false)
+const submitting = ref(false)
+const isExporting = ref(false)
 
-// Fetch data when component is mounted
-onMounted(async () => {
-  await fetchData();
-});
+// ─── Fetch ───────────────────────────────────────
+onMounted(() => {
+  fetchData()
+})
 
 async function fetchData() {
+  loading.value = true
   try {
-    const response = await axios.get('/api/request-for-purchase');
-    if (response.data.status) {
-      // Ensure rejection_reason is included in the data
-      purchaseRequests.value = response.data.data.map((request) => ({
-        ...request,
-        rejection_reason: request.rejection_reason || null, // Ensure rejection_reason is always defined
-      }));
+    const { data } = await axios.get('/api/request-for-purchase')
+    if (data.status) {
+      purchaseRequests.value = data.data.map(r => ({
+        ...r,
+        rejection_reason: r.rejection_reason || null
+      }))
     } else {
-      throw new Error(response.data.message || 'Failed to fetch purchase requests');
+      throw new Error(data.message || 'Failed to load requests')
     }
-  } catch (error) {
-    handleError(error);
+  } catch (err) {
+    toast.error(err.response?.data?.message || 'Could not load purchase requests')
+  } finally {
+    loading.value = false
   }
 }
 
-// Open dialog for approve/reject
+// ─── Dialog ──────────────────────────────────────
 function openDialog(request, status) {
-  selectedRequest.value = request;
-  dialogStatus.value = status;
-  rejectionReason.value = '';
-  showDialog.value = true;
+  selectedRequest.value = request
+  dialogStatus.value = status
+  rejectionReason.value = ''
+  rejectionError.value = false
+  showDialog.value = true
 }
 
-// Submit status update
+function closeDialog() {
+  showDialog.value = false
+  selectedRequest.value = null
+}
+
 async function submitStatus() {
   if (dialogStatus.value === 'rejected' && !rejectionReason.value.trim()) {
-    toast.error('Rejection reason is required');
-    return;
+    rejectionError.value = true
+    return
   }
+
+  rejectionError.value = false
+  submitting.value = true
 
   try {
     const payload = {
       request_for_id: selectedRequest.value.request_for_id,
       status: dialogStatus.value,
-    };
-    if (dialogStatus.value === 'rejected') {
-      payload.rejection_reason = rejectionReason.value.trim();
     }
 
-    const response = await axios.post('/api/requests/update', payload);
-    if (response.data.status) {
-      toast.success(`Request ${dialogStatus.value} successfully. Notification sent to creator.`);
-      await fetchData(); // Refresh data
-      showDialog.value = false;
-    } else {
-      throw new Error(response.data.message || 'Failed to update request');
+    if (dialogStatus.value === 'rejected') {
+      payload.rejection_reason = rejectionReason.value.trim()
     }
-  } catch (error) {
-    handleError(error);
-    await fetchData(); // Refetch data to ensure UI consistency
+
+    const { data } = await axios.post('/api/requests/update', payload)
+
+    if (data.status) {
+      toast.success(`Request ${dialogStatus.value} successfully. Notification sent.`)
+      closeDialog()
+      await fetchData()
+    } else {
+      throw new Error(data.message || 'Update failed')
+    }
+  } catch (err) {
+    toast.error(err.response?.data?.message || 'Failed to update request')
+  } finally {
+    submitting.value = false
   }
 }
 
-// Show rejection reason in a toast
-function showRejectionReason(reason) {
-  toast.info(`Rejection Reason: ${reason}`);
-}
+// ─── Computed ────────────────────────────────────
+const groupedByProject = computed(() => {
+  const map = {}
+  purchaseRequests.value.forEach(r => {
+    const pid = r.project_id
+    if (!map[pid]) {
+      map[pid] = {
+        project_id: pid,
+        project_name: r.project?.project_name || 'Unnamed Project',
+        requests: []
+      }
+    }
+    map[pid].requests.push(r)
+  })
+  return Object.values(map)
+})
 
-// Format date to East Africa Time
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
+const filteredProjects = computed(() => {
+  const term = filter.value.toLowerCase().trim()
+  if (!term) return groupedByProject.value
+
+  return groupedByProject.value
+    .map(p => ({
+      ...p,
+      requests: p.requests.filter(r =>
+        [r.user?.name, r.analysis?.item_description, r.VendorName, r.VendorContact, r.status, r.rejection_reason, p.project_name]
+          .some(v => v?.toLowerCase().includes(term))
+      )
+    }))
+    .filter(p => p.requests.length > 0)
+})
+
+// ─── Helpers ─────────────────────────────────────
+function formatDate(dateStr) {
+  if (!dateStr) return '—'
+  return new Intl.DateTimeFormat('en-GB', {
     dateStyle: 'medium',
     timeStyle: 'short',
-    timeZone: 'Africa/Nairobi',
-  }).format(date);
+    timeZone: 'Africa/Nairobi'
+  }).format(new Date(dateStr))
 }
 
-// Group requests by project_id
-const groupedByProject = computed(() => {
-  const grouped = {};
-  purchaseRequests.value.forEach((request) => {
-    const projectId = request.project_id;
-    if (!grouped[projectId]) {
-      grouped[projectId] = {
-        project_id: projectId,
-        project_name: request.project?.project_name || 'Unknown Project',
-        requests: [],
-      };
-    }
-    grouped[projectId].requests.push(request);
-  });
-  return Object.values(grouped);
-});
+function formatCurrency(value) {
+  if (!value) return '—'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD', // change to TZS or your currency
+    minimumFractionDigits: 0
+  }).format(value)
+}
 
-// Computed Property for Filtering
-const filteredProjects = computed(() => {
-  return groupedByProject.value
-    .map((project) => {
-      const filteredRequests = project.requests.filter((request) => {
-        const searchText = filter.value.toLowerCase();
-        return (
-          (request.user?.name?.toLowerCase() || '').includes(searchText) ||
-          (request.analysis?.item_description?.toLowerCase() || '').includes(searchText) ||
-          (request.VendorName?.toLowerCase() || '').includes(searchText) ||
-          (request.VendorAccountNumber?.toLowerCase() || '').includes(searchText) ||
-          (request.VendorContact?.toLowerCase() || '').includes(searchText) ||
-          (request.status?.toLowerCase() || '').includes(searchText) ||
-          (request.rejection_reason?.toLowerCase() || '').includes(searchText) ||
-          (project.project_name?.toLowerCase() || '').includes(searchText)
-        );
-      });
-      return { ...project, requests: filteredRequests };
-    })
-    .filter((project) => project.requests.length > 0);
-});
+function statusBadgeClasses(status) {
+  const base = 'inline-flex px-2.5 py-1 text-xs font-medium rounded-full'
+  if (status === 'pending') return `${base} bg-amber-100 text-amber-800 dark:bg-amber-800/30 dark:text-amber-300`
+  if (status === 'accepted') return `${base} bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-300`
+  if (status === 'rejected') return `${base} bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-300`
+  return `${base} bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300`
+}
 
-// Handle Errors
-function handleError(error) {
-  let message = 'An unexpected error occurred';
-  if (error.response) {
-    message = error.response.data?.message || error.response.statusText;
-  } else if (error.request) {
-    message = 'No response from the server. Please check your connection.';
-  } else {
-    message = error.message;
+// ─── Export ──────────────────────────────────────
+async function exportToExcel() {
+  isExporting.value = true
+  try {
+    const rows = filteredProjects.value.flatMap(p =>
+      p.requests.map((r, i) => ({
+        Project: p.project_name,
+        No: i + 1,
+        Engineer: r.user?.name || '—',
+        Item: r.analysis?.item_description || '—',
+        Vendor: r.VendorName || '—',
+        'Vendor Account': r.VendorAccountNumber || '—',
+        Contact: r.VendorContact || '—',
+        Quantity: r.quantity_purchased || '—',
+        Amount: r.amount_purchased || '—',
+        Status: r.status || '—',
+        'Rejection Reason': r.status === 'rejected' ? r.rejection_reason || '—' : '—',
+        'Created At': formatDate(r.created_at)
+      }))
+    )
+
+    const ws = XLSX.utils.json_to_sheet(rows)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Requests')
+    XLSX.writeFile(wb, 'Purchase_Requests.xlsx')
+  } catch (err) {
+    toast.error('Export failed')
+  } finally {
+    isExporting.value = false
   }
-  toast.error(message);
 }
 
-// Export to Excel
-function exportToExcel() {
-  const data = filteredProjects.value.flatMap((project) =>
-    project.requests.map((request, index) => ({
-      'Project Name': project.project_name,
-      No: index + 1,
-      Engineer: request.user?.name || 'N/A',
-      'Item Description': request.analysis?.item_description || 'N/A',
-      'Vendor Name': request.VendorName || 'N/A',
-      'Vendor Account Number': request.VendorAccountNumber || 'N/A',
-      'Vendor Contact': request.VendorContact || 'N/A',
-      'Quantity Purchased': request.quantity_purchased || 'N/A',
-      'Amount Purchased': request.amount_purchased || 'N/A',
-      Status: request.status || 'N/A',
-      'Rejection Reason': request.status === 'rejected' ? request.rejection_reason || 'N/A' : 'N/A',
-      'Created At': formatDate(request.created_at) || 'N/A',
-    }))
-  );
-
-  const worksheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Purchase Requests');
-  XLSX.writeFile(workbook, 'Purchase_Requests.xlsx');
-}
-
-// Export to PDF
 function exportToPDF() {
-  const doc = new jsPDF();
-  const title = 'Purchase Requests Data';
-  doc.setFontSize(18);
-  doc.text(title, 14, 22);
+  isExporting.value = true
+  try {
+    const doc = new jsPDF()
+    doc.setFontSize(18)
+    doc.text('Purchase Requests Report', 14, 22)
 
-  filteredProjects.value.forEach((project) => {
-    const headers = [
-      [
-        'No',
-        'Engineer',
-        'Item Description',
-        'Vendor Name',
-        'Vendor Account',
-        'Vendor Contact',
-        'Quantity',
-        'Amount',
-        'Status',
-        'Rejection Reason',
-        'Created At',
-      ],
-    ];
-    const data = project.requests.map((request, index) => [
-      index + 1,
-      request.user?.name || 'N/A',
-      request.analysis?.item_description || 'N/A',
-      request.VendorName || 'N/A',
-      request.VendorAccountNumber || 'N/A',
-      request.VendorContact || 'N/A',
-      request.quantity_purchased || 'N/A',
-      request.amount_purchased || 'N/A',
-      request.status || 'N/A',
-      request.status === 'rejected' ? request.rejection_reason || 'N/A' : 'N/A',
-      formatDate(request.created_at) || 'N/A',
-    ]);
+    let y = 30
+    filteredProjects.value.forEach((p, idx) => {
+      if (idx > 0) y += 10
+      doc.setFontSize(14)
+      doc.text(p.project_name, 14, y)
+      y += 8
 
-    doc.setFontSize(14);
-    doc.text(project.project_name, 14, doc.lastAutoTable.finalY + 20);
-    doc.setFontSize(12);
-    autoTable(doc, {
-      head: headers,
-      body: data,
-      startY: doc.lastAutoTable.finalY + 30,
-    });
-  });
+      autoTable(doc, {
+        startY: y,
+        head: [['No', 'Engineer', 'Item', 'Vendor', 'Qty', 'Amount', 'Status', 'Rejection', 'Date']],
+        body: p.requests.map((r, i) => [
+          i + 1,
+          r.user?.name || '—',
+          r.analysis?.item_description || '—',
+          r.VendorName || '—',
+          r.quantity_purchased || '—',
+          r.amount_purchased || '—',
+          r.status || '—',
+          r.status === 'rejected' ? r.rejection_reason || '—' : '—',
+          formatDate(r.created_at)
+        ]),
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 3 },
+        headStyles: { fillColor: [243, 244, 246], textColor: [31, 41, 55] },
+        alternateRowStyles: { fillColor: [249, 250, 251] }
+      })
 
-  doc.save('Purchase_Requests.pdf');
+      y = doc.lastAutoTable.finalY + 10
+    })
+
+    doc.save('Purchase_Requests.pdf')
+  } catch (err) {
+    toast.error('PDF export failed')
+  } finally {
+    isExporting.value = false
+  }
 }
 </script>
-
-<style scoped>
-.table-data {
-  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-200;
-}
-
-.rounded-table {
-  border-radius: 8px;
-  overflow: hidden;
-}
-</style>

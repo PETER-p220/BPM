@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 dark:from-gray-950 dark:via-blue-950/10 dark:to-gray-950 px-4 py-8 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
-
       <!-- Header -->
       <div class="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -12,7 +11,6 @@
             Create and manage accountant invoices
           </p>
         </div>
-
         <button
           @click="openCreateDialog"
           class="group relative inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:shadow-blue-500/20"
@@ -26,7 +24,6 @@
 
       <!-- Statistics Cards -->
       <div class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Total Invoices -->
         <div class="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md shadow-gray-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-gray-300/50 hover:-translate-y-1 dark:bg-gray-900 dark:shadow-gray-900/50">
           <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-blue-500/5 transition-transform group-hover:scale-110" />
           <div class="relative flex items-start justify-between">
@@ -42,7 +39,6 @@
           </div>
         </div>
 
-        <!-- Paid Invoices -->
         <div class="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md shadow-gray-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-gray-300/50 hover:-translate-y-1 dark:bg-gray-900 dark:shadow-gray-900/50">
           <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-green-500/5 transition-transform group-hover:scale-110" />
           <div class="relative flex items-start justify-between">
@@ -58,7 +54,6 @@
           </div>
         </div>
 
-        <!-- Pending Invoices -->
         <div class="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md shadow-gray-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-gray-300/50 hover:-translate-y-1 dark:bg-gray-900 dark:shadow-gray-900/50">
           <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-yellow-500/5 transition-transform group-hover:scale-110" />
           <div class="relative flex items-start justify-between">
@@ -74,7 +69,6 @@
           </div>
         </div>
 
-        <!-- Total Amount -->
         <div class="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md shadow-gray-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-gray-300/50 hover:-translate-y-1 dark:bg-gray-900 dark:shadow-gray-900/50">
           <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-purple-500/5 transition-transform group-hover:scale-110" />
           <div class="relative flex items-start justify-between">
@@ -102,11 +96,10 @@
           <input
             v-model="filter"
             type="text"
-            placeholder="Search by invoice number, client, item..."
+            placeholder="Search by invoice number, title, client, item..."
             class="block w-full rounded-xl border border-gray-300 bg-white py-3 pl-11 pr-4 text-gray-900 placeholder:text-gray-400 shadow-sm transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500 sm:text-sm"
           />
         </div>
-
         <div class="flex flex-wrap gap-3">
           <select
             v-model="statusFilter"
@@ -118,7 +111,6 @@
             <option value="paid">Paid</option>
             <option value="cancelled">Cancelled</option>
           </select>
-
           <button
             @click="exportToExcel"
             class="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
@@ -128,7 +120,6 @@
             </svg>
             Export Excel
           </button>
-
           <button
             @click="exportToPDF"
             class="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
@@ -141,7 +132,7 @@
         </div>
       </div>
 
-      <!-- Table - EXACT FORMAT PRESERVED -->
+      <!-- Table -->
       <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl shadow-gray-200/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-gray-900/50">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
@@ -149,7 +140,10 @@
               <tr>
                 <th class="w-12 px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">#</th>
                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Invoice Number</th>
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Title</th>
                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Client</th>
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">TIN</th>
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">VRN</th>
                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Item Description</th>
                 <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">No. of Cars</th>
                 <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Period (Months)</th>
@@ -174,7 +168,16 @@
                   {{ invoice.invoice_number }}
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {{ invoice.title || '-' }}
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
                   {{ invoice.client_name }}
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                  {{ invoice.tin || '-' }}
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                  {{ invoice.vrn || '-' }}
                 </td>
                 <td class="max-w-xs px-6 py-4 text-sm text-gray-700 dark:text-gray-300 truncate">
                   {{ invoice.item_description }}
@@ -207,6 +210,9 @@
                   <div class="flex justify-center gap-2">
                     <button @click="openEditDialog(invoice)" class="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-blue-700">
                       Edit
+                    </button>
+                    <button @click="downloadInvoice(invoice.id)" class="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-indigo-700">
+                      Download
                     </button>
                     <button v-if="invoice.status === 'draft'" @click="sendInvoice(invoice.id)" class="rounded-lg bg-green-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-green-700">
                       Send
@@ -250,7 +256,7 @@
           >
             Previous
           </button>
-          
+
           <div class="flex gap-1">
             <button
               v-for="page in visiblePages"
@@ -280,7 +286,7 @@
         </nav>
       </div>
 
-      <!-- Create / Edit Invoice Dialog -->
+      <!-- Create / Edit Dialog -->
       <div v-if="showDialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
         <div class="w-full max-w-4xl rounded-2xl bg-white p-8 shadow-2xl dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
           <div class="flex items-center justify-between mb-6">
@@ -293,44 +299,52 @@
               </svg>
             </button>
           </div>
-
           <form @submit.prevent="submitInvoice" class="space-y-6">
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Invoice Number <span class="text-red-500">*</span></label>
                 <input v-model="form.invoice_number" type="text" required class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
               </div>
-
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                <input v-model="form.title" type="text" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="Enter invoice title" />
+              </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Client Name <span class="text-red-500">*</span></label>
                 <input v-model="form.client_name" type="text" required class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
               </div>
-
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Client Email</label>
                 <input v-model="form.client_email" type="email" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
               </div>
-
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Client Phone <span class="text-blue-500">*</span> (for WhatsApp)</label>
                 <input v-model="form.client_phone" type="tel" required class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="+255123456789" />
               </div>
-
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">TIN (Tax Identification Number)</label>
+                <input v-model="form.tin" type="text" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="Enter TIN number" />
+              </div>
+              <div class="lg:col-span-2">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Address</label>
+                <textarea v-model="form.address" rows="2" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="Enter client address"></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">VRN (VAT Registration Number)</label>
+                <input v-model="form.vrn" type="text" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="Enter VRN number" />
+              </div>
               <div class="lg:col-span-2">
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Item Description <span class="text-red-500">*</span></label>
                 <textarea v-model="form.item_description" rows="3" required class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="Describe the items/services"></textarea>
               </div>
-
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Number of Cars <span class="text-red-500">*</span></label>
                 <input v-model.number="form.number_of_cars" type="number" min="0" step="1" required @input="calculateTotals" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
               </div>
-
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Period (Months) <span class="text-red-500">*</span></label>
                 <input v-model.number="form.period_months" type="number" min="0" step="0.01" required @input="calculateTotals" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
               </div>
-
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">UOM <span class="text-red-500">*</span></label>
                 <select v-model="form.uom" required class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
@@ -343,27 +357,22 @@
                   <option value="per_day">Per Day</option>
                 </select>
               </div>
-
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Unit Price (TZS) <span class="text-red-500">*</span></label>
                 <input v-model.number="form.unit_price" type="number" min="0" step="0.01" required @input="calculateTotals" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="0.00" />
               </div>
-
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">VAT Rate (%)</label>
                 <input v-model.number="form.tax_rate" type="number" step="0.01" min="0" max="100" @input="calculateTotals" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="18" />
               </div>
-
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Invoice Date <span class="text-red-500">*</span></label>
                 <input v-model="form.invoice_date" type="date" required class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
               </div>
-
               <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Due Date <span class="text-red-500">*</span></label>
                 <input v-model="form.due_date" type="date" required class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
               </div>
-
               <div class="lg:col-span-3">
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Notes</label>
                 <textarea v-model="form.notes" rows="3" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="Additional notes..."></textarea>
@@ -411,7 +420,6 @@
               </svg>
             </button>
           </div>
-
           <form @submit.prevent="submitSendInvoice" class="space-y-5">
             <div>
               <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Send Method <span class="text-red-500">*</span></label>
@@ -421,21 +429,18 @@
                 <option value="both">Both Email & WhatsApp</option>
               </select>
             </div>
-
             <div>
               <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Personal Message (Optional)</label>
               <textarea v-model="sendForm.message" rows="4" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 transition-all focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Add a personal message to include with the invoice..."></textarea>
             </div>
-
             <div class="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/50 rounded-xl p-4">
               <p class="text-sm text-blue-700 dark:text-blue-300">
-                <strong>Note:</strong> 
+                <strong>Note:</strong>
                 <span v-if="sendForm.send_method === 'email'">The invoice will be sent via email to the client's email address.</span>
                 <span v-else-if="sendForm.send_method === 'whatsapp'">The invoice will be sent via WhatsApp to the client's phone number.</span>
                 <span v-else>The invoice will be sent via both email and WhatsApp.</span>
               </p>
             </div>
-
             <div class="flex justify-end gap-3 pt-4">
               <button type="button" @click="showSendDialog = false" class="rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition-all hover:bg-gray-50 hover:border-gray-400 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700">
                 Cancel
@@ -459,13 +464,11 @@
               </svg>
             </button>
           </div>
-
           <form @submit.prevent="submitMarkPaid" class="space-y-5">
             <div>
               <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Payment Date <span class="text-red-500">*</span></label>
               <input v-model="paidForm.payment_date" type="date" required class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 transition-all focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
             </div>
-
             <div>
               <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Payment Method <span class="text-red-500">*</span></label>
               <select v-model="paidForm.payment_method" required class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 transition-all focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
@@ -477,12 +480,10 @@
                 <option value="credit_card">Credit Card</option>
               </select>
             </div>
-
             <div>
               <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Payment Reference</label>
               <input v-model="paidForm.payment_reference" type="text" class="block w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 transition-all focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" placeholder="Transaction reference number" />
             </div>
-
             <div class="flex justify-end gap-3 pt-4">
               <button type="button" @click="showMarkPaidDialog = false" class="rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition-all hover:bg-gray-50 hover:border-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                 Cancel
@@ -500,9 +501,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from '@/axios' 
+import axios from '@/axios'
 import { useToast } from 'vue-toastification'
-
 const toast = useToast()
 
 const invoices = ref([])
@@ -524,9 +524,13 @@ const selectedInvoice = ref(null)
 
 const form = ref({
   invoice_number: '',
+  title: '',
   client_name: '',
   client_email: '',
   client_phone: '',
+  tin: '',
+  address: '',
+  vrn: '',
   item_description: '',
   number_of_cars: 0,
   period_months: 0,
@@ -549,20 +553,18 @@ const paidForm = ref({
 
 const filteredInvoices = computed(() => {
   let result = invoices.value || []
-
   if (filter.value.trim()) {
     const q = filter.value.toLowerCase().trim()
     result = result.filter(inv =>
       inv.invoice_number?.toLowerCase().includes(q) ||
+      inv.title?.toLowerCase().includes(q) ||
       inv.client_name?.toLowerCase().includes(q) ||
       inv.item_description?.toLowerCase().includes(q)
     )
   }
-
   if (statusFilter.value) {
     result = result.filter(inv => inv.status === statusFilter.value)
   }
-
   return result
 })
 
@@ -582,7 +584,6 @@ const calculateTotals = () => {
   const months = Number(form.value.period_months) || 0
   const price = Number(form.value.unit_price) || 0
   const rate = Number(form.value.tax_rate) || 0
-
   form.value.gross_value = cars * months * price
   form.value.tax_amount = form.value.gross_value * (rate / 100)
   form.value.total_amount = form.value.gross_value + form.value.tax_amount
@@ -593,9 +594,13 @@ const openCreateDialog = () => {
   selectedInvoice.value = null
   form.value = {
     invoice_number: generateInvoiceNumber(),
+    title: '',
     client_name: '',
     client_email: '',
     client_phone: '',
+    tin: '',
+    address: '',
+    vrn: '',
     item_description: '',
     number_of_cars: 0,
     period_months: 0,
@@ -705,24 +710,25 @@ const submitSendInvoice = async () => {
   isSubmitting.value = true
   try {
     const response = await axios.post(`/api/accountant/invoices/${selectedInvoice.value}/send`, sendForm.value)
-    
+   
     if (response.data.success) {
       toast.success('Invoice sent successfully')
       showSendDialog.value = false
       await fetchInvoices()
       await fetchStatistics()
-      
-      // Show detailed results if available
+     
       if (response.data.results) {
         let message = 'Invoice sent via:\n'
         Object.entries(response.data.results).forEach(([method, result]) => {
           message += `${method}: ${result}\n`
         })
         toast.info(message.trim())
-        
-        // Open WhatsApp URL if provided
+       
         if (response.data.results.whatsapp_url) {
-          window.open(response.data.results.whatsapp_url, '_blank')
+          const newWindow = window.open(response.data.results.whatsapp_url, '_blank')
+          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+            window.location.href = response.data.results.whatsapp_url
+          }
         }
       }
     } else {
@@ -785,27 +791,26 @@ const visiblePages = computed(() => {
   const delta = 2
   const range = []
   const rangeWithDots = []
-
   for (let i = Math.max(2, current - delta); i <= Math.min(totalPages - 1, current + delta); i++) {
     range.push(i)
   }
-
   if (current - delta > 2) {
     rangeWithDots.push(1, '...')
   } else {
     rangeWithDots.push(1)
   }
-
   rangeWithDots.push(...range)
-
   if (current + delta < totalPages - 1) {
     rangeWithDots.push('...', totalPages)
   } else {
     rangeWithDots.push(totalPages)
   }
-
   return [...new Set(rangeWithDots)]
 })
+
+// ────────────────────────────────────────────────
+// EXPORT & PDF FUNCTIONS
+// ────────────────────────────────────────────────
 
 const exportToExcel = async () => {
   try {
@@ -826,18 +831,543 @@ const exportToExcel = async () => {
 
 const exportToPDF = async () => {
   try {
-    const response = await axios.get('/api/accountant/invoices/export/pdf', { responseType: 'blob' })
-    const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'invoices_' + new Date().toISOString().split('T')[0] + '.pdf'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    toast.success('PDF export downloaded successfully')
+    const response = await axios.get('/api/accountant/invoices/export/pdf')
+   
+    if (response.data.success) {
+      const data = response.data.data
+     
+      const modal = document.createElement('div')
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      `
+     
+      const container = document.createElement('div')
+      container.style.cssText = `
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 95%;
+        max-height: 95%;
+        overflow: auto;
+      `
+     
+      const listHtml = createInvoiceListHTML(data)
+      container.innerHTML = `
+        <div style="margin-bottom: 20px; text-align: right;">
+          <button onclick="this.closest('div[style*=fixed]').remove()" style="
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+          ">Close</button>
+          <button onclick="generateListPDFFromHTML(this)" style="
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+          ">Download PDF</button>
+        </div>
+        ${listHtml}
+      `
+     
+      modal.appendChild(container)
+      document.body.appendChild(modal)
+     
+      window.generateListPDFFromHTML = (button) => {
+        const container = button.closest('div[style*=background]')
+        const listElement = container.querySelector('.invoice-list-report')
+       
+        printInvoiceList(listElement, data.filename || 'invoices-report.pdf')
+      }
+     
+      toast.success('Invoice list loaded successfully')
+    }
   } catch (err) {
-    toast.error('Failed to export PDF')
+    toast.error('Failed to load invoice list')
     console.error(err)
+  }
+}
+
+const createInvoiceListHTML = (data) => {
+  const { invoices, company, generated, total_records, grand_total } = data
+
+  return `
+    <div class="invoice-list-report" style="font-family: Arial, sans-serif; font-size: 10px; color: #1e293b; padding: 16px 24px;">
+      <div style="height: 5px; background: linear-gradient(90deg, #1a3a5c, #c8932a); margin-bottom: 18px;"></div>
+     
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+        <div>
+          <div style="font-size: 16px; font-weight: 800; color: #1a3a5c;">${company.name}</div>
+          <div style="font-size: 8.5px; color: #94a3b8; margin-top: 4px; max-width: 360px; line-height: 1.55;">
+            ${company.address}<br>
+            ${company.contacts}
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 9px; color: #475569; line-height: 1.7;">
+          <div style="font-size: 12px; color: #1a3a5c; font-weight: 700; margin-bottom: 2px;">TAX INVOICE REPORT</div>
+          Generated: ${generated}<br>
+          Total Records: ${total_records}<br>
+          Grand Total: <strong style="color:#1a3a5c;">${formatCurrency(grand_total)} Tsh</strong>
+        </div>
+      </div>
+      <div style="border: none; border-top: 1.5px solid #e2e8f0; margin: 12px 0 9px;"></div>
+      <span style="font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #c8932a; border-bottom: 2px solid #c8932a; padding-bottom: 4px; margin-bottom: 9px; display: inline-block;">Invoice Listing</span>
+      <table style="width: 100%; border-collapse: collapse; font-size: 9.5px;">
+        <thead>
+          <tr style="background: #1a3a5c; color: #fff;">
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: left;">Invoice No.</th>
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: left;">Client</th>
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: left;">Description</th>
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: right;">Cars</th>
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: right;">Period</th>
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: right;">Unit Price (Tsh)</th>
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: right;">Tax (Tsh)</th>
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: right;">Total (Tsh)</th>
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: left;">Date</th>
+            <th style="padding: 8px 9px; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-align: center;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${invoices.map((inv, idx) => {
+            const status = inv.status || 'draft'
+            const [bg, fg] = status === 'paid' ? ['#dcfce7', '#15803d'] :
+                           status === 'sent' ? ['#dbeafe', '#1d4ed8'] :
+                           status === 'unpaid' ? ['#fee2e2', '#b91c1c'] :
+                           ['#f1f5f9', '#64748b']
+            const badge = `<span style="background:${bg};color:${fg};padding:2px 9px;border-radius:999px;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">${status}</span>`
+            const desc = inv.item_description ? inv.item_description.substring(0, 46) + (inv.item_description.length > 46 ? '…' : '') : ''
+           
+            return `
+              <tr style="border-bottom: 1px solid #e2e8f0; ${idx % 2 === 0 ? 'background: #f8fafc;' : ''}">
+                <td style="padding: 6.5px 9px; color: #475569;">${inv.invoice_number}</td>
+                <td style="padding: 6.5px 9px; color: #475569; font-weight: 600;">${inv.client_name}</td>
+                <td style="padding: 6.5px 9px; color: #475569;">${desc}</td>
+                <td style="padding: 6.5px 9px; color: #475569; text-align: right;">${inv.number_of_cars}</td>
+                <td style="padding: 6.5px 9px; color: #475569; text-align: right;">${inv.period_months}</td>
+                <td style="padding: 6.5px 9px; color: #475569; text-align: right;">${formatCurrency(inv.unit_price)}</td>
+                <td style="padding: 6.5px 9px; color: #475569; text-align: right;">${formatCurrency(inv.tax_amount)}</td>
+                <td style="padding: 6.5px 9px; color: #475569; text-align: right; font-weight: 700; color: #1a3a5c;">${formatCurrency(inv.total_amount)}</td>
+                <td style="padding: 6.5px 9px; color: #475569;">${inv.invoice_date}</td>
+                <td style="padding: 6.5px 9px; color: #475569; text-align: center;">${badge}</td>
+              </tr>
+            `
+          }).join('')}
+        </tbody>
+        <tfoot>
+          <tr style="background: #f1f5f9; border-top: 2px solid #1a3a5c;">
+            <td colspan="7" style="padding: 7px 9px; font-weight: 700; color: #1a3a5c; font-size: 10px; text-align: right; letter-spacing: 0.5px;">GRAND TOTAL</td>
+            <td style="padding: 7px 9px; font-weight: 700; color: #1a3a5c; font-size: 12px; text-align: right;">${formatCurrency(grand_total)} Tsh</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div style="margin-top: 16px; display: flex; justify-content: space-between; font-size: 8.5px; color: #94a3b8;">
+        <span>${company.name} — Confidential Invoice Report</span>
+        <span>Generated on ${generated}</span>
+      </div>
+      <div style="height: 4px; background: linear-gradient(90deg, #c8932a, #1a3a5c); margin-top: 14px;"></div>
+    </div>
+  `
+}
+
+const downloadInvoice = async (id) => {
+  try {
+    const response = await axios.get(`/api/accountant/invoices/${id}/download`)
+   
+    if (response.data.success) {
+      const invoiceData = response.data.data
+     
+      const modal = document.createElement('div')
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      `
+     
+      const container = document.createElement('div')
+      container.style.cssText = `
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 90%;
+        max-height: 90%;
+        overflow: auto;
+      `
+     
+      const invoiceHtml = createInvoiceHTML(invoiceData)
+      container.innerHTML = `
+        <div style="margin-bottom: 20px; text-align: right;">
+          <button onclick="this.closest('div[style*=fixed]').remove()" style="
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+          ">Close</button>
+          <button onclick="generatePDFFromHTML(this)" style="
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+          ">Download PDF</button>
+        </div>
+        ${invoiceHtml}
+      `
+     
+      modal.appendChild(container)
+      document.body.appendChild(modal)
+     
+      window.generatePDFFromHTML = (button) => {
+        const container = button.closest('div[style*=background]')
+        const invoiceElement = container.querySelector('.page')
+       
+        printInvoice(invoiceElement, invoiceData.filename || `invoice-${invoiceData.invoice.invoice_number}.pdf`)
+      }
+     
+      toast.success('Invoice loaded successfully')
+    }
+  } catch (err) {
+    toast.error('Failed to load invoice')
+    console.error(err)
+  }
+}
+
+const createInvoiceHTML = (data) => {
+  const { invoice, company, status_badge, client_info, tax_info, notes } = data
+
+  return `
+    <div class="page" style="width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff; display: flex; flex-direction: column; position: relative;">
+      <div style="height: 6px; background: #1e3a8a;"></div>
+      <div style="height: 2px; background: #b45309;"></div>
+      <div style="padding: 30px 44px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #e2e8f0;">
+        <div style="display: flex; align-items: flex-start; gap: 20px;">
+          <div style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 8px; padding: 8px; flex-shrink: 0;">
+            <img src="/images/tera.jpeg" alt="TERA Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+          </div>
+          <div>
+            <div style="font-size: 18px; font-weight: 800; color: #1e3a8a; text-transform: uppercase;">${company.name}</div>
+            <div style="font-size: 10px; color: #64748b; margin-top: 5px;">
+              ${company.address}<br>
+              ${company.contacts}
+            </div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 36px; font-weight: 900; color: #1e3a8a;">INVOICE</div>
+          <div style="font-weight: 700;">#${invoice.invoice_number}</div>
+          <span style="display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 999px; font-size: 9px; font-weight: 700; text-transform: uppercase; background: ${status_badge.bg}; color: ${status_badge.fg};">
+            ${status_badge.text}
+          </span>
+        </div>
+      </div>
+      <div style="display: table; width: 100%; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+        <div style="display: table-cell; padding: 15px 22px; border-right: 1px solid #e2e8f0;">
+          <span style="font-size: 8px; font-weight: 700; text-transform: uppercase; color: #94a3b8;">Date</span><br>
+          <span style="font-size: 12px; font-weight: 700; color: #1e293b;">${invoice.invoice_date}</span>
+        </div>
+        <div style="display: table-cell; padding: 15px 22px; border-right: 1px solid #e2e8f0;">
+          <span style="font-size: 8px; font-weight: 700; text-transform: uppercase; color: #94a3b8;">Due Date</span><br>
+          <span style="font-size: 12px; font-weight: 700; color: #1e293b;">${invoice.due_date}</span>
+        </div>
+        <div style="display: table-cell; padding: 15px 22px;">
+          <span style="font-size: 8px; font-weight: 700; text-transform: uppercase; color: #94a3b8;">Tax Rate</span><br>
+          <span style="font-size: 12px; font-weight: 700; color: #1e293b;">${invoice.tax_rate}%</span>
+        </div>
+      </div>
+      <div style="padding: 30px 44px; flex: 1;">
+        <div style="display: table; width: 100%; margin-bottom: 30px;">
+          <div style="display: table-cell; width: 33%; padding-right: 20px; vertical-align: top;">
+            <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #b45309; border-bottom: 2px solid #b45309; padding-bottom: 3px; margin-bottom: 10px;">Bill To</div>
+            <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 5px;">${invoice.client_name}</div>
+            <table style="width: 100%; border-collapse: collapse;">
+              ${client_info.map(info => `
+                <tr><td style="padding: 2px 0; font-size: 11px; color: #1e293b; font-weight: 700; width: 70px;">${info.label}</td><td style="padding: 2px 0; font-size: 11px; color: #475569;">${info.value}</td></tr>
+              `).join('')}
+            </table>
+          </div>
+          <div style="display: table-cell; width: 33%; padding-right: 20px; vertical-align: top;">
+            <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #b45309; border-bottom: 2px solid #b45309; padding-bottom: 3px; margin-bottom: 10px;">Tax Details</div>
+            <table style="width: 100%; border-collapse: collapse;">
+              ${tax_info.map(info => `
+                <tr><td style="padding: 2px 0; font-size: 11px; color: #1e293b; font-weight: 700; width: 70px;">${info.label}</td><td style="padding: 2px 0; font-size: 11px; color: #475569;">${info.value}</td></tr>
+              `).join('')}
+            </table>
+          </div>
+          <div style="display: table-cell; width: 33%; vertical-align: top;">
+            <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #b45309; border-bottom: 2px solid #b45309; padding-bottom: 3px; margin-bottom: 10px;">Payment Due</div>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr><td style="padding: 2px 0; font-size: 11px; color: #1e293b; font-weight: 700; width: 70px;">Total</td><td style="padding: 2px 0; font-size: 11px; color: #1e293b; font-weight: 800;">${formatCurrency(invoice.total_amount)} Tsh</td></tr>
+            </table>
+          </div>
+        </div>
+        <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #b45309; border-bottom: 2px solid #b45309; padding-bottom: 3px; margin-bottom: 10px;">Items & Services</div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <thead>
+            <tr>
+              <th style="background: #1e3a8a; color: #fff; padding: 10px; font-size: 9px; text-transform: uppercase; text-align: left;">Description</th>
+              <th style="background: #1e3a8a; color: #fff; padding: 10px; font-size: 9px; text-transform: uppercase; text-align: right;">Qty</th>
+              <th style="background: #1e3a8a; color: #fff; padding: 10px; font-size: 9px; text-transform: uppercase; text-align: right;">Price</th>
+              <th style="background: #1e3a8a; color: #fff; padding: 10px; font-size: 9px; text-transform: uppercase; text-align: right;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px;">
+                <strong>${invoice.item_description}</strong><br>
+                <small style="color: #64748b;">Period: ${invoice.period_months} Mo.</small>
+              </td>
+              <td style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; text-align: right;">${invoice.number_of_cars || 1}</td>
+              <td style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; text-align: right;">${formatCurrency(invoice.unit_price)}</td>
+              <td style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; text-align: right; font-weight: 700;">${formatCurrency(invoice.total_amount)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="width: 100%; display: table;">
+          <div style="display: table-cell; width: 60%; vertical-align: top;">
+            <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #b45309; border-bottom: 2px solid #b45309; padding-bottom: 3px; margin-bottom: 10px;">Notes</div>
+            <div style="font-size: 11px; color: #64748b;">${notes || 'No notes provided'}</div>
+          </div>
+          <div style="display: table-cell; width: 40%; vertical-align: top;">
+            <br><br><br>
+            <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+              <div style="display: table; width: 100%; padding: 8px 15px; border-bottom: 1px solid #e2e8f0;">
+                <span style="display: table-cell; font-size: 11px;">Subtotal</span>
+                <span style="display: table-cell; text-align: right; font-weight: 700;">${formatCurrency(invoice.gross_value)}</span>
+              </div>
+              <div style="display: table; width: 100%; padding: 8px 15px; border-bottom: 1px solid #e2e8f0;">
+                <span style="display: table-cell; font-size: 11px;">VAT (${invoice.tax_rate}%)</span>
+                <span style="display: table-cell; text-align: right; font-weight: 700;">${formatCurrency(invoice.tax_amount)}</span>
+              </div>
+              <div style="display: table; width: 100%; padding: 13px 15px; background: #1e3a8a; color: #fff;">
+                <span style="display: table-cell; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Amount Due</span>
+                <span style="display: table-cell; text-align: right; font-weight: 800; font-size: 16px;">${formatCurrency(invoice.total_amount)} Tsh</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 20px 44px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 10px; color: #94a3b8;">
+        <div style="display: flex; justify-content: space-between;">
+          <span>Thank you for your business.</span>
+          <span style="text-align: right;">Generated on ${new Date().toLocaleDateString()}</span>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+const printInvoice = async (element, filename = 'invoice.pdf') => {
+  try {
+    // Attempt html2pdf first (best quality when it works)
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+
+      const opt = {
+        margin:       [8, 6, 10, 6],           // smaller top/bottom margins
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  {
+          scale: 2.5,                        // higher scale = sharper text
+          useCORS: true,
+          logging: false,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          windowWidth: 794,                  // A4 at ~96 dpi
+          removeContainer: true
+        },
+        jsPDF:        {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+          compressPDF: true
+        },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      const pdfBlob = await html2pdf()
+        .set(opt)
+        .from(element)
+        .outputPdf('blob');
+
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success("PDF downloaded via html2pdf");
+      return;
+    } catch (pdfErr) {
+      console.warn("html2pdf failed → falling back to browser print", pdfErr);
+      toast.info("Using browser print (better results with small margins)");
+    }
+
+    // ───────────────────────────────────────
+    // Very robust browser print fallback
+    // ───────────────────────────────────────
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    if (!printWindow) {
+      toast.error("Popup blocked → please allow popups for this site");
+      return;
+    }
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>Invoice - ${filename.replace('.pdf', '')}</title>
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 8mm 6mm 10mm 6mm;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.2pt;
+            line-height: 1.38;
+            color: #111827;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .page {
+            width: 210mm;
+            min-height: 297mm;
+            box-sizing: border-box;
+            page-break-after: always;
+          }
+          table { width: 100%; border-collapse: collapse; }
+          thead { display: table-header-group; }
+          tfoot { display: table-footer-group; }
+          tr, td, th, div, p {
+            page-break-inside: avoid !important;
+          }
+          .description-cell {
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            hyphens: auto !important;
+          }
+          .avoid-break {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          img { max-width: 100%; height: auto; }
+          * { box-sizing: border-box; }
+        </style>
+      </head>
+      <body>
+        ${element.outerHTML}
+        <script>
+          setTimeout(() => {
+            window.print();
+            // Optional: close window after printing (comment out if unwanted)
+            // setTimeout(() => window.close(), 2000);
+          }, 1200);
+        <\/script>
+      </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+
+  } catch (err) {
+    console.error("PDF generation completely failed", err);
+    toast.error("PDF creation failed. Try printing manually from the preview.");
+  }
+};
+const printInvoiceList = async (element, filename = 'invoices-report.pdf') => {
+  try {
+    try {
+      const html2pdf = (await import('html2pdf.js')).default
+      const opt = {
+        margin: [10, 8, 12, 8],
+        filename,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+        pagebreak: { mode: ['avoid-all', 'css'] }
+      }
+      const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob')
+
+      const url = URL.createObjectURL(pdfBlob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      return
+    } catch (e) {
+      console.warn('html2pdf fallback for list')
+    }
+
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>Invoice Report - ${filename}</title>
+        <style>
+          @page {
+            size: A4 landscape;
+            margin: 10mm 8mm 12mm 8mm;
+          }
+          body { margin:0; padding:0; font-family:Arial,Helvetica,sans-serif; font-size:9.8pt; }
+          .page { width:297mm; min-height:210mm; box-sizing:border-box; page-break-after:always; }
+          table { width:100%; border-collapse:collapse; font-size:9pt; }
+          thead { display:table-header-group; }
+          .description-cell { word-wrap:break-word; hyphens:auto; }
+          .avoid-break { page-break-inside:avoid; }
+        </style>
+      </head>
+      <body>
+        ${element.outerHTML}
+      </body>
+      </html>
+    `)
+
+    printWindow.document.close()
+    setTimeout(() => {
+      printWindow.focus()
+      printWindow.print()
+    }, 1000)
+
+  } catch (err) {
+    toast.error('Failed to generate report PDF')
   }
 }
 

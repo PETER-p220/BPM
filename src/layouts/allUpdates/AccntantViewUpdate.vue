@@ -154,7 +154,7 @@ onMounted(() => {
 async function fetchUpdates() {
   loading.value = true
   try {
-    const { data } = await axios.get('api/updates')
+    const { data } = await axios.get('my/updates')
     updates.value = (data.data || []).map(update => ({
       chat_id: update.chat_id,
       title: update.title,
@@ -166,7 +166,7 @@ async function fetchUpdates() {
     }))
   } catch (err) {
     console.error(err)
-    toast.error('Failed to load project updates')
+    toast.error('Failed to load your updates')
   } finally {
     loading.value = false
   }

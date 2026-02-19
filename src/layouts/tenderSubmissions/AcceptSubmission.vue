@@ -123,7 +123,7 @@
   async function fetchSubmissionData() {
     isLoading.value = true;
     try {
-      const response = await axios.get(`api/submit/tender/${route.params.submission_id}`);
+      const response = await axios.get(`submit/tender/${route.params.submission_id}`);
       const submission = response.data.data;
       submissionData.value = {
         tender_id: submission.tender_id,
@@ -143,7 +143,7 @@
   async function updateSubmission() {
     isLoading.value = true;
     try {
-      await axios.put(`api/submit/tender/${route.params.submission_id}`, submissionData.value);
+      await axios.put(`submit/tender/${route.params.submission_id}`, submissionData.value);
       toast.success('Submission updated successfully');
       router.push('/tenders-submitted');
     } catch (error) {

@@ -375,6 +375,13 @@ const navigations = ref([
       },
     ],
   },
+  {
+    icon: "fas fa-user-circle text-gray-500",
+    label: "Profile",
+    name: "Profile",
+    path: "UserProfile",
+    active: false,
+  },
   { 
     icon: 'fas fa-ellipsis-h text-gray-500',
     label: 'Others',

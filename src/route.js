@@ -949,18 +949,18 @@ const routes = [
                meta: { requiresAuth: true, allowedRoles: [3] }
             },
             {
-                path:'/submit-update',
-                name:'SubmitUpdate',
-                component: SubmitUpdateVue,
-                props:true,
-               meta: { requiresAuth: true, allowedRoles: [3] }
-            },
-            {
                 path:'/edituser-update/:chat_id',
                 name:'EditUserUpdate',
                 component: EditUserUpdateVue,
                 props:true,
-               meta: { requiresAuth: true, allowedRoles: [3, 6] }
+               meta: { requiresAuth: true, allowedRoles: [3] }
+            },
+            {
+                path:'/user/submit-update',
+                name:'UserSubmitUpdate',
+                component: SubmitUpdateVue,
+                props:true,
+               meta: { requiresAuth: true, allowedRoles: [3] }
             },
             {
                 path:'/user/schedules',
@@ -1718,11 +1718,10 @@ const routes = [
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
             {
-                path: '/edituser-update/:chat_id',
-                name: 'EditUserUpdate',
-                component: EditUserUpdateVue,
-                props: true,
-                meta: { requiresAuth: true, allowedRoles: [3, 6] }
+                path: '/hr-create-minutes-test',
+                name: 'HrCreateMinutesTest',
+                component: HrCreateMinutes,
+                meta: { requiresAuth: true, allowedRoles: [6] }
             },
         ],
     },
@@ -1742,11 +1741,13 @@ const routes = [
                 name: 'Register',
                 component: Register,
             },
+
             {
                 path: '/auth/google/callback',
                 name: 'GoogleCallback',
                 component: GoogleCallback,
             },
+            
             {
                 path: 'password',
                 name: 'Password',
@@ -1761,6 +1762,12 @@ const routes = [
                 path: 'update-password',
                 name: 'ResetPasswordPage',
                 component: ResetPasswordPage,
+            },
+            {
+                path: '/profile',
+                name: 'UniversalProfile',
+                component: UserProfile1,
+                meta: { requiresAuth: true, allowedRoles: [1, 2, 3, 4, 5, 6] }
             },
         ]
     },

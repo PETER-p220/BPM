@@ -310,7 +310,7 @@ onMounted(async () => {
 
 async function fetchData() {
   try {
-    const response = await axios.get('api/submit/tender');
+    const response = await axios.get('api/submitted/tender');
     users.value = response.data.data;
   } catch (error) {
     handleError(error);

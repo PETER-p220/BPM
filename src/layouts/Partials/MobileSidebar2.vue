@@ -10,7 +10,7 @@
             <div class="mt-5 flex-1 h-0">
                 <nav>
                     <div class="space-y-1">
-                        <HodSideBar></HodSideBar>
+                        <TendersSideBar></TendersSideBar>
                     </div>
                 </nav>
             </div>
@@ -27,7 +27,7 @@ export default {
 <script setup>
 import { computed } from "vue"
 import { useStore } from "vuex"
-import HodSideBar from './HodSideBar.vue'
+import TendersSideBar from './TendersSideBar.vue'
 
 const store = useStore()
 

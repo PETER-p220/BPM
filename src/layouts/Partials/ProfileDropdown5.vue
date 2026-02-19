@@ -7,7 +7,7 @@
         <MenuItems
           class="absolute right-0 z-20 w-48 mx-2 mt-1 overflow-hidden bg-white divide-y divide-gray-200 rounded-md top-12 dark:bg-dark-header dark:border dark:border-gray-700 dark:divide-gray-600"
         >
-        <router-link to="/accntant/profile">
+        <router-link to="/profile">
           <MenuItem v-slot="{ active }">
             <div
               class="px-4 py-2 text-sm cursor-pointer"

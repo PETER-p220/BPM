@@ -336,7 +336,7 @@ const navigations = ref([
     icon: "fas fa-user-circle text-gray-500",
     label: "Profile",
     name: "Profile",
-    path: "UserProfile1",
+    path: "UniversalProfile",
     active: false,
   },
   {

@@ -170,7 +170,10 @@ onMounted(async () => {
 
 async function fetchChatDetails() {
   try {
+    console.log('Fetching update details for chat_id:', chat_id)
     const response = await axios.get(`api/updates/${chat_id}`)
+    console.log('API response:', response.data)
+    
     if (response.data.status === 'success') {
       const data = response.data.data
       chat.value = {
@@ -183,10 +186,25 @@ async function fetchChatDetails() {
       form.description = data.description
     } else {
       toast.error(response.data.message || 'Failed to load update')
+      // Redirect back to updates list on failure
+      router.push('/user-updates')
     }
   } catch (error) {
-    console.error(error)
+    console.error('Error fetching update details:', error)
     toast.error('Could not load update details')
+    
+    // Check if it's an authentication error and redirect accordingly
+    if (error.response?.status === 401) {
+      router.push('/login')
+    } else if (error.response?.status === 403) {
+      router.push('/user-updates')
+    } else if (error.response?.status === 404) {
+      toast.error('Update not found')
+      router.push('/user-updates')
+    } else {
+      // For other errors, redirect back to updates list
+      router.push('/user-updates')
+    }
   }
 }
 
@@ -229,7 +247,7 @@ function cancelEdit() {
   if (userRole === '6') {
     router.push('/hr-view-updates')
   } else {
-    router.push('/user/update')
+    router.push('/user-updates')
   }
 }
 </script>

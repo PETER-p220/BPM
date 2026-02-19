@@ -2,14 +2,14 @@
   <div class="add-user py-6 md:py-10 min-h-screen bg-gray-50">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
       <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
-        <!-- Header -->
+        <!-- Header -->            
         <div
           class="px-6 py-4 flex items-center justify-between text-white"
           style="background-color: #283747;"
         >
           <div class="flex items-center gap-3 text-lg font-semibold">
             <i class="fa fa-file-invoice"></i>
-            Submit Quotation
+            Submit Quotation 
           </div>
           <button
             type="button"

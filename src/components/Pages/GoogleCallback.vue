@@ -39,22 +39,45 @@
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
   
-        // Navigate based on role_id
+        console.log('Processing redirect for role_id:', role_id, 'type:', typeof role_id);
+        console.log('Router instance:', router);
+        console.log('About to call router.push...');
+        
         switch (parseInt(role_id)) {
           case 1:
-            router.push('/dashboard');
+            console.log('Redirecting to Admin Dashboard');
+            await router.push('/dashboard');
+            console.log('Router push completed');
             break;
           case 2:
-            router.push('/tenders/dashboard');
+            console.log('Redirecting to HOD Dashboard');
+            await router.push('/hod/dashboard');
+            console.log('Router push completed');
             break;
           case 3:
-            router.push('/user/dashboard');
+            console.log('Redirecting to User Dashboard');
+            await router.push('/user/dashboard');
+            console.log('Router push completed');
             break;
           case 4:
-            router.push('/accountDash');
+            console.log('Redirecting to Tenders Dashboard');
+            await router.push('/tenders/dashboard');
+            console.log('Router push completed');
+            break;
+          case 5:
+            console.log('Redirecting to Accountant Dashboard');
+            await router.push('/accountDash');
+            console.log('Router push completed');
+            break;
+          case 6:
+            console.log('Redirecting to HR Dashboard');
+            await router.push('/hrDash');
+            console.log('Router push completed');
             break;
           default:
-            router.push('/');
+            console.log('Unknown role_id, redirecting to home');
+            await router.push('/');
+            console.log('Router push completed');
             break;
         }
       } else {

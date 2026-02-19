@@ -172,9 +172,7 @@
                 <th scope="col" class="px-4 py-3.5 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   Timeline
                 </th>
-                <th scope="col" class="px-4 py-3.5 text-center text-xs font-semibold text-gray-900 uppercase tracking-wider">
-                  Actions
-                </th>
+                
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -331,26 +329,6 @@
                   </div>
                 </td>
                 
-                <!-- Actions -->
-                <td class="px-4 py-4 text-sm whitespace-nowrap">
-                  <div class="flex items-center justify-center gap-2">
-                    <button
-                      @click="viewDetails(appointmentLetter)"
-                      class="p-2 text-blue-600 transition-colors rounded-lg hover:bg-blue-50"
-                      title="View Details"
-                    >
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button
-                      v-if="appointmentLetter.letter_file"
-                      @click="downloadLetterFile(appointmentLetter.letter_file)"
-                      class="p-2 text-green-600 transition-colors rounded-lg hover:bg-green-50"
-                      title="Download Letter"
-                    >
-                      <i class="fas fa-file-download"></i>
-                    </button>
-                  </div>
-                </td>
               </tr>
             </tbody>
           </table>

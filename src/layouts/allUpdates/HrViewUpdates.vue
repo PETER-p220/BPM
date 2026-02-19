@@ -227,7 +227,7 @@ onMounted(async () => {
 async function fetchUpdates() {
   isLoading.value = true;
   try {
-    const response = await axios.get('api/my/updates');
+    const response = await axios.get('my/updates');
     // Sort by created_at descending (newest first)
     updates.value = response.data.data
       .map(update => ({
