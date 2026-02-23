@@ -49,8 +49,8 @@
             class="form-input"
             accept="image/*"
           />
-          <div v-if="form.update_photo" class="photo-preview">
-            <img :src="form.update_photo" alt="Preview" class="preview-image" />
+          <div v-if="form.update_photo_preview" class="photo-preview">
+            <img :src="form.update_photo_preview" alt="Preview" class="preview-image" />
           </div>
         </div>
 
@@ -86,20 +86,28 @@
 <script setup>
 import { ref } from 'vue';
 import axios from '@/axios';
+import { useToast } from 'vue-toastification';
 
 const form = ref({
   titles: [''],
   description: '',
   priority: 'medium',
   update_photo: null,
+  update_photo_preview: null,
   update_file: null
 });
 
 const isSubmitting = ref(false);
+const toast = useToast();
 
 const submitUpdate = async () => {
   if (!form.value.titles[0] || !form.value.description) {
-    alert('Please fill in all required fields');
+    toast.error('Please fill in all required fields', {
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnHover: true,
+      icon: 'fas fa-exclamation-circle'
+    });
     return;
   }
 
@@ -107,35 +115,13 @@ const submitUpdate = async () => {
   
   try {
     const formData = new FormData();
-    
-    // Debug: Log the form data
-    console.log('Form data before submission:', form.value);
-    
-    // Send titles as array instead of string
-    if (Array.isArray(form.value.titles)) {
-      form.value.titles.forEach((title, index) => {
-        if (title) {
-          formData.append(`titles[${index}]`, title);
-        }
-      });
-    } else {
-      // If titles is somehow not an array, convert it
-      const titlesArray = [form.value.titles];
-      titlesArray.forEach((title, index) => {
-        if (title) {
-          formData.append(`titles[${index}]`, title);
-        }
-      });
-    }
-    
+    // Send titles as array (backend requirement)
+    // Ensure we send a proper array structure
+    if (form.value.titles[0]) {
+      formData.append('titles[0]', form.value.titles[0]);
+    } 
     formData.append('description', form.value.description);
     formData.append('priority', form.value.priority);
-    
-    // Debug: Log FormData contents
-    console.log('FormData contents:');
-    for (let pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
     
     if (form.value.update_photo) {
       formData.append('update_photo', form.value.update_photo);
@@ -148,18 +134,34 @@ const submitUpdate = async () => {
     const response = await axios.post('/api/updates', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
-      }
+      },
+      timeout: 30000 
     });
     
     if (response.data.status === 'success') {
-      alert('Update submitted successfully!');
+      toast.success('Update submitted successfully!', {
+        timeout: 3000,
+        closeOnClick: true,
+        pauseOnHover: true,
+        icon: 'fas fa-check-circle'
+      });
       resetForm();
     } else {
-      alert('Failed to submit update: ' + response.data.message);
+      toast.error('Failed to submit update: ' + response.data.message, {
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnHover: true,
+        icon: 'fas fa-exclamation-triangle'
+      });
     }
   } catch (error) {
     console.error('Error submitting update:', error);
-    alert('An error occurred while submitting the update');
+    toast.error('An error occurred while submitting update. Please try again.', {
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnHover: true,
+      icon: 'fas fa-exclamation-circle'
+    });
   } finally {
     isSubmitting.value = false;
   }
@@ -168,8 +170,23 @@ const submitUpdate = async () => {
 const handlePhotoChange = (event) => {
   const file = event.target.files[0];
   if (file && file.type.startsWith('image/')) {
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB', {
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnHover: true,
+        icon: 'fas fa-exclamation-circle'
+      });
+      event.target.value = '';
+      return;
+    }
+    
     form.value.update_photo = file;
-    // Only store the file, not the data URL
+    // Create preview URL using URL.createObjectURL for instant preview
+    if (URL.createObjectURL) {
+      form.value.update_photo_preview = URL.createObjectURL(file);
+    }
   }
 };
 
@@ -189,11 +206,17 @@ const formatFileSize = (bytes) => {
 };
 
 const resetForm = () => {
+  // Clean up object URLs to prevent memory leaks
+  if (form.value.update_photo_preview && URL.revokeObjectURL) {
+    URL.revokeObjectURL(form.value.update_photo_preview);
+  }
+  
   form.value = {
     titles: [''],
     description: '',
     priority: 'medium',
     update_photo: null,
+    update_photo_preview: null,
     update_file: null
   };
 };

@@ -188,7 +188,7 @@ onMounted(async () => {
 
 async function fetchData() {
   try {
-    const response = await axios.get('submitted/tender');
+    const response = await axios.get('api/submitted/tender');
     submissions.value = response.data.data;
   } catch (error) {
     toast.error(error.response?.data?.message || 'Failed to load submitted tenders');

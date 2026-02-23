@@ -326,30 +326,19 @@ function groupByTender(data) {
         created_at: item.created_at,
         status: item.status,
         reason_for_reject: item.reason_for_reject,
-        total_amount_vat_excl: null,
-        total_amount_vat_incl: null,
-        total_amount_needed: null,
-        site_contingency: null,
-        total_investment: null,
-        projected_profit: null,
-        projected_profit_percentage: null,
+        total_amount_vat_excl: item.total_amount_vat_excl,
+        total_amount_vat_incl: item.total_amount_vat_incl,
+        total_amount_needed: item.total_amount_needed,
+        site_contingency: item.site_contingency,
+        total_investment: item.total_investment,
+        projected_profit: item.projected_profit,
+        projected_profit_percentage: item.projected_profit_percentage,
         items: []
       }
     }
 
-    // Set financial summary if available
-    if (item.total_amount_vat_excl && !grouped[tenderId].total_amount_vat_excl) {
-      grouped[tenderId].total_amount_vat_excl = item.total_amount_vat_excl
-      grouped[tenderId].total_amount_vat_incl = item.total_amount_vat_incl
-      grouped[tenderId].total_amount_needed = item.total_amount_needed
-      grouped[tenderId].site_contingency = item.site_contingency
-      grouped[tenderId].total_investment = item.total_investment
-      grouped[tenderId].projected_profit = item.projected_profit
-      grouped[tenderId].projected_profit_percentage = item.projected_profit_percentage
-    }
-
     // Add schedule item
-    if (item.item_description || item.serial_number?.match(/^[A-M\s]+$/)) {
+    if (item.item_description || item.serial_number) {
       grouped[tenderId].items.push(item)
     }
   })

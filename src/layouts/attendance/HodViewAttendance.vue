@@ -5,7 +5,7 @@
       <div class="container mx-auto px-4 py-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Manage Attendance</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Manage HR Attendance</h1>
             <p class="text-sm text-gray-600 mt-1">View, edit, and export attendance records</p>
           </div>
           
@@ -362,21 +362,12 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
           <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
             <h3 class="text-lg font-bold text-gray-900">Attendees List</h3>
-            <div class="flex items-center gap-2">
-              <button
-                @click="downloadAttendeesList"
-                class="inline-flex items-center gap-2 px-3 py-2 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-all font-medium border border-blue-200"
-              >
-                <i class="fas fa-download"></i>
-                Download Names
-              </button>
-              <button
-                @click="showAttendeesModal = false"
-                class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
+            <button
+              @click="showAttendeesModal = false"
+              class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              <i class="fas fa-times"></i>
+            </button>
           </div>
 
           <div class="p-6">
@@ -569,67 +560,6 @@ const confirmDelete = async () => {
 const cancelDelete = () => {
   showDeleteModal.value = false;
   recordToDelete.value = null;
-};
-
-const downloadAttendeesList = () => {
-  if (currentAttendees.value.length === 0) {
-    toast.warning('No attendees to download');
-    return;
-  }
-
-  try {
-    const meetingInfo = attendance.value.find(record => 
-      getAttendeesList(record.attendees).length === currentAttendees.value.length
-    );
-    
-    // Create PDF
-    const doc = new jsPDF();
-    
-    // Header
-    doc.setFontSize(18);
-    doc.setTextColor(40, 40, 40);
-    doc.text('Attendees List', 14, 22);
-    
-    doc.setFontSize(12);
-    doc.setTextColor(100, 100, 100);
-    doc.text(`Generated on: ${new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    })}`, 14, 32);
-    
-    if (meetingInfo) {
-      doc.text(`Meeting Type: ${getMeetingTypeLabel(meetingInfo.meeting_type)}`, 14, 42);
-      doc.text(`Date: ${formatDate(meetingInfo.meeting_date)}`, 14, 50);
-      doc.text(`Location: ${meetingInfo.location}`, 14, 58);
-      doc.text(`Total Attendees: ${currentAttendees.value.length}`, 14, 66);
-      
-      // Attendees list
-      doc.setFontSize(14);
-      doc.setTextColor(40, 40, 40);
-      doc.text('Attendees:', 14, 78);
-      
-      doc.setFontSize(11);
-      doc.setTextColor(60, 60, 60);
-      let yPosition = 88;
-      
-      currentAttendees.value.forEach((attendee, index) => {
-        doc.text(`${index + 1}. ${attendee}`, 20, yPosition);
-        yPosition += 8;
-      });
-    }
-    
-    // Generate filename
-    const filename = meetingInfo 
-      ? `Attendees_${getMeetingTypeLabel(meetingInfo.meeting_type).replace(/\s+/g, '_')}_${formatDate(meetingInfo.meeting_date).replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
-      : `Attendees_List_${new Date().toISOString().split('T')[0]}.pdf`;
-    
-    doc.save(filename);
-    toast.success('Attendees list downloaded successfully as PDF');
-  } catch (error) {
-    console.error('Error downloading attendees list:', error);
-    toast.error('Failed to download attendees list');
-  }
 };
 
 // Export to Excel

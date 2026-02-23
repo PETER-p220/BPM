@@ -167,6 +167,46 @@
         <button class="btn btn-close" @click="closeViewModal">Close</button>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="modal-overlay" @click="cancelDelete">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <div class="modal-icon danger">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h3 class="modal-title">Delete Meeting Minute</h3>
+        </div>
+        
+        <div class="modal-body">
+          <p class="modal-message">
+            Are you sure you want to delete this meeting minute? This action cannot be undone.
+          </p>
+          
+          <div v-if="recordToDelete" class="record-details">
+            <div class="detail-row">
+              <span class="detail-label">Title:</span>
+              <span class="detail-value">{{ recordToDelete.meeting_title || 'Untitled' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Date:</span>
+              <span class="detail-value">{{ formatDate(recordToDelete.meeting_date) || '-' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn btn-secondary" @click="cancelDelete">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button class="btn btn-danger" @click="confirmDelete">
+            <i class="fas fa-trash"></i>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -194,6 +234,9 @@ const itemsPerPage = 10
 
 const showViewModal = ref(false)
 const selectedMinute = ref({})
+const showDeleteModal = ref(false)
+const recordToDelete = ref(null)
+const isDeleting = ref(false)
 
 const fetchMinutes = async () => {
   isLoading.value = true
@@ -299,9 +342,33 @@ const editMinute = (minute) => {
   // → implement your edit logic here
 }
 
-const deleteMinute = (id) => {
-  console.log('Delete:', id)
-  // → implement your delete logic here (confirm + API call)
+const deleteMinute = (minute) => {
+  recordToDelete.value = minute
+  showDeleteModal.value = true
+}
+
+const confirmDelete = async () => {
+  if (!recordToDelete.value) return
+  
+  isDeleting.value = true
+  
+  try {
+    await axios.delete(`/api/meeting-minutes/${recordToDelete.value.minutes_id}`)
+    minutes.value = minutes.value.filter(m => m.minutes_id !== recordToDelete.value.minutes_id)
+    showToast('Meeting minute deleted successfully', 'success')
+    showDeleteModal.value = false
+    recordToDelete.value = null
+  } catch (error) {
+    console.error('Error deleting minute:', error)
+    showToast('Failed to delete meeting minute', 'error')
+  } finally {
+    isDeleting.value = false
+  }
+}
+
+const cancelDelete = () => {
+  showDeleteModal.value = false
+  recordToDelete.value = null
 }
 
 const exportToPDF = () => {
@@ -731,6 +798,123 @@ onMounted(() => {
 
 .btn-close:hover {
   background: #4b5563;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.modal-icon.danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+}
+
+.modal-body {
+  margin-bottom: 1.5rem;
+}
+
+.modal-message {
+  color: #475569;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.record-details {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.detail-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
 }
 
 @media (max-width: 1024px) {

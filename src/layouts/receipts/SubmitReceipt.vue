@@ -107,7 +107,7 @@
             <!-- Description -->
             <div>
               <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                Description / Notes <span class="text-gray-500 text-xs">(optional)</span>
+                Description / Notes 
               </label>
               <textarea
                 id="description"

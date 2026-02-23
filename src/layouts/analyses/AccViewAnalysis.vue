@@ -433,31 +433,43 @@ function groupByProject(data) {
         created_at: item.created_at,
         status: item.status,
         reason_for_reject: item.reason_for_reject,
-        total_amount_vat_excl: null,
-        total_amount_vat_incl: null,
-        total_amount_needed: null,
-        site_contingency: null,
-        total_investment: null,
-        projected_profit: null,
-        projected_profit_percentage: null,
+        total_amount_vat_excl: 0,
+        total_amount_vat_incl: 0,
+        total_amount_needed: 0,
+        site_contingency: 0,
+        total_investment: 0,
+        projected_profit: 0,
+        projected_profit_percentage: 0,
         items: []
       };
     }
 
-    if (item.total_amount_vat_excl && !grouped[projectId].total_amount_vat_excl) {
-      grouped[projectId].total_amount_vat_excl = item.total_amount_vat_excl;
-      grouped[projectId].total_amount_vat_incl = item.total_amount_vat_incl;
-      grouped[projectId].total_amount_needed = item.total_amount_needed;
-      grouped[projectId].site_contingency = item.site_contingency;
-      grouped[projectId].total_investment = item.total_investment;
-      grouped[projectId].projected_profit = item.projected_profit;
-      grouped[projectId].projected_profit_percentage = item.projected_profit_percentage;
-    }
-
-    if (item.item_description || item.serial_number?.match(/^[A-M\s]+$/)) {
-      grouped[projectId].items.push(item);
+    // Add item to project's items array
+    grouped[projectId].items.push(item);
+    
+    // Calculate financial totals for this project
+    const quotedAmount = parseFloat(item.quoted_amount || (item.quantity * item.rate) || 0);
+    const buyingAmount = parseFloat(item.amount || 0);
+    
+    // VAT calculations (18% VAT rate)
+    const vatRate = 0.18;
+    const vatAmount = quotedAmount * vatRate;
+    
+    grouped[projectId].total_amount_vat_excl += quotedAmount;
+    grouped[projectId].total_amount_vat_incl += quotedAmount + vatAmount;
+    grouped[projectId].total_amount_needed += buyingAmount;
+    grouped[projectId].site_contingency += quotedAmount * 0.1; // 10% contingency
+    grouped[projectId].total_investment += quotedAmount * 1.2; // 20% investment factor
+    grouped[projectId].projected_profit += quotedAmount - buyingAmount; // Profit margin
+  });
+  
+  // Calculate profit percentage for each project
+  Object.values(grouped).forEach(project => {
+    if (project.total_amount_vat_incl > 0) {
+      project.projected_profit_percentage = Math.round((project.projected_profit / project.total_amount_vat_incl) * 100 * 100) / 100;
     }
   });
+  
   return Object.values(grouped);
 }
 

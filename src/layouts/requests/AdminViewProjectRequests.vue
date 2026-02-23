@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 space-y-6 font-sans">
     <!-- Header -->
-    <PageHeader subtitle="View & Manage Purchase Requests">
+    <PageHeader title="Purchase requests" subtitle="View & Manage Purchase Requests">
       <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3">
         <!-- You can add extra header actions here if needed -->
       </div>

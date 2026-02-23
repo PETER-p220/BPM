@@ -8,8 +8,8 @@
       <header class="page-header">
         <div class="header-left">
           <div class="header-badge">REPORTS</div>
-          <h1 class="page-title">Engineer Updates</h1>
-          <p class="page-sub">View, filter and export daily engineer progress updates</p>
+          <h1 class="page-title">Employee Updates</h1>
+          <p class="page-sub">View, filter and export daily Employee progress updates</p>
         </div>
         <div v-if="reports.length" class="header-stat">
           <span class="stat-num">{{ reports.length }}</span>
@@ -39,6 +39,7 @@
               v-model="fromDate"
               class="field-input"
               :max="toDate || undefined"
+              @change="selectedQuickRange = null"
             />
           </div>
 
@@ -49,6 +50,7 @@
               v-model="toDate"
               class="field-input"
               :min="fromDate || undefined"
+              @change="selectedQuickRange = null"
             />
           </div>
 
@@ -121,7 +123,7 @@
             <thead>
               <tr>
                 <th class="col-no">#</th>
-                <th>Engineer</th>
+                <th>Employee</th>
                 <th>Title</th>
                 <th class="col-desc">Description</th>
                 <th>Date</th>
@@ -200,12 +202,8 @@
 
         <!-- Pagination -->
         <div class="pagination">
-          <button class="page-btn" @click="changePage(1)" :disabled="currentPage === 1">
-            «
-          </button>
-          <button class="page-btn" @click="changePage(currentPage - 1)" :disabled="currentPage === 1">
-            <
-          </button>
+          <button class="page-btn" @click="changePage(1)" :disabled="currentPage === 1">«</button>
+          <button class="page-btn" @click="changePage(currentPage - 1)" :disabled="currentPage === 1">&lt;</button>
 
           <button
             v-for="p in visiblePages"
@@ -218,22 +216,71 @@
             {{ p }}
           </button>
 
-          <button class="page-btn" @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
-            >
-          </button>
-          <button class="page-btn" @click="changePage(totalPages)" :disabled="currentPage >= totalPages">
-            »
-          </button>
+          <button class="page-btn" @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">&gt;</button>
+          <button class="page-btn" @click="changePage(totalPages)" :disabled="currentPage >= totalPages">»</button>
         </div>
       </div>
 
-      <!-- Empty State -->
-      <div v-else class="state-card empty-state">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 7.414V19a2 2 0 01-2 2z"/>
-        </svg>
-        <h3>No updates found</h3>
-        <p>Select a date range and fetch the report.</p>
+      <!-- Empty State: never fetched yet -->
+      <div v-else-if="!hasFetched" class="empty-state-wrap">
+        <div class="empty-illustration">
+          <div class="empty-circle empty-circle--outer"></div>
+          <div class="empty-circle empty-circle--inner"></div>
+          <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+            <line x1="8" y1="14" x2="16" y2="14"/>
+            <line x1="8" y1="18" x2="13" y2="18"/>
+          </svg>
+        </div>
+        <h3 class="empty-title">Ready to load updates</h3>
+        <p class="empty-sub">Pick a date range using the quick filters or custom dates above, then press <strong>Fetch</strong>.</p>
+        <div class="hint-chips">
+          <span class="hint-chip">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Click <strong>Today</strong> for instant results
+          </span>
+          <span class="hint-chip">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            All employees included by default
+          </span>
+          <span class="hint-chip">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export results to Excel or PDF
+          </span>
+        </div>
+      </div>
+
+      <!-- Empty State: fetched but zero results -->
+      <div v-else class="empty-state-wrap empty-state-wrap--noresult">
+        <div class="empty-illustration">
+          <div class="empty-circle empty-circle--outer empty-circle--grey"></div>
+          <div class="empty-circle empty-circle--inner empty-circle--grey"></div>
+          <svg class="empty-icon empty-icon--grey" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </div>
+        <h3 class="empty-title">No updates found</h3>
+        <p class="empty-sub">
+          Nobody submitted updates between
+          <span class="date-badge">{{ fromDate }}</span> and <span class="date-badge">{{ toDate }}</span>.
+          Try a wider range or a different period.
+        </p>
+        <div class="empty-cta">
+          <button class="btn btn-primary" @click="applyQuickRange(quickRanges[0])">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Try Today
+          </button>
+          <button class="btn btn-ghost" @click="applyQuickRange(quickRanges[2])">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Last 7 Days
+          </button>
+          <button class="btn btn-ghost" @click="resetFilter">Reset</button>
+        </div>
       </div>
     </div>
 
@@ -247,9 +294,7 @@
                 <span class="modal-badge">View Update</span>
                 <h2 class="modal-title">{{ selectedUpdate?.title || 'Update Details' }}</h2>
               </div>
-              <button class="close-btn" @click="closeViewModal" aria-label="Close">
-                ×
-              </button>
+              <button class="close-btn" @click="closeViewModal" aria-label="Close">×</button>
             </div>
 
             <div class="modal-body">
@@ -265,9 +310,7 @@
 
               <div class="modal-section">
                 <div class="section-label">Description</div>
-                <div class="section-body">
-                  {{ selectedUpdate?.description || 'No description provided.' }}
-                </div>
+                <div class="section-body">{{ selectedUpdate?.description || 'No description provided.' }}</div>
               </div>
 
               <div v-if="selectedUpdate?.update_photo" class="modal-section">
@@ -316,41 +359,107 @@ const reports = ref([])
 const fromDate = ref('')
 const toDate = ref('')
 const currentPage = ref(1)
-const itemsPerPage = ref(20)
+const itemsPerPage = ref(10)
 const isLoading = ref(false)
 const showViewModal = ref(false)
 const showImageModal = ref(false)
 const selectedUpdate = ref(null)
 const selectedImage = ref('')
 const selectedQuickRange = ref(null)
+const hasFetched = ref(false)
+const pagination = ref(null)
 
 // ─── Quick Ranges ───────────────────────────────────────
 const quickRanges = [
-  { label: 'Today',       value: 'today',       days: 0 },
-  { label: 'Yesterday',   value: 'yesterday',   days: 1 },
-  { label: 'Last 7 days', value: '7d',          days: 7 },
-  { label: 'Last 14 days',value: '14d',         days: 14 },
-  { label: 'Last 30 days',value: '30d',         days: 30 },
-  { label: 'This month',  value: 'this-month' },
-  { label: 'Last month',  value: 'last-month' },
+  { label: 'Today',        value: 'today' },
+  { label: 'Yesterday',    value: 'yesterday' },
+  { label: 'Last 7 days',  value: '7d' },
+  { label: 'Last 14 days', value: '14d' },
+  { label: 'Last 30 days', value: '30d' },
+  { label: 'This month',   value: 'this-month' },
+  { label: 'Last month',   value: 'last-month' },
 ]
+
+/**
+ * Returns a local date string "YYYY-MM-DD" for a given Date object,
+ * using local timezone (avoids UTC-offset shifting dates).
+ */
+function toLocalDateStr(date) {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
 
 function applyQuickRange(range) {
   selectedQuickRange.value = range.value
-  const today = new Date()
-  let from = new Date()
 
-  if (range.days !== undefined) {
-    from.setDate(today.getDate() - range.days)
-  } else if (range.value === 'this-month') {
-    from = new Date(today.getFullYear(), today.getMonth(), 1)
-  } else if (range.value === 'last-month') {
-    from = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-    today.setDate(0) // last day of previous month
+  const now = new Date()
+  // Work with plain year/month/day to avoid any time-of-day / timezone issues
+  const todayStr = toLocalDateStr(now)
+
+  let from, to
+
+  switch (range.value) {
+    case 'today':
+      from = todayStr
+      to   = todayStr
+      break
+
+    case 'yesterday': {
+      const y = new Date(now)
+      y.setDate(now.getDate() - 1)
+      const yStr = toLocalDateStr(y)
+      from = yStr
+      to   = yStr
+      break
+    }
+
+    case '7d': {
+      const d = new Date(now)
+      d.setDate(now.getDate() - 6) // 6 days back → 7-day window inclusive of today
+      from = toLocalDateStr(d)
+      to   = todayStr
+      break
+    }
+
+    case '14d': {
+      const d = new Date(now)
+      d.setDate(now.getDate() - 13)
+      from = toLocalDateStr(d)
+      to   = todayStr
+      break
+    }
+
+    case '30d': {
+      const d = new Date(now)
+      d.setDate(now.getDate() - 29)
+      from = toLocalDateStr(d)
+      to   = todayStr
+      break
+    }
+
+    case 'this-month': {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+      from = toLocalDateStr(firstDay)
+      to   = todayStr
+      break
+    }
+
+    case 'last-month': {
+      const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      const lastDay  = new Date(now.getFullYear(), now.getMonth(), 0) // day 0 = last day of prev month
+      from = toLocalDateStr(firstDay)
+      to   = toLocalDateStr(lastDay)
+      break
+    }
+
+    default:
+      return
   }
 
-  fromDate.value = from.toISOString().split('T')[0]
-  toDate.value   = today.toISOString().split('T')[0]
+  fromDate.value = from
+  toDate.value   = to
 
   fetchReport()
 }
@@ -360,33 +469,47 @@ function resetFilter() {
   toDate.value = ''
   selectedQuickRange.value = null
   reports.value = []
+  hasFetched.value = false
   currentPage.value = 1
 }
 
 // ─── Computed ────────────────────────────────────────────
-const totalPages = computed(() => Math.ceil(reports.value.length / itemsPerPage.value))
+const totalPages = computed(() => {
+  return pagination.value ? pagination.value.last_page : Math.ceil(reports.value.length / itemsPerPage.value) || 1
+})
+
 const paginatedReports = computed(() => {
+  // If API provides pagination, use API data directly (already paginated)
+  if (pagination.value) {
+    return reports.value
+  }
+  // Fallback to client-side pagination for non-paginated response
   const start = (currentPage.value - 1) * itemsPerPage.value
   return reports.value.slice(start, start + itemsPerPage.value)
 })
 
-const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value + 1)
-const endIndex   = computed(() => Math.min(startIndex.value + itemsPerPage.value - 1, reports.value.length))
+const startIndex = computed(() => {
+  if (pagination.value) {
+    return pagination.value.from || 0
+  }
+  return reports.value.length === 0 ? 0 : (currentPage.value - 1) * itemsPerPage.value + 1
+})
+
+const endIndex = computed(() => {
+  if (pagination.value) {
+    return pagination.value.to || 0
+  }
+  return Math.min(startIndex.value + itemsPerPage.value - 1, reports.value.length)
+})
 
 const visiblePages = computed(() => {
   const total = totalPages.value
-  const cur = currentPage.value
+  const cur   = currentPage.value
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
 
-  const pages = []
-  if (cur <= 4) {
-    pages.push(1, 2, 3, 4, 5, '…', total)
-  } else if (cur >= total - 3) {
-    pages.push(1, '…', total - 4, total - 3, total - 2, total - 1, total)
-  } else {
-    pages.push(1, '…', cur - 1, cur, cur + 1, '…', total)
-  }
-  return pages
+  if (cur <= 4)            return [1, 2, 3, 4, 5, '…', total]
+  if (cur >= total - 3)    return [1, '…', total - 4, total - 3, total - 2, total - 1, total]
+  return [1, '…', cur - 1, cur, cur + 1, '…', total]
 })
 
 // ─── Helpers ─────────────────────────────────────────────
@@ -417,35 +540,69 @@ function formatDate(dateString) {
 function changePage(page) {
   if (page < 1 || page > totalPages.value) return
   currentPage.value = page
+  fetchReport()
 }
 
 // ─── API ─────────────────────────────────────────────────
 async function fetchReport() {
   if (!fromDate.value || !toDate.value) {
-    toast.error('Please select both dates')
+    toast.error('Please select both a From and To date before fetching.', { timeout: 3500 })
+    return
+  }
+
+  // Guard: from must not be after to
+  if (fromDate.value > toDate.value) {
+    toast.error('"From" date cannot be after "To" date.', { timeout: 3500 })
     return
   }
 
   isLoading.value = true
   try {
+    // Append end-of-day time so backend datetime comparison includes
+    // all records created on "to" date (not just up to 00:00:00).
+    const toEndOfDay = `${toDate.value} 23:59:59`
+
     const { data } = await axios.get('/api/reports/for-updates', {
-      params: { from: fromDate.value, to: toDate.value, exclude_admin: true }
+      params: { 
+        from: fromDate.value, 
+        to: toEndOfDay, 
+        exclude_admin: true,
+        page: currentPage.value,
+        per_page: 10
+      }
     })
-    reports.value = data.data || []
-    currentPage.value = 1
+    
+    // Handle paginated response
+    if (data.pagination) {
+      reports.value = data.data || []
+      pagination.value = data.pagination
+    } else {
+      // Fallback for non-paginated response
+      reports.value = data.data || []
+      pagination.value = null
+    }
+    
+    hasFetched.value = true
 
     if (!reports.value.length) {
-      toast.info('No updates found in this period')
+      toast.info(`No updates found between ${fromDate.value} and ${toDate.value}`, {
+        timeout: 4000,
+        icon: '🗓️',
+      })
+    } else {
+      const count = pagination.value ? pagination.value.total : reports.value.length
+      toast.success(`Found ${count} update${count !== 1 ? 's' : ''}`, { timeout: 3000 })
     }
   } catch (err) {
-    toast.error(err.response?.data?.message || 'Could not load updates')
+    console.error('Fetch error:', err)
+    toast.error('Failed to fetch updates. Please try again.', { timeout: 4000 })
   } finally {
     isLoading.value = false
   }
 }
 
 async function downloadFile(url, filename) {
-  if (!url) return toast.error('No file available')
+  if (!url) return toast.error('No file attached to this update.', { timeout: 3000 })
   try {
     const res = await axios.get(url, { responseType: 'blob' })
     const link = document.createElement('a')
@@ -454,13 +611,13 @@ async function downloadFile(url, filename) {
     link.click()
     URL.revokeObjectURL(link.href)
   } catch {
-    toast.error('Download failed')
+    toast.error('Download failed. Please try again.', { timeout: 3500 })
   }
 }
 
 // ─── Export ──────────────────────────────────────────────
 function exportToExcel() {
-  if (!reports.value.length) return toast.warning('No data to export')
+  if (!reports.value.length) return toast.warning('No data to export. Fetch some updates first.', { timeout: 3000 })
 
   const ws = XLSX.utils.json_to_sheet(
     reports.value.map((r, i) => ({
@@ -480,7 +637,7 @@ function exportToExcel() {
 }
 
 function exportToPDF() {
-  if (!reports.value.length) return toast.warning('No data to export')
+  if (!reports.value.length) return toast.warning('No data to export. Fetch some updates first.', { timeout: 3000 })
 
   const doc = new jsPDF()
   doc.setFontSize(18)
@@ -612,23 +769,9 @@ function closeImageModal() {
   margin-top: 6px;
 }
 
-.header-stat {
-  text-align: right;
-}
-
-.stat-num {
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--c-accent);
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 12px;
-  color: var(--c-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
+.header-stat { text-align: right; }
+.stat-num { font-size: 36px; font-weight: 700; color: var(--c-accent); line-height: 1; }
+.stat-label { font-size: 12px; color: var(--c-text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
 
 /* Filter ─────────────────────────────────────────────── */
 .filter-card {
@@ -655,6 +798,7 @@ function closeImageModal() {
   color: var(--c-text-muted);
   border: 1px solid var(--c-border);
   transition: all 0.15s;
+  cursor: pointer;
 }
 
 .quick-btn:hover {
@@ -676,11 +820,7 @@ function closeImageModal() {
   align-items: flex-end;
 }
 
-.field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+.field-group { display: flex; flex-direction: column; gap: 6px; }
 
 .field-label {
   font-size: 12px;
@@ -725,21 +865,13 @@ function closeImageModal() {
   transition: all 0.15s ease;
   white-space: nowrap;
   cursor: pointer;
+  border: none;
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-primary {
-  background: red;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: rgb(145, 76, 76);
-}
+.btn-primary { background: var(--c-accent); color: white; }
+.btn-primary:hover:not(:disabled) { background: var(--c-accent-hover); }
 
 .btn-ghost {
   background: transparent;
@@ -747,10 +879,7 @@ function closeImageModal() {
   color: var(--c-text-muted);
 }
 
-.btn-ghost:hover:not(:disabled) {
-  background: var(--c-surface-2);
-  color: var(--c-text);
-}
+.btn-ghost:hover:not(:disabled) { background: var(--c-surface-2); color: var(--c-text); }
 
 .btn-excel {
   background: rgba(22,163,74,0.08);
@@ -778,9 +907,7 @@ function closeImageModal() {
 .state-card p  { color: var(--c-text-muted); }
 
 /* Skeleton ───────────────────────────────────────────── */
-.skeleton-container {
-  padding: 24px;
-}
+.skeleton-container { padding: 24px; }
 
 .skeleton-row {
   height: 72px;
@@ -859,16 +986,8 @@ function closeImageModal() {
   vertical-align: middle;
 }
 
-.table-row {
-  transition: background 0.18s, transform 0.18s;
-  cursor: pointer;
-}
-
-.table-row:hover,
-.table-row:focus-within {
-  background: rgba(37,99,235,0.04);
-}
-
+.table-row { transition: background 0.18s; cursor: pointer; }
+.table-row:hover, .table-row:focus-within { background: rgba(37,99,235,0.04); }
 .table-row:last-child td { border-bottom: none; }
 
 .col-no { width: 60px; text-align: center; font-weight: 500; }
@@ -876,6 +995,7 @@ function closeImageModal() {
 .col-desc { max-width: 280px; }
 
 .engineer-cell { display: flex; align-items: center; gap: 12px; }
+
 .avatar {
   width: 38px;
   height: 38px;
@@ -890,7 +1010,6 @@ function closeImageModal() {
 }
 
 .avatar--lg { width: 48px; height: 48px; font-size: 18px; border-radius: 12px; }
-
 .engineer-name { font-weight: 600; }
 
 .title-pill {
@@ -943,6 +1062,7 @@ function closeImageModal() {
   align-items: center;
   justify-content: center;
   transition: all 0.15s;
+  cursor: pointer;
 }
 
 .icon-btn--view {
@@ -981,6 +1101,7 @@ function closeImageModal() {
   color: var(--c-text-muted);
   font-family: monospace;
   font-size: 13px;
+  cursor: pointer;
   transition: all 0.15s;
 }
 
@@ -989,17 +1110,8 @@ function closeImageModal() {
   color: var(--c-accent);
 }
 
-.page-num.active {
-  background: var(--c-accent);
-  color: white;
-  border-color: var(--c-accent);
-}
-
-.page-num.ellipsis {
-  border-color: transparent;
-  cursor: default;
-}
-
+.page-num.active { background: var(--c-accent); color: white; border-color: var(--c-accent); }
+.page-num.ellipsis { border-color: transparent; cursor: default; }
 .page-btn:disabled { opacity: 0.4; }
 
 /* Modal ──────────────────────────────────────────────── */
@@ -1047,11 +1159,7 @@ function closeImageModal() {
   margin-bottom: 6px;
 }
 
-.modal-title {
-  font-size: 20px;
-  font-weight: 700;
-  margin: 0;
-}
+.modal-title { font-size: 20px; font-weight: 700; margin: 0; }
 
 .close-btn {
   width: 40px;
@@ -1075,22 +1183,9 @@ function closeImageModal() {
   gap: 24px;
 }
 
-.modal-engineer {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.modal-eng-name {
-  font-size: 17px;
-  font-weight: 600;
-}
-
-.modal-eng-date {
-  font-size: 13px;
-  color: var(--c-text-muted);
-  font-family: monospace;
-}
+.modal-engineer { display: flex; align-items: center; gap: 16px; }
+.modal-eng-name { font-size: 17px; font-weight: 600; }
+.modal-eng-date { font-size: 13px; color: var(--c-text-muted); font-family: monospace; }
 
 .section-label {
   font-size: 12px;
@@ -1118,12 +1213,7 @@ function closeImageModal() {
   border: 1px solid var(--c-border);
 }
 
-.modal-img {
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-  display: block;
-}
+.modal-img { width: 100%; height: 240px; object-fit: cover; display: block; }
 
 .img-overlay {
   position: absolute;
@@ -1183,4 +1273,204 @@ function closeImageModal() {
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* ─── Empty States ───────────────────────────────────── */
+.empty-state-wrap {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: 72px 24px 64px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.empty-state-wrap--noresult {
+  border-style: dashed;
+}
+
+/* Animated illustration rings */
+.empty-illustration {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.empty-circle {
+  position: absolute;
+  border-radius: 50%;
+  animation: pulse-ring 2.8s ease-out infinite;
+}
+
+.empty-circle--outer {
+  width: 120px;
+  height: 120px;
+  background: rgba(37,99,235,0.06);
+  border: 1px solid rgba(37,99,235,0.12);
+  animation-delay: 0s;
+}
+
+.empty-circle--inner {
+  width: 84px;
+  height: 84px;
+  background: rgba(37,99,235,0.09);
+  border: 1px solid rgba(37,99,235,0.18);
+  animation-delay: 0.4s;
+}
+
+.empty-circle--grey.empty-circle--outer {
+  background: rgba(100,116,139,0.06);
+  border-color: rgba(100,116,139,0.14);
+}
+
+.empty-circle--grey.empty-circle--inner {
+  background: rgba(100,116,139,0.09);
+  border-color: rgba(100,116,139,0.18);
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.95); opacity: 0.7; }
+  50%  { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.empty-icon {
+  position: relative;
+  z-index: 1;
+  color: var(--c-accent);
+  opacity: 0.85;
+}
+
+.empty-icon--grey {
+  color: var(--c-text-muted);
+}
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-text);
+  margin: 0 0 10px;
+}
+
+.empty-sub {
+  font-size: 14px;
+  color: var(--c-text-muted);
+  max-width: 420px;
+  line-height: 1.65;
+  margin: 0 0 28px;
+}
+
+.empty-sub strong {
+  color: var(--c-text);
+  font-weight: 600;
+}
+
+/* Hint chips row (initial state) */
+.hint-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.hint-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--c-text-muted);
+}
+
+.hint-chip strong {
+  color: var(--c-text);
+}
+
+.hint-chip svg {
+  flex-shrink: 0;
+  opacity: 0.65;
+}
+
+/* CTA buttons row (no-result state) */
+.empty-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Date badge inside empty sub text */
+.date-badge {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
+  padding: 2px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+
+/* ─── Toast Overrides ────────────────────────────────── */
+/* These work when vue-toastification CSS is loaded globally */
+:global(.Vue-Toastification__toast) {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 12px !important;
+  padding: 14px 18px !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08) !important;
+  min-width: 300px;
+  max-width: 420px;
+  line-height: 1.5;
+}
+
+:global(.Vue-Toastification__toast--info) {
+  background: #1e3a5f !important;
+  color: #e0f0ff !important;
+}
+
+:global(.Vue-Toastification__toast--success) {
+  background: #14532d !important;
+  color: #dcfce7 !important;
+}
+
+:global(.Vue-Toastification__toast--warning) {
+  background: #78350f !important;
+  color: #fef3c7 !important;
+}
+
+:global(.Vue-Toastification__toast--error) {
+  background: #7f1d1d !important;
+  color: #fee2e2 !important;
+}
+
+:global(.Vue-Toastification__progress-bar) {
+  height: 3px !important;
+  border-radius: 0 0 12px 12px !important;
+  opacity: 0.5 !important;
+}
+
+:global(.Vue-Toastification__close-button) {
+  opacity: 0.6 !important;
+  font-size: 18px !important;
+}
+
+:global(.Vue-Toastification__close-button:hover) {
+  opacity: 1 !important;
+}
+
 </style>

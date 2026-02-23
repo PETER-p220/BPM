@@ -230,7 +230,7 @@ onMounted(async () => {
 async function fetchUpdates() {
   loading.value = true
   try {
-    const { data } = await axios.get('/my/updates')
+    const { data } = await axios.get('api/my/updates')
     if (data.data) {
       updates.value = data.data.map(u => ({
         chat_id: u.chat_id,

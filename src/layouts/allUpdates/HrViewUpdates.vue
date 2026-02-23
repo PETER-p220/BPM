@@ -8,7 +8,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Project Updates</h1>
             <p class="text-sm text-gray-600 mt-1">View and manage all project updates</p>
           </div>
-          <router-link to="/hr-createupdate">
+          <router-link to="hr-create-update">
             <button 
               class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md"
               style="background-color: #2e4053"
@@ -227,7 +227,7 @@ onMounted(async () => {
 async function fetchUpdates() {
   isLoading.value = true;
   try {
-    const response = await axios.get('my/updates');
+    const response = await axios.get('api/my/updates');
     // Sort by created_at descending (newest first)
     updates.value = response.data.data
       .map(update => ({
@@ -249,7 +249,7 @@ async function fetchUpdates() {
 
 // Navigate to update details page with chat_id
 function viewUpdateDetails(chat_id) {
-  router.push({ name: 'EditUserUpdate', params: { chat_id } });
+  router.push({ name: 'HrEditUpdate', params: { chat_id } });
 }
 
 // Download file function
@@ -266,10 +266,20 @@ async function downloadFile(fileUrl, fileName) {
     link.click();
     document.body.removeChild(link);
     
-    toast.success('Download started');
+    toast.success('Download started successfully!', {
+      timeout: 3000,
+      closeOnClick: true,
+      pauseOnHover: true,
+      icon: 'fas fa-download'
+    });
   } catch (error) {
     console.error('Download error:', error);
-    toast.error('Failed to download file');
+    toast.error('Failed to download file. Please try again.', {
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnHover: true,
+      icon: 'fas fa-exclamation-triangle'
+    });
   }
 }
 
@@ -300,7 +310,13 @@ function handleError(error) {
   } else {
     message = error.message;
   }
-  toast.error(message);
+  
+  toast.error(message, {
+    timeout: 5000,
+    closeOnClick: true,
+    pauseOnHover: true,
+    icon: 'fas fa-exclamation-circle'
+  });
 }
 
 // Format date to a readable format

@@ -99,6 +99,7 @@ import AccntantEditUpdateVue from "./layouts/allUpdates/AccntantEditUpdate.vue";
 import AccntantSubmitUpdateVue from "./layouts/allUpdates/AccntantCreateUpdate.vue";
 import HrCreateUpdate from "./layouts/allUpdates/HrCreateUpdate.vue";
 import HrViewUpdates from "./layouts/allUpdates/HrViewUpdates.vue";
+import HrEditUpdate from "./layouts/allUpdates/HrEditUpdate.vue";
 import HrCreateAttendance from "./layouts/attendance/HrCreateAttendance.vue";
 import HrManageAttendance from "./layouts/attendance/HrManageAttendance.vue";
 import HrCreateMinutes from "./layouts/meetingMenutes/HrCreateMinutes.vue";
@@ -176,6 +177,8 @@ import ReportForSubmittedReceipts from "./layouts/receipts/ReportForSubmittedRec
 import ReportForUpdates from "./layouts/allUpdates/ReportForUpdates.vue";
 import GoogleCallback from "./components/Pages/GoogleCallback.vue";
 import CreateIntentioToAward from "./layouts/awards/createIntentioToAward.vue";
+import HodViewAttendance from "./layouts/attendance/HodViewAttendance.vue";
+import HodViewMinutes from "./layouts/meetingMenutes/HodViewMinutes.vue";
 import ViewIntentionToAwards from "./layouts/awards/ViewIntentionToAwards.vue";
 import CreateAwardLetter from "./layouts/awards/createAwardLetter.vue";
 import ViewAwardLetter from "./layouts/awards/ViewAwardLetter.vue";
@@ -1364,6 +1367,20 @@ const routes = [
                 component: AdminViewALlProjectActivities,  // reuses the activities list component
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
+            // Attendance Management for HOD
+            {
+                path: 'hod/attendance',
+                name: 'HodAttendance',
+                component: HodViewAttendance,
+                meta: { requiresAuth: true, allowedRoles: [2] }
+            },
+            // Meeting Minutes Management for HOD
+            {
+                path: 'hod/meeting-minutes',
+                name: 'HodMeetingMinutes',
+                component: HodViewMinutes,
+                meta: { requiresAuth: true, allowedRoles: [2] }
+            },
             {
                 path: '/hod/projects',
                 name: 'HodViewProjects',
@@ -1678,6 +1695,13 @@ const routes = [
                 path: '/hr-create-update',
                 name: 'HrCreateUpdate',
                 component: HrCreateUpdate,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
+                path: '/hr-edit-update/:chat_id',
+                name: 'HrEditUpdate',
+                component: HrEditUpdate,
+                props: true,
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
             {
