@@ -303,7 +303,7 @@ function downloadTenderPdf(url) {
   padding: 32px 28px 48px;
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--text);
-  margin-top: 60px;
+  margin-top: 10px;
 }
 
 /* ── Header card ── */

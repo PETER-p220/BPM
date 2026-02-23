@@ -1,133 +1,112 @@
 <template>
-  <div class="py-8 md:py-10 bg-gray-50 dark:bg-gray-950 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+  <div class="min-h-screen bg-[#f5f6fa] dark:bg-[#0d0f14] transition-colors duration-300">
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-            Engineers With Projects
-          </h1>
-          <p class="mt-1 text-gray-600 dark:text-gray-400">
-            Overview of engineers and their assigned projects
-          </p>
+          <h1 class="text-xl font-bold text-gray-900 dark:text-white">Engineers with Projects</h1>
+          <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Overview of engineers and their assigned projects</p>
         </div>
-      </div>
-
-      <!-- Search & Export Controls -->
-      <div class="bg-white dark:bg-gray-900 shadow-sm rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div class="relative flex-1">
-            <input
-              v-model="filter"
-              type="text"
-              placeholder="Search engineer name or email..."
-              class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-            />
-            <svg
-              class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <div class="flex gap-2">
+          <button @click="exportToExcel" :disabled="isExporting || isLoading || !filteredUsers.length"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 transition-all">
+            <svg class="h-3.5 w-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-          </div>
-
-          <div class="flex items-center gap-3 flex-wrap">
-            <button
-              @click="exportToExcel"
-              :disabled="isExporting || isLoading || !filteredUsers.length"
-              class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow-sm transition disabled:opacity-50"
-            >
-              <i class="fas fa-file-excel mr-2"></i>
-              Excel
-            </button>
-
-            <button
-              @click="exportToPDF"
-              :disabled="isExporting || isLoading || !filteredUsers.length"
-              class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-sm transition disabled:opacity-50"
-            >
-              <i class="fas fa-file-pdf mr-2"></i>
-              PDF
-            </button>
-          </div>
+            Excel
+          </button>
+          <button @click="exportToPDF" :disabled="isExporting || isLoading || !filteredUsers.length"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 transition-all">
+            <svg class="h-3.5 w-3.5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            PDF
+          </button>
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="isLoading" class="bg-white dark:bg-gray-900 shadow-sm rounded-xl p-12 text-center">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-indigo-600 border-gray-200 dark:border-gray-700"></div>
-        <p class="mt-4 text-gray-600 dark:text-gray-400">Loading engineers data...</p>
+      <!-- Search -->
+      <div class="mb-4 relative max-w-xs">
+        <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input v-model="filter" type="text" placeholder="Search name or email…"
+          class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-8 text-sm text-gray-900 placeholder:text-gray-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 shadow-sm" />
+        <button v-if="filter" @click="filter = ''" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
       </div>
 
-      <!-- Empty State -->
-      <div v-else-if="filteredUsers.length === 0" class="bg-white dark:bg-gray-900 shadow-sm rounded-xl p-12 text-center">
-        <i class="fas fa-users-slash text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
-        <h3 class="text-xl font-medium text-gray-700 dark:text-gray-300">No engineers found</h3>
-        <p class="mt-2 text-gray-500 dark:text-gray-400">
-          {{ filter ? 'Try adjusting your search.' : 'No engineers with projects yet.' }}
-        </p>
+      <!-- Loading -->
+      <div v-if="isLoading" class="rounded-xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/50 dark:bg-gray-900 py-20 text-center">
+        <div class="inline-block h-7 w-7 animate-spin rounded-full border-4 border-gray-200 border-t-teal-500 mb-2"></div>
+        <p class="text-sm text-gray-400">Loading engineers…</p>
       </div>
 
-      <!-- Main Table -->
-      <div v-else class="bg-white dark:bg-gray-900 shadow-sm rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <!-- Empty -->
+      <div v-else-if="filteredUsers.length === 0" class="rounded-xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/50 dark:bg-gray-900 py-16 text-center">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ filter ? 'No engineers match your search.' : 'No engineers with projects yet.' }}</p>
+      </div>
+
+      <!-- Table -->
+      <div v-else class="overflow-hidden rounded-xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/50 dark:bg-gray-900">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-            <thead class="bg-gray-50 dark:bg-gray-800">
-              <tr>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">No</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Engineer Name</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Projects</th>
-                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">In Progress</th>
-                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Completed</th>
-                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Failed</th>
-                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+          <table class="min-w-full">
+            <thead>
+              <tr class="border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40">
+                <th class="px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-400 w-10">#</th>
+                <th class="px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-400">Engineer</th>
+                <th class="px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-400">Email</th>
+                <th class="px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-gray-400">Total</th>
+                <th class="px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-amber-500/80">Progress</th>
+                <th class="px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-teal-500/80">Done</th>
+                <th class="px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-rose-400/80">Failed</th>
+                <th class="px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-gray-400">Status</th>
+                <th class="px-5 py-3 w-20"></th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-gray-900">
-              <tr
-                v-for="(user, index) in paginatedUsers"
-                :key="user.user_id"
-                @click="openModal(user)"
-                class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
-              >
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                  {{ index + 1 + (currentPage - 1) * itemsPerPage }}
+            <tbody class="divide-y divide-gray-50 dark:divide-gray-800/60">
+              <tr v-for="(user, index) in paginatedUsers" :key="user.user_id"
+                class="hover:bg-gray-50/70 dark:hover:bg-gray-800/30 transition-colors">
+                <td class="px-5 py-3.5 text-xs text-gray-400">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-2.5">
+                    <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      {{ getInitials(user.name) }}
+                    </div>
+                    <div>
+                      <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ user.name || '—' }}</p>
+                      <p v-if="user.role || user.department" class="text-xs text-gray-400">{{ user.role || user.department }}</p>
+                    </div>
+                  </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {{ user.name || '—' }}
+                <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ user.email || '—' }}</td>
+                <td class="px-5 py-3.5 text-center">
+                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-gray-100 px-1.5 text-xs font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">{{ user.total_projects || 0 }}</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                  {{ user.email || '—' }}
+                <td class="px-5 py-3.5 text-center">
+                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-amber-50 px-1.5 text-xs font-semibold text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">{{ user.on_progress_projects || 0 }}</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-indigo-600 dark:text-indigo-400">
-                  {{ user.total_projects || 0 }}
+                <td class="px-5 py-3.5 text-center">
+                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-teal-50 px-1.5 text-xs font-semibold text-teal-600 dark:bg-teal-900/20 dark:text-teal-400">{{ user.completed_projects || 0 }}</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-yellow-600 dark:text-yellow-400">
-                  {{ user.on_progress_projects || 0 }}
+                <td class="px-5 py-3.5 text-center">
+                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-rose-50 px-1.5 text-xs font-semibold text-rose-600 dark:bg-rose-900/20 dark:text-rose-400">{{ user.failed_projects || 0 }}</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-green-600 dark:text-green-400">
-                  {{ user.completed_projects || 0 }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-red-600 dark:text-red-400">
-                  {{ user.failed_projects || 0 }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center">
-                  <span
-                    class="inline-flex px-3 py-1 text-xs font-medium rounded-full"
-                    :class="user.status === 'is_active' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'"
-                  >
+                <td class="px-5 py-3.5 text-center">
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
+                    :class="user.status === 'is_active'
+                      ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/20 dark:text-teal-300'
+                      : 'bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-300'">
                     {{ user.status === 'is_active' ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
-              </tr>
-
-              <!-- Empty row if no data (fallback) -->
-              <tr v-if="paginatedUsers.length === 0">
-                <td colspan="8" class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
-                  No engineers match your search
+                <td class="px-5 py-3.5 text-right">
+                  <button @click="openModal(user)"
+                    class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-all shadow-sm">
+                    View
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -136,183 +115,135 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="filteredUsers.length > 0" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <p class="text-sm text-gray-600 dark:text-gray-400">
-          Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
-          {{ Math.min(currentPage * itemsPerPage, filteredUsers.length) }} of
-          {{ filteredUsers.length }} engineers
+      <div v-if="filteredUsers.length > itemsPerPage" class="mt-5 flex items-center justify-between">
+        <p class="text-xs text-gray-400">
+          {{ (currentPage - 1) * itemsPerPage + 1 }}–{{ Math.min(currentPage * itemsPerPage, filteredUsers.length) }} of {{ filteredUsers.length }}
         </p>
-
-        <div class="flex items-center gap-2">
-          <button
-            :disabled="currentPage === 1"
-            @click="changePage(currentPage - 1)"
-            class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
-          >
-            Previous
+        <div class="flex items-center gap-1">
+          <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)"
+            class="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 transition-all">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
           </button>
-          <button
-            :disabled="currentPage * itemsPerPage >= filteredUsers.length"
-            @click="changePage(currentPage + 1)"
-            class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition"
-          >
-            Next
+          <button v-for="page in visiblePages" :key="page" @click="changePage(page)"
+            :class="['flex h-7 w-7 items-center justify-center rounded-md text-xs font-semibold transition-all',
+              page === currentPage ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'border border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800']">
+            {{ page }}
+          </button>
+          <button :disabled="currentPage >= totalPages" @click="changePage(currentPage + 1)"
+            class="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 transition-all">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- Engineer Details Modal -->
-      <div
-        v-if="selectedUser"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4"
-        @click="closeModal"
-      >
+    <!-- ===== MODAL ===== -->
+    <Transition name="modal">
+      <div v-if="selectedUser"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
+        @click="closeModal">
         <div
-          class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-          @click.stop
-        >
-          <div class="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center justify-between z-10">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Engineer Details</h2>
-            <button @click="closeModal" class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 text-2xl">
-              ×
-            </button>
+          class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl bg-white dark:bg-gray-900 shadow-2xl overflow-hidden"
+          @click.stop>
+
+          <!-- Modal Header -->
+          <div class="flex items-center gap-4 px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
+            <div class="h-11 w-11 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow">
+              {{ getInitials(selectedUser.name) }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-base font-bold text-gray-900 dark:text-gray-100 truncate">{{ selectedUser.name || '—' }}</p>
+              <p class="text-xs text-gray-400 truncate">{{ selectedUser.email || '—' }}</p>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
+                :class="selectedUser.status === 'is_active'
+                  ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/20 dark:text-teal-300'
+                  : 'bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-300'">
+                {{ selectedUser.status === 'is_active' ? 'Active' : 'Inactive' }}
+              </span>
+              <button @click="closeModal"
+                class="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 transition-all">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
-          <div class="p-6 space-y-6">
-            <!-- Basic Info -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Name</p>
-                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.name || '—' }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Email</p>
-                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.email || '—' }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Status</p>
-                <span
-                  class="inline-flex px-3 py-1 text-sm font-medium rounded-full"
-                  :class="selectedUser.status === 'is_active' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'"
-                >
-                  {{ selectedUser.status === 'is_active' ? 'Active' : 'Inactive' }}
-                </span>
-              </div>
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Role</p>
-                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.role || '—' }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Department</p>
-                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.department || '—' }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Total Projects</p>
-                <p class="text-xl font-bold text-indigo-600 dark:text-indigo-400">{{ selectedUser.total_projects || 0 }}</p>
-              </div>
+          <!-- Scrollable Body -->
+          <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+
+            <!-- Info tiles -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <InfoTile label="Role" :value="selectedUser.role" />
+              <InfoTile label="Department" :value="selectedUser.department" />
+              <InfoTile label="In Progress" :value="selectedUser.on_progress_projects" color="amber" />
+              <InfoTile label="Completed" :value="selectedUser.completed_projects" color="teal" />
             </div>
 
-            <!-- Project Summary Stats -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-gray-50 dark:bg-gray-800 p-5 rounded-lg">
-              <div class="text-center">
-                <p class="text-sm text-gray-600 dark:text-gray-400">In Progress</p>
-                <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ selectedUser.on_progress_projects || 0 }}</p>
-              </div>
-              <div class="text-center">
-                <p class="text-sm text-gray-600 dark:text-gray-400">Completed</p>
-                <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ selectedUser.completed_projects || 0 }}</p>
-              </div>
-              <div class="text-center">
-                <p class="text-sm text-gray-600 dark:text-gray-400">Failed</p>
-                <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ selectedUser.failed_projects || 0 }}</p>
-              </div>
-              <div class="text-center">
-                <p class="text-sm text-gray-600 dark:text-gray-400">Total</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ selectedUser.total_projects || 0 }}</p>
-              </div>
-            </div>
-
-            <!-- Assigned Projects List -->
+            <!-- Projects -->
             <div>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Assigned Projects</h3>
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Projects</p>
+                <span class="text-xs font-semibold text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-0.5">{{ selectedUser.projects?.length || 0 }}</span>
+              </div>
 
-              <div v-if="selectedUser.projects?.length" class="space-y-4">
-                <div
-                  v-for="project in selectedUser.projects"
-                  :key="project.project_id"
-                  class="p-5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
-                >
-                  <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                    <div>
-                      <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        {{ project.project_name || 'Untitled Project' }}
-                      </h4>
-                      <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        <span class="font-medium">Status:</span>
-                        <span :class="getStatusClass(project.project_status)" class="ml-2 px-2.5 py-0.5 text-xs font-medium rounded-full">
-                          {{ project.project_status || '—' }}
-                        </span>
-                      </div>
+              <div v-if="selectedUser.projects?.length" class="space-y-2.5">
+                <div v-for="project in selectedUser.projects" :key="project.project_id"
+                  class="rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+
+                  <!-- Project header -->
+                  <div class="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-800/50">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="h-1.5 w-1.5 rounded-full flex-shrink-0" :class="statusDot(project.project_status)"></span>
+                      <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{{ project.project_name || 'Untitled Project' }}</span>
                     </div>
+                    <StatusBadge :value="project.project_status" />
                   </div>
 
-                  <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <p class="text-gray-600 dark:text-gray-400">Start Date</p>
-                      <p class="font-medium">{{ project.start_date || '—' }}</p>
-                    </div>
-                    <div>
-                      <p class="text-gray-600 dark:text-gray-400">End Date</p>
-                      <p class="font-medium">{{ project.end_date || '—' }}</p>
-                    </div>
-                    <div>
-                      <p class="text-gray-600 dark:text-gray-400">Extended Date</p>
-                      <p class="font-medium">{{ project.extended_date || '—' }}</p>
-                    </div>
-                    <div>
-                      <p class="text-gray-600 dark:text-gray-400">Created By</p>
-                      <p class="font-medium">{{ project.created_by || '—' }}</p>
-                    </div>
+                  <!-- Project fields -->
+                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3.5 px-4 py-4">
+                    <ProjectField label="Start Date" :value="formatDate(project.start_date)" />
+                    <ProjectField label="End Date" :value="formatDate(project.end_date)" />
+                    <ProjectField label="Extended Date" :value="formatDate(project.extended_date)" />
+                    <ProjectField label="Created By" :value="project.created_by" />
+                    <ProjectField label="Members" :value="project.members?.length ? project.members.join(', ') : 'None'" />
+                    <ProjectField v-if="project.follow_up" label="Follow Up" :value="project.follow_up" />
                   </div>
 
-                  <div class="mt-4 text-sm">
-                    <p>
-                      <span class="text-gray-600 dark:text-gray-400 font-medium">Team Members:</span>
-                      {{ project.members?.length ? project.members.join(', ') : 'None assigned' }}
-                    </p>
-                  </div>
-
-                  <div v-if="project.contract || project.tender" class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Contract / Tender -->
+                  <div v-if="project.contract || project.tender"
+                    class="border-t border-gray-100 dark:border-gray-800 px-4 py-3 bg-gray-50/50 dark:bg-gray-800/20 flex flex-wrap gap-6">
                     <div v-if="project.contract">
-                      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Contract</p>
-                      <p class="text-gray-600 dark:text-gray-400">{{ project.contract.title || '—' }}</p>
-                      <p class="text-xs mt-1">Status: {{ project.contract.status || '—' }}</p>
+                      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">Contract</p>
+                      <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ project.contract.title || '—' }}</p>
+                      <StatusBadge v-if="project.contract.status" :value="project.contract.status" class="mt-1" />
                     </div>
                     <div v-if="project.tender">
-                      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Tender</p>
-                      <p class="text-gray-600 dark:text-gray-400">{{ project.tender.title || '—' }}</p>
+                      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">Tender</p>
+                      <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ project.tender.title || '—' }}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <p v-else class="text-gray-500 dark:text-gray-400 italic mt-4">
-                No projects assigned to this engineer yet.
-              </p>
+              <div v-else class="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 py-10 text-center">
+                <p class="text-sm text-gray-400">No projects assigned</p>
+              </div>
             </div>
           </div>
 
-          <div class="sticky bottom-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-6 py-4 flex justify-end">
-            <button
-              @click="closeModal"
-              class="px-6 py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition"
-            >
+          <!-- Footer -->
+          <div class="flex-shrink-0 border-t border-gray-100 dark:border-gray-800 px-6 py-4 flex justify-end">
+            <button @click="closeModal"
+              class="rounded-lg border border-gray-200 px-5 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-all">
               Close
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -325,7 +256,6 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
 const toast = useToast()
-
 const users = ref([])
 const filter = ref('')
 const currentPage = ref(1)
@@ -334,9 +264,7 @@ const selectedUser = ref(null)
 const isLoading = ref(false)
 const isExporting = ref(false)
 
-onMounted(() => {
-  fetchUsers()
-})
+onMounted(() => fetchUsers())
 
 async function fetchUsers() {
   isLoading.value = true
@@ -357,10 +285,9 @@ async function fetchUsers() {
 const filteredUsers = computed(() => {
   const term = filter.value.toLowerCase().trim()
   if (!term) return users.value
-
-  return users.value.filter(user =>
-    user.name?.toLowerCase().includes(term) ||
-    user.email?.toLowerCase().includes(term)
+  return users.value.filter(u =>
+    u.name?.toLowerCase().includes(term) ||
+    u.email?.toLowerCase().includes(term)
   )
 })
 
@@ -369,89 +296,141 @@ const paginatedUsers = computed(() => {
   return filteredUsers.value.slice(start, start + itemsPerPage)
 })
 
+const totalPages = computed(() => Math.ceil(filteredUsers.value.length / itemsPerPage) || 1)
+
+const visiblePages = computed(() => {
+  const total = totalPages.value, cur = currentPage.value
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
+  if (cur <= 3) return [1, 2, 3, 4, 5]
+  if (cur >= total - 2) return [total - 4, total - 3, total - 2, total - 1, total]
+  return [cur - 2, cur - 1, cur, cur + 1, cur + 2].filter(p => p >= 1 && p <= total)
+})
+
 function changePage(page) {
-  if (page < 1 || page > Math.ceil(filteredUsers.value.length / itemsPerPage)) return
-  currentPage.value = page
+  if (page >= 1 && page <= totalPages.value) currentPage.value = page
 }
 
 function openModal(user) {
-  selectedUser.value = user
+  selectedUser.value = { ...user, projects: user.projects || [] }
+  document.body.style.overflow = 'hidden'
 }
-
 function closeModal() {
   selectedUser.value = null
+  document.body.style.overflow = ''
 }
-
-function getStatusClass(status) {
-  const classes = {
-    'on-progress': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300',
-    completed: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
-    failed: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
-  }
-  return classes[status?.toLowerCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+function getInitials(name) {
+  if (!name) return '?'
+  return name.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()
+}
+function formatDate(date) {
+  if (!date) return '—'
+  return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+function statusDot(val) {
+  const v = (val || '').toLowerCase()
+  if (v.includes('complete') || v.includes('done') || v.includes('active')) return 'bg-teal-500'
+  if (v.includes('progress') || v.includes('ongoing') || v.includes('pending')) return 'bg-amber-400'
+  if (v.includes('fail') || v.includes('cancel')) return 'bg-rose-500'
+  return 'bg-gray-400'
 }
 
 async function exportToExcel() {
   isExporting.value = true
   try {
-    const data = filteredUsers.value.map((user, index) => ({
-      No: index + 1,
-      Name: user.name || '—',
-      Email: user.email || '—',
-      Status: user.status === 'is_active' ? 'Active' : 'Inactive',
-      Role: user.role || '—',
-      Department: user.department || '—',
-      'Total Projects': user.total_projects || 0,
-      'On Progress': user.on_progress_projects || 0,
-      Completed: user.completed_projects || 0,
-      Failed: user.failed_projects || 0
+    const rows = filteredUsers.value.map((u, i) => ({
+      No: i + 1, Name: u.name || '—', Email: u.email || '—',
+      Status: u.status === 'is_active' ? 'Active' : 'Inactive',
+      Role: u.role || '—', Department: u.department || '—',
+      'Total Projects': u.total_projects || 0, 'On Progress': u.on_progress_projects || 0,
+      Completed: u.completed_projects || 0, Failed: u.failed_projects || 0
     }))
-
-    const ws = XLSX.utils.json_to_sheet(data)
+    const ws = XLSX.utils.json_to_sheet(rows)
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, 'Engineers')
-    XLSX.writeFile(wb, `Engineers_With_Projects_${new Date().toISOString().slice(0,10)}.xlsx`)
-  } catch (err) {
-    toast.error('Failed to export to Excel')
-  } finally {
-    isExporting.value = false
-  }
+    XLSX.writeFile(wb, `Engineers_With_Projects_${new Date().toISOString().slice(0, 10)}.xlsx`)
+    toast.success('Exported successfully')
+  } catch { toast.error('Export failed') } finally { isExporting.value = false }
 }
 
 function exportToPDF() {
   isExporting.value = true
   try {
     const doc = new jsPDF()
-    doc.setFontSize(18)
-    doc.text('Engineers With Projects Report', 14, 20)
-
-    const tableData = filteredUsers.value.map((user, index) => [
-      index + 1,
-      user.name || '—',
-      user.email || '—',
-      user.status === 'is_active' ? 'Active' : 'Inactive',
-      user.role || '—',
-      user.department || '—',
-      user.total_projects || 0,
-      user.on_progress_projects || 0,
-      user.completed_projects || 0,
-      user.failed_projects || 0
-    ])
-
+    doc.setFontSize(14)
+    doc.text('Engineers With Projects', 14, 18)
     autoTable(doc, {
-      head: [['No', 'Name', 'Email', 'Status', 'Role', 'Department', 'Total Projects', 'In Progress', 'Completed', 'Failed']],
-      body: tableData,
-      startY: 30,
-      styles: { fontSize: 9, cellPadding: 3 },
-      headStyles: { fillColor: [40, 58, 83] },
+      head: [['No', 'Name', 'Email', 'Status', 'Role', 'Dept', 'Total', 'Progress', 'Done', 'Failed']],
+      body: filteredUsers.value.map((u, i) => [
+        i + 1, u.name || '—', u.email || '—',
+        u.status === 'is_active' ? 'Active' : 'Inactive',
+        u.role || '—', u.department || '—',
+        u.total_projects || 0, u.on_progress_projects || 0,
+        u.completed_projects || 0, u.failed_projects || 0
+      ]),
+      startY: 26,
+      styles: { fontSize: 8, cellPadding: 3 },
+      headStyles: { fillColor: [15, 118, 110], textColor: 255 },
       alternateRowStyles: { fillColor: [245, 247, 250] }
     })
-
-    doc.save(`Engineers_With_Projects_${new Date().toISOString().slice(0,10)}.pdf`)
-  } catch (err) {
-    toast.error('Failed to export to PDF')
-  } finally {
-    isExporting.value = false
-  }
+    doc.save(`Engineers_With_Projects_${new Date().toISOString().slice(0, 10)}.pdf`)
+    toast.success('Exported successfully')
+  } catch { toast.error('Export failed') } finally { isExporting.value = false }
 }
 </script>
+
+<script>
+const StatusBadge = {
+  props: ['value'],
+  template: `<span v-if="value" :class="cls" class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold">{{ value }}</span>`,
+  computed: {
+    cls() {
+      const v = (this.value || '').toLowerCase()
+      if (v.includes('active') || v.includes('complete') || v.includes('done'))
+        return 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300'
+      if (v.includes('progress') || v.includes('ongoing') || v.includes('pending'))
+        return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+      if (v.includes('fail') || v.includes('cancel') || v.includes('inactive'))
+        return 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300'
+      return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
+    }
+  }
+}
+
+const InfoTile = {
+  props: ['label', 'value', 'color'],
+  template: `
+    <div :class="bg" class="rounded-lg px-3.5 py-3 border">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">{{ label }}</p>
+      <p :class="vc" class="text-sm font-bold truncate">{{ value ?? '—' }}</p>
+    </div>
+  `,
+  computed: {
+    bg() {
+      return { amber: 'bg-amber-50 border-amber-100 dark:bg-amber-900/10 dark:border-amber-800/20', teal: 'bg-teal-50 border-teal-100 dark:bg-teal-900/10 dark:border-teal-800/20' }[this.color]
+        || 'bg-gray-50 border-gray-100 dark:bg-gray-800/40 dark:border-gray-700/50'
+    },
+    vc() {
+      return { amber: 'text-amber-600 dark:text-amber-400', teal: 'text-teal-600 dark:text-teal-400' }[this.color] || 'text-gray-800 dark:text-gray-100'
+    }
+  }
+}
+
+const ProjectField = {
+  props: ['label', 'value'],
+  template: `
+    <div>
+      <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">{{ label }}</p>
+      <p class="text-sm text-gray-700 dark:text-gray-300">{{ value || '—' }}</p>
+    </div>
+  `
+}
+</script>
+
+<style scoped>
+.modal-enter-active, .modal-leave-active { transition: opacity 0.2s ease; }
+.modal-enter-from, .modal-leave-to { opacity: 0; }
+.overflow-y-auto::-webkit-scrollbar { width: 4px; }
+.overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
+.overflow-y-auto::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 9999px; }
+.dark .overflow-y-auto::-webkit-scrollbar-thumb { background: #374151; }
+</style>
