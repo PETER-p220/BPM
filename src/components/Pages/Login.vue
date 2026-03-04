@@ -218,7 +218,8 @@ const LoginMethod = async () => {
       3: '/user/dashboard',
       4: '/tenders/dashboard',
       5: '/accountDash',
-      6: '/hrDash'
+      6: '/hrDash',
+      7: '/ceo/dashboard'
     }
 
     const route = roleRoutes[Number(role_id)]

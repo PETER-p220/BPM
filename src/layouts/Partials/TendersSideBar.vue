@@ -6,7 +6,6 @@
         Tender Management
       </h2>
     </div>
-
     <!-- Navigation -->
     <nav class="flex-1 px-3 py-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
       <ul class="space-y-1">
@@ -25,14 +24,12 @@
               <i :class="[item.icon, 'w-5 h-5 mr-3 shrink-0']"></i>
               <span class="text-sm font-medium">{{ item.label }}</span>
             </div>
-
             <i
               v-if="hasChild(item)"
               class="fas w-4 h-4 transition-transform"
               :class="item.active ? 'fa-chevron-down' : 'fa-chevron-right'"
             ></i>
           </div>
-
           <!-- Children (submenu) -->
           <ul
             v-if="hasChild(item) && item.active"
@@ -110,28 +107,30 @@ const navigations = ref([
   {
     icon: 'fas fa-trophy',
     label: 'Awards',
-    name: 'Awards',
+    name: 'ViewIntentionToAwards',
+    path: 'ViewIntentionToAwards',
     active: false,
     children: [
-      {
-        icon: 'fas fa-lightbulb',
-        label: 'Intentions to Award',
-        name: 'ViewIntentionToAwards',
-        path: 'ViewIntentionToAwards',
-      },
       {
         icon: 'fas fa-envelope',
         label: 'Awarding Letters',
         name: 'ViewAwardLetter',
         path: 'ViewAwardLetter',
       },
-    ],
+      {
+        icon: 'fa fa-lightbulb',
+        label: 'Intentions to Award',
+        name: 'ViewIntentionToAwards',
+        path: 'ViewIntentionToAwards',
+      }
+    ]
   },
 
   {
     icon: 'fas fa-chart-line',
     label: 'Performances',
     name: 'Performances',
+    path: 'insuranceBond',
     active: false,
     children: [
       {
@@ -141,17 +140,18 @@ const navigations = ref([
         path: 'insuranceBond',
       },
       {
-        icon: 'fas fa-lock', 
+        icon: 'fas fa-lock',
         label: 'Security Declarations',
         name: 'securityDeclaration',
         path: 'securityDeclaration',
       },
     ],
   },
-{
+  {
     icon: "fas fa-upload",
     label: "Updates",
     name: "UpdatesManagement",
+    path: "TenderUserCreateUpdate",
     active: false,
     children: [
       {
@@ -169,9 +169,105 @@ const navigations = ref([
         active: false
       },
      
-    ]
+    ],
   },
-  
+  {
+    icon: "fas fa-users",
+    label: "Meetings",
+    name: "MeetingsManagement",
+    path: "TenderUserCreateAttendance",
+    active: false,
+    children: [
+      {
+        icon: "fas fa-calendar-plus",
+        label: "Create Attendance",
+        name: "TenderUserCreateAttendance",
+        path: "TenderUserCreateAttendance",
+        active: false
+      },
+      {
+        icon: "fas fa-calendar-check",
+        label: "View Attendance",
+        name: "TenderUserViewAttendance",
+        path: "TenderUserViewAttendance",
+        active: false
+      },
+      {
+        icon: "fas fa-file-plus",
+        label: "Create Minutes",
+        name: "TenderUserCreateMinutes",
+        path: "TenderUserCreateMinutes",
+        active: false
+      },
+      {
+        icon: "fas fa-file-alt",
+        label: "View Minutes",
+        name: "TenderUserViewMinutes",
+        path: "TenderUserViewMinutes",
+        active: false
+      }
+    ],
+  },
+  {
+    icon: "fas fa-tools",
+    label: "Operations",
+    name: "OperationsManagement",
+    path: "TenderUserVGetAllReceipts",
+    active: false,
+    children: [
+      {
+        icon: "fas fa-receipt",
+        label: "My Receipts",
+        name: "TenderUserVGetAllReceipts",
+        path: "TenderUserVGetAllReceipts",
+        active: false
+      },
+      {
+        icon: "fas fa-hand-paper",
+        label: "My Requests",
+        name: "TenderUserGetALlRequests",
+        path: "TenderUserGetALlRequests",
+        active: false
+      },
+      {
+        icon: "fas fa-tasks",
+        label: "Project Activities",
+        name: "TenderUserViewActivity",
+        path: "TenderUserViewActivity",
+        active: false
+      }
+    ],
+  },
+  {
+    icon: "fas fa-calendar-alt",
+    label: "Leave Management",
+    name: "LeaveManagement",
+    path: "TenderUserLeaveManagement",
+    active: false
+  },
+  {
+    icon: "fas fa-chart-bar",
+    label: "Reports",
+    name: "ReportsManagement",
+    path: "TenderUserReports",
+    active: false,
+    children: [
+      {
+        icon: "fas fa-file-contract",
+        label: "Tender Reports",
+        name: "TenderUserReports",
+        path: "TenderUserReports",
+        active: false
+      },
+      {
+        icon: "fas fa-trophy",
+        label: "Award Reports",
+        name: "TenderUserAwardReports",
+        path: "TenderUserAwardReports",
+        active: false
+      }
+    ],
+  }
 ]);
 
 const clickNavigation = (item, index) => {
@@ -182,6 +278,8 @@ const clickNavigation = (item, index) => {
     });
     // Toggle current
     item.active = !item.active;
+    // Don't auto-navigate - let user choose from submenu
+    // Only navigate if user clicks directly on a child item
   } else if (hasPath(item)) {
     navigateToPath(item);
   }

@@ -8,7 +8,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Project Updates</h1>
             <p class="text-sm text-gray-600 mt-1">View and manage all project updates</p>
           </div>
-          <router-link to="/tenderuser-submitupdate">
+          <router-link :to="submitUpdateRoute">
             <button 
               class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md"
               style="background-color: #2e4053"
@@ -39,7 +39,7 @@
           </div>
           <h3 class="text-xl font-semibold text-gray-900 mb-2">No Updates Yet</h3>
           <p class="text-gray-600 mb-6">Start by creating your first project update</p>
-          <router-link to="/tenderuser-submitupdate">
+          <router-link :to="submitUpdateRoute">
             <button 
               class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-all font-medium"
               style="background-color: #2e4053"
@@ -202,6 +202,33 @@ const toast = useToast();
 const updates = ref([]);
 const isLoading = ref(true);
 
+// Get current user role from localStorage
+const userRole = ref(parseInt(localStorage.getItem('role_id')) || 4);
+
+// Dynamic routes based on user role
+const submitUpdateRoute = computed(() => {
+  switch(userRole.value) {
+    case 2: return '/hod/submit-update';  // HOD
+    case 3: return '/user/submit-update';  // User
+    case 4: return '/tenderuser-submitupdate';  // Tender
+    case 5: return '/accntnant/submit-update';  // Accountant
+    case 6: return '/hr-create-update';  // HR
+    default: return '/tenderuser-submitupdate';
+  }
+});
+
+// Dynamic edit route based on user role
+const editRouteName = computed(() => {
+  switch(userRole.value) {
+    case 2: return 'HodEditUpdate';        // HOD
+    case 3: return 'EditUserUpdate';      // User
+    case 4: return 'TenderUserEditUpdates'; // Tender
+    case 5: return 'AccntantEditUpdate';  // Accountant
+    case 6: return 'HrEditUpdate';        // HR
+    default: return 'TenderUserEditUpdates';
+  }
+});
+
 // Computed statistics
 const updatesWithFiles = computed(() => {
   return updates.value.filter(update => update.update_file).length;
@@ -227,7 +254,7 @@ onMounted(async () => {
 async function fetchUpdates() {
   isLoading.value = true;
   try {
-    const response = await axios.get('my/updates');
+    const response = await axios.get('api/my/updates');
     // Sort by created_at descending (newest first)
     updates.value = response.data.data
       .map(update => ({
@@ -249,7 +276,7 @@ async function fetchUpdates() {
 
 // Navigate to update details page with chat_id
 function viewUpdateDetails(chat_id) {
-  router.push({ name: 'TenderUserEditUpdates', params: { chat_id } });
+  router.push({ name: editRouteName.value, params: { chat_id } });
 }
 
 // Download file function

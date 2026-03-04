@@ -1,527 +1,116 @@
 <template>
-  <div class="min-h-screen bg-gray-50" style="font-family: 'cygre', sans-serif">
-    <!-- Header Section -->
-    <div class="bg-white border-b border-gray-200 shadow-sm">
-      <div class="container mx-auto px-4 py-6">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
-            <p class="text-sm text-gray-600 mt-1">Complete view of your tender management system</p>
-          </div>
-          <button 
-            @click="fetchDashboardData" 
-            class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all"
-            :disabled="isLoading"
-          >
-            <i :class="isLoading ? 'fas fa-spinner fa-spin' : 'fas fa-sync-alt'" class="text-gray-600"></i>
-            <span class="text-sm font-medium text-gray-700">Refresh</span>
-          </button>
-        </div>
-      </div>
-    </div>
+  <div class="min-h-screen bg-[#f5f6fa] dark:bg-[#0d0f14] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-6xl space-y-6">
 
-    <div class="container mx-auto px-4 py-8">
-      <!-- Loading State -->
-      <div v-if="isLoading" class="space-y-6">
-        <!-- Statistics Grid Skeleton -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <div v-for="i in 8" :key="i" class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm animate-pulse">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 bg-gray-300 rounded-lg"></div>
-              <div class="flex-1">
-                <div class="h-4 bg-gray-300 rounded w-20 mb-2"></div>
-                <div class="h-6 bg-gray-300 rounded w-12"></div>
-              </div>
-            </div>
-          </div>
+      <!-- Header -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
+          <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Complete view of your tender management system</p>
         </div>
+        <button @click="fetchDashboardData" :disabled="isLoading"
+          class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 transition-all">
+          <svg :class="isLoading ? 'animate-spin' : ''" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh
+        </button>
+      </div>
+      <!-- Loading -->
+      <div v-if="isLoading" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div v-for="i in 8" :key="i" class="h-20 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 animate-pulse"></div>
       </div>
 
-      <!-- Error State -->
-      <div v-else-if="error" class="flex items-center justify-center py-20">
-        <div class="text-center max-w-md">
-          <div class="mb-4">
-            <i class="fas fa-exclamation-circle text-6xl text-red-400"></i>
-          </div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">Error Loading Dashboard</h3>
-          <p class="text-gray-600 mb-6">{{ error }}</p>
-          <button 
-            @click="fetchDashboardData" 
-            class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium"
-          >
-            <i class="fas fa-redo"></i>
-            <span>Retry</span>
-          </button>
-        </div>
+      <!-- Error -->
+      <div v-else-if="error" class="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 py-16 text-center">
+        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Failed to load dashboard</p>
+        <p class="text-xs text-gray-400 mb-4">{{ error }}</p>
+        <button @click="fetchDashboardData"
+          class="rounded-lg bg-gray-900 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 transition-all">
+          Retry
+        </button>
       </div>
 
-      <!-- Dashboard Content -->
+      <!-- Content -->
       <div v-else class="space-y-6">
-        <!-- Quick Stats Grid - Responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <!-- Total Tenders -->
-          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-            <div class="flex flex-col items-center text-center">
-              <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg group-hover:scale-110 transition-transform mb-2">
-                <i class="fas fa-file-contract text-blue-600 text-xl"></i>
-              </div>
-              <p class="text-xs text-gray-600 mb-1">Total Tenders</p>
-              <p class="text-2xl font-bold text-gray-900">{{ dashboardData.tenders.registered }}</p>
-            </div>
-          </div>
 
-          <!-- Assigned Tenders -->
-          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-            <div class="flex flex-col items-center text-center">
-              <div class="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg group-hover:scale-110 transition-transform mb-2">
-                <i class="fas fa-tasks text-purple-600 text-xl"></i>
-              </div>
-              <p class="text-xs text-gray-600 mb-1">Assigned</p>
-              <p class="text-2xl font-bold text-gray-900">{{ dashboardData.tenders.assigned }}</p>
-            </div>
-          </div>
-
-          <!-- Submitted Tenders -->
-          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-            <div class="flex flex-col items-center text-center">
-              <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg group-hover:scale-110 transition-transform mb-2">
-                <i class="fas fa-folder-open text-green-600 text-xl"></i>
-              </div>
-              <p class="text-xs text-gray-600 mb-1">Submitted</p>
-              <p class="text-2xl font-bold text-gray-900">{{ dashboardData.tenders.submitted }}</p>
-            </div>
-          </div>
-
-          <!-- Active Projects -->
-          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-            <div class="flex flex-col items-center text-center">
-              <div class="flex items-center justify-center w-12 h-12 bg-teal-100 rounded-lg group-hover:scale-110 transition-transform mb-2">
-                <i class="fas fa-project-diagram text-teal-600 text-xl"></i>
-              </div>
-              <p class="text-xs text-gray-600 mb-1">Projects</p>
-              <p class="text-2xl font-bold text-gray-900">{{ dashboardData.projects.inProgress }}</p>
-            </div>
-          </div>
-
-          <!-- Awards -->
-          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-            <div class="flex flex-col items-center text-center">
-              <div class="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-lg group-hover:scale-110 transition-transform mb-2">
-                <i class="fas fa-trophy text-yellow-600 text-xl"></i>
-              </div>
-              <p class="text-xs text-gray-600 mb-1">Awards</p>
-              <p class="text-2xl font-bold text-gray-900">{{ dashboardData.awards.total }}</p>
-            </div>
-          </div>
-
-          <!-- Awarding Letters -->
-          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-            <div class="flex flex-col items-center text-center">
-              <div class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg group-hover:scale-110 transition-transform mb-2">
-                <i class="fas fa-envelope text-indigo-600 text-xl"></i>
-              </div>
-              <p class="text-xs text-gray-600 mb-1">Letters</p>
-              <p class="text-2xl font-bold text-gray-900">{{ dashboardData.awards.letters }}</p>
-            </div>
-          </div>
-
-          <!-- Insurance Bonds -->
-          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-            <div class="flex flex-col items-center text-center">
-              <div class="flex items-center justify-center w-12 h-12 bg-cyan-100 rounded-lg group-hover:scale-110 transition-transform mb-2">
-                <i class="fas fa-shield-alt text-cyan-600 text-xl"></i>
-              </div>
-              <p class="text-xs text-gray-600 mb-1">Bonds</p>
-              <p class="text-2xl font-bold text-gray-900">{{ dashboardData.performances.insuranceBonds }}</p>
-            </div>
-          </div>
-
-          <!-- Updates -->
-          <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-            <div class="flex flex-col items-center text-center">
-              <div class="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg group-hover:scale-110 transition-transform mb-2">
-                <i class="fas fa-upload text-orange-600 text-xl"></i>
-              </div>
-              <p class="text-xs text-gray-600 mb-1">Updates</p>
-              <p class="text-2xl font-bold text-gray-900">{{ dashboardData.updates.total }}</p>
-            </div>
-          </div>
+        <!-- Quick Stat Chips -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <QuickStat label="Total Tenders"  :value="dashboardData.tenders.registered"  color="indigo" />
+          <QuickStat label="Active Projects" :value="dashboardData.projects.inProgress" color="amber" />
+          <QuickStat label="Awards"          :value="dashboardData.awards.total"         color="teal" />
+          <QuickStat label="Updates"         :value="dashboardData.updates.total"         color="gray" />
         </div>
 
-        <!-- Main Content Grid - Responsive: 1 col mobile, 2 cols tablet, 3 cols desktop -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Tenders Overview Card -->
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg shadow-lg">
-                    <i class="fas fa-file-contract text-white text-xl"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-lg font-bold text-gray-900">Tenders</h2>
-                    <p class="text-xs text-gray-600">All activities</p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <p class="text-2xl font-bold text-blue-600">{{ dashboardData.tenders.registered }}</p>
-                  <p class="text-xs text-gray-500">Total</p>
-                </div>
-              </div>
-            </div>
+        <!-- Main 3-column cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 
-            <div class="p-6">
-              <div class="space-y-3">
-                <!-- Registered -->
-                <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-all cursor-pointer">
-                  <div class="flex items-center gap-2">
-                    <div class="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-lg">
-                      <i class="fas fa-pen-square text-white text-sm"></i>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-900">Registered</span>
-                  </div>
-                  <span class="text-lg font-bold text-blue-600">{{ dashboardData.tenders.registered }}</span>
-                </div>
-
-                <!-- Assigned -->
-                <div class="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-all cursor-pointer">
-                  <div class="flex items-center gap-2">
-                    <div class="flex items-center justify-center w-8 h-8 bg-purple-500 rounded-lg">
-                      <i class="fas fa-tasks text-white text-sm"></i>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-900">Assigned</span>
-                  </div>
-                  <span class="text-lg font-bold text-purple-600">{{ dashboardData.tenders.assigned }}</span>
-                </div>
-
-                <!-- Submitted -->
-                <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-all cursor-pointer">
-                  <div class="flex items-center gap-2">
-                    <div class="flex items-center justify-center w-8 h-8 bg-green-500 rounded-lg">
-                      <i class="fas fa-folder-open text-white text-sm"></i>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-900">Submitted</span>
-                  </div>
-                  <span class="text-lg font-bold text-green-600">{{ dashboardData.tenders.submitted }}</span>
-                </div>
-
-                <!-- In Progress -->
-                <div class="flex items-center justify-between p-3 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-all cursor-pointer">
-                  <div class="flex items-center gap-2">
-                    <div class="flex items-center justify-center w-8 h-8 bg-indigo-500 rounded-lg">
-                      <i class="fas fa-spinner text-white text-sm"></i>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-900">In Progress</span>
-                  </div>
-                  <span class="text-lg font-bold text-indigo-600">{{ dashboardData.tenders.inProgress }}</span>
-                </div>
-
-                <!-- Deadline & Expired -->
-                <div class="grid grid-cols-2 gap-2">
-                  <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-center hover:bg-yellow-100 transition-all cursor-pointer">
-                    <div class="flex items-center justify-center w-6 h-6 bg-yellow-500 rounded mx-auto mb-1">
-                      <i class="fas fa-exclamation-triangle text-white text-xs"></i>
-                    </div>
-                    <p class="text-xs text-gray-600 mb-1">Deadline</p>
-                    <p class="text-lg font-bold text-yellow-700">{{ dashboardData.tenders.deadlineReached }}</p>
-                  </div>
-                  <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-center hover:bg-red-100 transition-all cursor-pointer">
-                    <div class="flex items-center justify-center w-6 h-6 bg-red-500 rounded mx-auto mb-1">
-                      <i class="fas fa-times-circle text-white text-xs"></i>
-                    </div>
-                    <p class="text-xs text-gray-600 mb-1">Expired</p>
-                    <p class="text-lg font-bold text-red-600">{{ dashboardData.tenders.expired }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Progress Bar -->
-              <div class="mt-4 pt-4 border-t border-gray-200">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs font-medium text-gray-700">Submission Rate</span>
-                  <span class="text-xs font-bold text-gray-900">{{ tenderSubmissionRate }}%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                  <div 
-                    class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500"
-                    :style="{ width: tenderSubmissionRate + '%' }"
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- Tenders Card -->
+          <SectionCard title="Tenders" :total="dashboardData.tenders.registered" unit="Registered" color="indigo">
+            <MetricRow label="Assigned"    :value="dashboardData.tenders.assigned" />
+            <MetricRow label="Submitted"   :value="dashboardData.tenders.submitted"   color="teal" />
+            <MetricRow label="In Progress" :value="dashboardData.tenders.inProgress"  color="amber" />
+            <MetricRow label="Due Soon"    :value="dashboardData.tenders.deadlineReached" color="amber" />
+            <MetricRow label="Expired"     :value="dashboardData.tenders.expired"     color="red" />
+            <template #footer>
+              <ProgressBar label="Submission Rate" :pct="tenderSubmissionRate" color="indigo" />
+            </template>
+          </SectionCard>
 
           <!-- Awards & Performance Card -->
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-white">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="flex items-center justify-center w-12 h-12 bg-yellow-600 rounded-lg shadow-lg">
-                    <i class="fas fa-trophy text-white text-xl"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-lg font-bold text-gray-900">Awards</h2>
-                    <p class="text-xs text-gray-600">Track awards</p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <p class="text-2xl font-bold text-yellow-600">{{ dashboardData.awards.total }}</p>
-                  <p class="text-xs text-gray-500">Total</p>
-                </div>
-              </div>
-            </div>
+          <SectionCard title="Awards & Performance" :total="dashboardData.awards.total" unit="Total" color="amber">
+            <MetricRow label="Intentions"  :value="dashboardData.awards.intentions"             color="amber" />
+            <MetricRow label="Letters"     :value="dashboardData.awards.letters"                color="indigo" />
+            <MetricRow label="Bonds"       :value="dashboardData.performances.insuranceBonds"   color="teal" />
+            <MetricRow label="Security"    :value="dashboardData.performances.securityDeclarations" />
+            <MetricRow label="Updates"     :value="dashboardData.updates.total"                 color="amber" />
+            <MetricRow label="Recent"      :value="dashboardData.updates.recent" />
+          </SectionCard>
 
-            <div class="p-6">
-              <div class="space-y-4">
-                <!-- Awards Section -->
-                <div class="space-y-2">
-                  <!-- Intention to Awards -->
-                  <div class="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition-all cursor-pointer">
-                    <div class="flex items-center gap-2">
-                      <div class="flex items-center justify-center w-8 h-8 bg-yellow-500 rounded-lg">
-                        <i class="fas fa-lightbulb text-white text-sm"></i>
-                      </div>
-                      <span class="text-sm font-semibold text-gray-900">Intentions</span>
-                    </div>
-                    <span class="text-lg font-bold text-yellow-600">{{ dashboardData.awards.intentions }}</span>
-                  </div>
-
-                  <!-- Awarding Letters -->
-                  <div class="flex items-center justify-between p-3 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-all cursor-pointer">
-                    <div class="flex items-center gap-2">
-                      <div class="flex items-center justify-center w-8 h-8 bg-indigo-500 rounded-lg">
-                        <i class="fas fa-envelope text-white text-sm"></i>
-                      </div>
-                      <span class="text-sm font-semibold text-gray-900">Letters</span>
-                    </div>
-                    <span class="text-lg font-bold text-indigo-600">{{ dashboardData.awards.letters }}</span>
-                  </div>
-                </div>
-
-                <!-- Performance Section -->
-                <div class="pt-4 border-t border-gray-200">
-                  <h3 class="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <i class="fas fa-chart-line text-cyan-500"></i>
-                    Performance
-                  </h3>
-                  <div class="space-y-2">
-                    <!-- Insurance Bonds -->
-                    <div class="flex items-center justify-between p-3 bg-cyan-50 border border-cyan-200 rounded-lg hover:bg-cyan-100 transition-all cursor-pointer">
-                      <div class="flex items-center gap-2">
-                        <div class="flex items-center justify-center w-8 h-8 bg-cyan-500 rounded-lg">
-                          <i class="fas fa-shield-alt text-white text-sm"></i>
-                        </div>
-                        <span class="text-sm font-semibold text-gray-900">Bonds</span>
-                      </div>
-                      <span class="text-lg font-bold text-cyan-600">{{ dashboardData.performances.insuranceBonds }}</span>
-                    </div>
-
-                    <!-- Security Declarations -->
-                    <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-all cursor-pointer">
-                      <div class="flex items-center gap-2">
-                        <div class="flex items-center justify-center w-8 h-8 bg-gray-600 rounded-lg">
-                          <i class="fas fa-lock text-white text-sm"></i>
-                        </div>
-                        <span class="text-sm font-semibold text-gray-900">Security</span>
-                      </div>
-                      <span class="text-lg font-bold text-gray-700">{{ dashboardData.performances.securityDeclarations }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Updates Section -->
-                <div class="pt-4 border-t border-gray-200">
-                  <h3 class="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <i class="fas fa-upload text-orange-500"></i>
-                    Updates
-                  </h3>
-                  <div class="grid grid-cols-2 gap-2">
-                    <div class="p-3 bg-orange-50 border border-orange-200 rounded-lg text-center hover:bg-orange-100 transition-all cursor-pointer">
-                      <p class="text-xs text-gray-600 mb-1">Total</p>
-                      <p class="text-lg font-bold text-orange-600">{{ dashboardData.updates.total }}</p>
-                    </div>
-                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-center hover:bg-blue-100 transition-all cursor-pointer">
-                      <p class="text-xs text-gray-600 mb-1">Recent</p>
-                      <p class="text-lg font-bold text-blue-600">{{ dashboardData.updates.recent }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Projects Overview Card -->
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-white">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="flex items-center justify-center w-12 h-12 bg-green-600 rounded-lg shadow-lg">
-                    <i class="fas fa-project-diagram text-white text-xl"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-lg font-bold text-gray-900">Projects</h2>
-                    <p class="text-xs text-gray-600">Monitor status</p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <p class="text-2xl font-bold text-green-600">{{ dashboardData.projects.total }}</p>
-                  <p class="text-xs text-gray-500">Total</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="p-6">
-              <div class="space-y-3">
-                <!-- Total Projects -->
-                <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-all cursor-pointer">
-                  <div class="flex items-center gap-2">
-                    <div class="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-lg">
-                      <i class="fas fa-folder text-white text-sm"></i>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-900">Total</span>
-                  </div>
-                  <span class="text-lg font-bold text-blue-600">{{ dashboardData.projects.total }}</span>
-                </div>
-
-                <!-- In Progress -->
-                <div class="flex items-center justify-between p-3 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-all cursor-pointer">
-                  <div class="flex items-center gap-2">
-                    <div class="flex items-center justify-center w-8 h-8 bg-orange-500 rounded-lg">
-                      <i class="fas fa-tasks text-white text-sm"></i>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-900">In Progress</span>
-                  </div>
-                  <span class="text-lg font-bold text-orange-600">{{ dashboardData.projects.inProgress }}</span>
-                </div>
-
-                <!-- Completed & Failed -->
-                <div class="grid grid-cols-2 gap-2">
-                  <div class="p-3 bg-green-50 border border-green-200 rounded-lg text-center hover:bg-green-100 transition-all cursor-pointer">
-                    <div class="flex items-center justify-center w-6 h-6 bg-green-500 rounded mx-auto mb-1">
-                      <i class="fas fa-check-circle text-white text-xs"></i>
-                    </div>
-                    <p class="text-xs text-gray-600 mb-1">Completed</p>
-                    <p class="text-lg font-bold text-green-600">{{ dashboardData.projects.completed }}</p>
-                  </div>
-                  <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-center hover:bg-red-100 transition-all cursor-pointer">
-                    <div class="flex items-center justify-center w-6 h-6 bg-red-500 rounded mx-auto mb-1">
-                      <i class="fas fa-times-circle text-white text-xs"></i>
-                    </div>
-                    <p class="text-xs text-gray-600 mb-1">Failed</p>
-                    <p class="text-lg font-bold text-red-600">{{ dashboardData.projects.failed }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Progress Bar -->
-              <div class="mt-4 pt-4 border-t border-gray-200">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs font-medium text-gray-700">Success Rate</span>
-                  <span class="text-xs font-bold text-gray-900">{{ projectSuccessRate }}%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                  <div 
-                    class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500"
-                    :style="{ width: projectSuccessRate + '%' }"
-                  ></div>
-                </div>
-              </div>
-
-              <!-- Distribution -->
-              <div class="mt-4 pt-4 border-t border-gray-200">
-                <h3 class="text-xs font-semibold text-gray-700 mb-2">Distribution</h3>
-                <div class="space-y-2 text-xs">
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-600">Active</span>
-                    <span class="font-semibold text-gray-900">{{ projectActivePercentage }}%</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-600">Completed</span>
-                    <span class="font-semibold text-gray-900">{{ projectCompletedPercentage }}%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- Projects Card -->
+          <SectionCard title="Projects" :total="dashboardData.projects.total" unit="Total" color="teal">
+            <MetricRow label="In Progress" :value="dashboardData.projects.inProgress" color="amber" />
+            <MetricRow label="Completed"   :value="dashboardData.projects.completed"  color="teal" />
+            <MetricRow label="Failed"      :value="dashboardData.projects.failed"     color="red" />
+            <template #footer>
+              <ProgressBar label="Success Rate" :pct="projectSuccessRate" color="teal" />
+            </template>
+          </SectionCard>
         </div>
 
-        <!-- System Summary Card - Full Width -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
-            <div class="flex items-center gap-3">
-              <div class="flex items-center justify-center w-12 h-12 bg-purple-600 rounded-lg shadow-lg">
-                <i class="fas fa-chart-bar text-white text-xl"></i>
-              </div>
-              <div>
-                <h2 class="text-lg font-bold text-gray-900">System Overview</h2>
-                <p class="text-sm text-gray-600">Complete system statistics</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="p-6">
-            <!-- Activity Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-                <i class="fas fa-file-contract text-blue-600 text-2xl mb-2"></i>
-                <p class="text-2xl font-bold text-blue-600">{{ dashboardData.tenders.registered }}</p>
-                <p class="text-xs text-gray-600 mt-1">Tenders</p>
-              </div>
-              <div class="p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-                <i class="fas fa-trophy text-green-600 text-2xl mb-2"></i>
-                <p class="text-2xl font-bold text-green-600">{{ dashboardData.awards.total }}</p>
-                <p class="text-xs text-gray-600 mt-1">Awards</p>
-              </div>
-              <div class="p-4 bg-cyan-50 border border-cyan-200 rounded-lg text-center">
-                <i class="fas fa-shield-alt text-cyan-600 text-2xl mb-2"></i>
-                <p class="text-2xl font-bold text-cyan-600">{{ dashboardData.performances.total }}</p>
-                <p class="text-xs text-gray-600 mt-1">Performance</p>
-              </div>
-              <div class="p-4 bg-orange-50 border border-orange-200 rounded-lg text-center">
-                <i class="fas fa-upload text-orange-600 text-2xl mb-2"></i>
-                <p class="text-2xl font-bold text-orange-600">{{ dashboardData.updates.total }}</p>
-                <p class="text-xs text-gray-600 mt-1">Updates</p>
-              </div>
-            </div>
-
-            <!-- Overall Progress -->
-            <div class="mb-6">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-gray-700">Overall System Completion</span>
-                <span class="text-sm font-bold text-gray-900">{{ overallCompletion }}%</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  class="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500"
-                  :style="{ width: overallCompletion + '%' }"
-                ></div>
-              </div>
-            </div>
-
-            <!-- Quick Actions -->
+        <!-- System Summary -->
+        <div class="rounded-xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/50 dark:bg-gray-900 p-5">
+          <div class="pb-4 mb-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-semibold text-gray-700 mb-3">Quick Actions</h3>
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button class="flex flex-col items-center gap-2 p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-all text-sm font-medium">
-                  <i class="fas fa-plus-circle text-xl"></i>
-                  <span>New Tender</span>
-                </button>
-                <button class="flex flex-col items-center gap-2 p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-all text-sm font-medium">
-                  <i class="fas fa-upload text-xl"></i>
-                  <span>Submit Update</span>
-                </button>
-                <button class="flex flex-col items-center gap-2 p-3 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 transition-all text-sm font-medium">
-                  <i class="fas fa-trophy text-xl"></i>
-                  <span>View Awards</span>
-                </button>
-                <button class="flex flex-col items-center gap-2 p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-all text-sm font-medium">
-                  <i class="fas fa-chart-bar text-xl"></i>
-                  <span>Reports</span>
-                </button>
-              </div>
+              <p class="text-sm font-bold text-gray-900 dark:text-white">System Overview</p>
+              <p class="text-xs text-gray-400 mt-0.5">Overall completion across all modules</p>
+            </div>
+            <span class="text-xs font-bold text-gray-500 bg-gray-100 dark:bg-gray-800 rounded-full px-2.5 py-1">{{ overallCompletion }}% complete</span>
+          </div>
+
+          <!-- Summary tiles -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+            <SummaryTile label="Tenders"     :value="dashboardData.tenders.registered"     color="indigo" />
+            <SummaryTile label="Awards"      :value="dashboardData.awards.total"            color="amber" />
+            <SummaryTile label="Performance" :value="dashboardData.performances.total"      color="teal" />
+            <SummaryTile label="Updates"     :value="dashboardData.updates.total"           color="gray" />
+          </div>
+
+          <!-- Overall progress bar -->
+          <div class="mb-5">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs text-gray-500 dark:text-gray-400">Overall Completion</span>
+              <span class="text-xs font-bold text-gray-800 dark:text-gray-200">{{ overallCompletion }}%</span>
+            </div>
+            <div class="h-2 w-full rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+              <div class="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400 transition-all duration-700"
+                :style="{ width: overallCompletion + '%' }"></div>
             </div>
           </div>
+
+          
         </div>
+
       </div>
     </div>
   </div>
@@ -531,165 +120,171 @@
 import { ref, onMounted, computed } from 'vue'
 import axios from '@/axios'
 
-// ── State ────────────────────────────────────────────────
 const isLoading = ref(true)
 const error = ref(null)
 
 const dashboardData = ref({
-  tenders: {
-    registered: 0,
-    assigned: 0,
-    submitted: 0,
-    inProgress: 0,
-    deadlineReached: 0,
-    expired: 0
-  },
-  projects: {
-    total: 0,
-    inProgress: 0,
-    completed: 0,
-    failed: 0
-  },
-  awards: {
-    total: 0,
-    intentions: 0,
-    letters: 0
-  },
-  performances: {
-    total: 0,
-    insuranceBonds: 0,
-    securityDeclarations: 0
-  },
-  updates: {
-    total: 0,
-    recent: 0
-  }
+  tenders:      { registered: 0, assigned: 0, submitted: 0, inProgress: 0, deadlineReached: 0, expired: 0 },
+  projects:     { total: 0, inProgress: 0, completed: 0, failed: 0 },
+  awards:       { total: 0, intentions: 0, letters: 0 },
+  performances: { total: 0, insuranceBonds: 0, securityDeclarations: 0 },
+  updates:      { total: 0, recent: 0 }
 })
 
-// ── Computed Properties ──────────────────────────────────
 const tenderSubmissionRate = computed(() => {
-  const total = dashboardData.value.tenders.registered
-  if (total === 0) return 0
-  const submitted = dashboardData.value.tenders.submitted
-  return Math.round((submitted / total) * 100)
+  const t = dashboardData.value.tenders.registered
+  return t > 0 ? Math.round((dashboardData.value.tenders.submitted / t) * 100) : 0
 })
-
 const projectSuccessRate = computed(() => {
-  const total = dashboardData.value.projects.total
-  if (total === 0) return 0
-  const completed = dashboardData.value.projects.completed
-  return Math.round((completed / total) * 100)
+  const t = dashboardData.value.projects.total
+  return t > 0 ? Math.round((dashboardData.value.projects.completed / t) * 100) : 0
 })
-
-const projectActivePercentage = computed(() => {
-  const total = dashboardData.value.projects.total
-  if (total === 0) return 0
-  const active = dashboardData.value.projects.inProgress
-  return Math.round((active / total) * 100)
-})
-
-const projectCompletedPercentage = computed(() => {
-  const total = dashboardData.value.projects.total
-  if (total === 0) return 0
-  const completed = dashboardData.value.projects.completed
-  return Math.round((completed / total) * 100)
-})
-
 const overallCompletion = computed(() => {
-  const totalItems = dashboardData.value.tenders.registered + 
-                     dashboardData.value.projects.total +
-                     dashboardData.value.awards.total +
-                     dashboardData.value.performances.total
-
-  if (totalItems === 0) return 0
-  
-  const completedItems = dashboardData.value.tenders.submitted +
-                         dashboardData.value.projects.completed +
-                         dashboardData.value.awards.letters
-  
-  return Math.round((completedItems / totalItems) * 100)
+  const total = dashboardData.value.tenders.registered + dashboardData.value.projects.total +
+    dashboardData.value.awards.total + dashboardData.value.performances.total
+  if (!total) return 0
+  const done = dashboardData.value.tenders.submitted + dashboardData.value.projects.completed + dashboardData.value.awards.letters
+  return Math.round((done / total) * 100)
 })
 
-// ── Fetch Dashboard Data ─────────────────────────────────
 const fetchDashboardData = async () => {
   isLoading.value = true
   error.value = null
-  
   try {
+    // Fetch general dashboard stats
     const { data } = await axios.get('api/dashboard/stats')
+    const d = data.data || data
     
-    // Update dashboard data - handle both direct data and nested data formats
-    const responseData = data.data || data
+    // Fetch user-specific updates
+    let userUpdates = { total: 0, recent: 0 }
+    try {
+      const updatesResponse = await axios.get('api/my/updates')
+      const updatesData = updatesResponse.data.data || []
+      userUpdates.total = updatesData.length
+      // Count recent updates (last 7 days)
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+      userUpdates.recent = updatesData.filter(update => 
+        new Date(update.created_at) >= sevenDaysAgo
+      ).length
+    } catch (updatesErr) {
+      console.warn('Failed to fetch user updates:', updatesErr)
+      // Keep userUpdates as zero if API fails
+    }
     
     dashboardData.value = {
-      tenders: {
-        registered: Number(responseData.tenders?.registered || 0),
-        assigned: Number(responseData.tenders?.assigned || 0),
-        submitted: Number(responseData.tenders?.submitted || 0),
-        inProgress: Number(responseData.tenders?.inProgress || 0),
-        deadlineReached: Number(responseData.tenders?.deadlineReached || 0),
-        expired: Number(responseData.tenders?.expired || 0)
-      },
-      projects: {
-        total: Number(responseData.projects?.total || 0),
-        inProgress: Number(responseData.projects?.inProgress || 0),
-        completed: Number(responseData.projects?.completed || 0),
-        failed: Number(responseData.projects?.failed || 0)
-      },
-      awards: {
-        total: Number(responseData.awards?.total || 0),
-        intentions: Number(responseData.awards?.intentions || 0),
-        letters: Number(responseData.awards?.letters || 0)
-      },
-      performances: {
-        total: Number(responseData.performances?.insuranceBonds || 0) + 
-               Number(responseData.performances?.securityDeclarations || 0),
-        insuranceBonds: Number(responseData.performances?.insuranceBonds || 0),
-        securityDeclarations: Number(responseData.performances?.securityDeclarations || 0)
-      },
-      updates: {
-        total: Number(responseData.updates?.total || 0),
-        recent: Number(responseData.updates?.recent || 0)
-      }
+      tenders:      { registered: +d.tenders?.registered||0, assigned: +d.tenders?.assigned||0, submitted: +d.tenders?.submitted||0, inProgress: +d.tenders?.inProgress||0, deadlineReached: +d.tenders?.deadlineReached||0, expired: +d.tenders?.expired||0 },
+      projects:     { total: +d.projects?.total||0, inProgress: +d.projects?.inProgress||0, completed: +d.projects?.completed||0, failed: +d.projects?.failed||0 },
+      awards:       { total: +d.awards?.total||0, intentions: +d.awards?.intentions||0, letters: +d.awards?.letters||0 },
+      performances: { total: (+d.performances?.insuranceBonds||0)+(+d.performances?.securityDeclarations||0), insuranceBonds: +d.performances?.insuranceBonds||0, securityDeclarations: +d.performances?.securityDeclarations||0 },
+      updates:      userUpdates
     }
   } catch (err) {
-    console.error('Dashboard data loading failed:', err)
     error.value = 'Failed to load dashboard data. Please try again.'
   } finally {
     isLoading.value = false
   }
 }
 
-onMounted(() => {
-  fetchDashboardData()
-})
+onMounted(() => fetchDashboardData())
 </script>
 
-<style scoped>
-/* Smooth transitions */
-* {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+<script>
+const colorMap = {
+  indigo: { tile: 'bg-indigo-50 border-indigo-100 dark:bg-indigo-900/10 dark:border-indigo-800/20', val: 'text-indigo-600 dark:text-indigo-400', bar: 'from-indigo-500 to-indigo-400', badge: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300', btn: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300' },
+  amber:  { tile: 'bg-amber-50  border-amber-100  dark:bg-amber-900/10  dark:border-amber-800/20',  val: 'text-amber-600  dark:text-amber-400',  bar: 'from-amber-500  to-amber-400',  badge: 'bg-amber-100  text-amber-700  dark:bg-amber-900/30  dark:text-amber-300',  btn: 'bg-amber-50  text-amber-700  hover:bg-amber-100  dark:bg-amber-900/20  dark:text-amber-300'  },
+  teal:   { tile: 'bg-teal-50   border-teal-100   dark:bg-teal-900/10   dark:border-teal-800/20',   val: 'text-teal-600   dark:text-teal-400',   bar: 'from-teal-500   to-teal-400',   badge: 'bg-teal-100   text-teal-700   dark:bg-teal-900/30   dark:text-teal-300',   btn: 'bg-teal-50   text-teal-700   hover:bg-teal-100   dark:bg-teal-900/20   dark:text-teal-300'   },
+  red:    { tile: 'bg-rose-50   border-rose-100   dark:bg-rose-900/10   dark:border-rose-800/20',   val: 'text-rose-600   dark:text-rose-400',   bar: 'from-rose-500   to-rose-400',   badge: 'bg-rose-100   text-rose-700   dark:bg-rose-900/30   dark:text-rose-300',   btn: 'bg-rose-50   text-rose-700   hover:bg-rose-100   dark:bg-rose-900/20   dark:text-rose-300'   },
+  gray:   { tile: 'bg-gray-50   border-gray-100   dark:bg-gray-800/40   dark:border-gray-700/50',   val: 'text-gray-700   dark:text-gray-200',   bar: 'from-gray-500   to-gray-400',   badge: 'bg-gray-100   text-gray-600   dark:bg-gray-800     dark:text-gray-300',   btn: 'bg-gray-100  text-gray-700   hover:bg-gray-200   dark:bg-gray-800     dark:text-gray-300'  },
 }
 
-/* Hover effects */
-.cursor-pointer:hover {
-  transform: translateY(-2px);
+const QuickStat = {
+  props: ['label', 'value', 'color'],
+  setup(p) { return { c: colorMap[p.color] || colorMap.gray } },
+  template: `
+    <div :class="c.tile" class="rounded-xl border px-4 py-3">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">{{ label }}</p>
+      <p :class="c.val" class="text-xl font-extrabold tabular-nums">{{ value }}</p>
+    </div>
+  `
 }
 
-.group:hover .group-hover\:scale-110 {
-  transform: scale(1.1);
+const SectionCard = {
+  props: ['title', 'total', 'unit', 'color'],
+  setup(p) { return { c: colorMap[p.color] || colorMap.gray } },
+  template: `
+    <div class="rounded-xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/50 dark:bg-gray-900 p-5 flex flex-col">
+      <!-- Card header -->
+      <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-100 dark:border-gray-800">
+        <p class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ title }}</p>
+        <span :class="c.badge" class="rounded-full px-2.5 py-0.5 text-xs font-semibold">{{ total }} {{ unit }}</span>
+      </div>
+      <!-- Metrics -->
+      <div class="grid grid-cols-2 gap-2 flex-1">
+        <slot />
+      </div>
+      <!-- Optional footer -->
+      <div v-if="$slots.footer" class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+        <slot name="footer" />
+      </div>
+    </div>
+  `
 }
 
-/* Animation for progress bars */
-@keyframes progressAnimation {
-  from {
-    width: 0%;
-  }
+const MetricRow = {
+  props: ['label', 'value', 'color'],
+  setup(p) { return { c: colorMap[p.color] || colorMap.gray } },
+  template: `
+    <div :class="c.tile" class="rounded-lg border px-3 py-2.5">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">{{ label }}</p>
+      <p :class="c.val" class="text-sm font-bold tabular-nums">{{ value }}</p>
+    </div>
+  `
 }
 
-.bg-gradient-to-r {
-  animation: progressAnimation 1s ease-out;
+const ProgressBar = {
+  props: ['label', 'pct', 'color'],
+  setup(p) { return { c: colorMap[p.color] || colorMap.gray } },
+  template: `
+    <div>
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-xs text-gray-500 dark:text-gray-400">{{ label }}</span>
+        <span class="text-xs font-bold text-gray-800 dark:text-gray-200">{{ pct }}%</span>
+      </div>
+      <div class="h-1.5 w-full rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+        <div :class="'bg-gradient-to-r ' + c.bar" class="h-1.5 rounded-full transition-all duration-700" :style="{ width: pct + '%' }"></div>
+      </div>
+    </div>
+  `
 }
-</style>
+
+const SummaryTile = {
+  props: ['label', 'value', 'color'],
+  setup(p) { return { c: colorMap[p.color] || colorMap.gray } },
+  template: `
+    <div :class="c.tile" class="rounded-lg border px-3 py-3 text-center">
+      <p :class="c.val" class="text-2xl font-extrabold tabular-nums">{{ value }}</p>
+      <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mt-0.5">{{ label }}</p>
+    </div>
+  `
+}
+
+const iconPaths = {
+  plus:   'M12 4v16m8-8H4',
+  upload: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12',
+  trophy: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z',
+  chart:  'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+}
+
+const ActionBtn = {
+  props: ['label', 'icon', 'color'],
+  setup(p) { return { c: colorMap[p.color] || colorMap.gray, path: iconPaths[p.icon] } },
+  template: `
+    <button :class="c.btn" class="flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-semibold transition-all">
+      <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="path" />
+      </svg>
+      {{ label }}
+    </button>
+  `
+}
+</script>

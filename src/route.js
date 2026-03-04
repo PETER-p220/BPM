@@ -84,22 +84,14 @@ import SubmitActivityVue from "./layouts/project_activities/SubmitActivity.vue";
 import ActivityDetailsPageVue from "./layouts/project_activities/ActivityDetailsPage.vue";
 import HodApproveActivityVue from "./layouts/project_activities/HodApproveActivity.vue";
 import ApproveActivityVue from "./layouts/project_activities/ApproveActivity.vue";
-import UserUpdatesVue from "./layouts/allUpdates/UserUpdates.vue";
-import SubmitUpdateVue from "./layouts/allUpdates/SubmitUpdate.vue";
-import EditUserUpdateVue from "./layouts/allUpdates/EditUserUpdate.vue";
-import HodViewUpdateVue from "./layouts/allUpdates/HodViewUpdate.vue";
-import HodSubmitUpdateVue from "./layouts/allUpdates/HodSubmitUpdate.vue";
-import HodEditUpdateVue from "./layouts/allUpdates/HodEditUpdate.vue";
 import TenderUserViewUpdatesVue from "./layouts/allUpdates/TenderUserViewUpdates.vue";
 import TenderUserSubmitUpdatesVue from "./layouts/allUpdates/TenderUserSubmitUpdates.vue";
 import TenderUserEditUpdatesVue from "./layouts/allUpdates/TenderUserEditUpdates.vue";
 import TenderUserCreateUpdateVue from "./layouts/allUpdates/TenderUserCreateUpdate.vue";
-import AccntantViewUpdateVue from "./layouts/allUpdates/AccntantViewUpdate.vue";
-import AccntantEditUpdateVue from "./layouts/allUpdates/AccntantEditUpdate.vue";
-import AccntantSubmitUpdateVue from "./layouts/allUpdates/AccntantCreateUpdate.vue";
-import HrCreateUpdate from "./layouts/allUpdates/HrCreateUpdate.vue";
-import HrViewUpdates from "./layouts/allUpdates/HrViewUpdates.vue";
-import HrEditUpdate from "./layouts/allUpdates/HrEditUpdate.vue";
+import TenderUserCreateAttendanceVue from "./layouts/attendance/TenderUserCreateAttendance.vue";
+import TenderUserCreateMinutesVue from "./layouts/meetingMenutes/TenderUserCreateMinutes.vue";
+import TenderUserReportsVue from "./layouts/tenders/TenderUserReports.vue";
+import TenderUserAwardReportsVue from "./layouts/awards/TenderUserAwardReports.vue";
 import HrCreateAttendance from "./layouts/attendance/HrCreateAttendance.vue";
 import HrManageAttendance from "./layouts/attendance/HrManageAttendance.vue";
 import HrCreateMinutes from "./layouts/meetingMenutes/HrCreateMinutes.vue";
@@ -133,6 +125,17 @@ import AdminViewAssignedProjects from "./layouts/assignProjects/AdminViewAssigne
 import AdminEditAssignedProject from "./layouts/assignProjects/AdminEditAssignedProject.vue";
 import AdminViewALlProjectActivities from "./layouts/project_activities/ViewProjectActivities.vue";
 import AdminGetActivityDetailsPage from "./layouts/project_activities/AdminGetActivityDetailsPage.vue";
+import CEODashboardVue from "./layouts/ceo/CEODashboard.vue";
+import CEOAnalyticsVue from "./layouts/ceo/CEOAnalytics.vue";
+import BudgetManagementVue from "./layouts/ceo/BudgetManagement.vue";
+import AdvancedReportingVue from "./layouts/ceo/AdvancedReporting.vue";
+import CEOTendersVue from "./layouts/ceo/CEOTenders.vue";
+import CEOQuotationsVue from "./layouts/ceo/CEOQuotations.vue";
+import CEOReportsVue from "./layouts/ceo/CEOReports.vue";
+import CEOPerformanceVue from "./layouts/ceo/CEOPerformance.vue";
+import HrManageLeave from "./layouts/leave/HrManageLeave.vue";
+import HrLeaveManagement from "./layouts/leave/HrLeaveManagement.vue";
+import CEOLayout from "./layouts/CEOLayout.vue";
 import CreateReceipt from "./layouts/receipts/CreateReceipt.vue";
 import AdminGetAllreceipts from "./layouts/receipts/AdminGetAllreceipts.vue";
 import AdminGetUpdates from "./layouts/allUpdates/AdminGetUpdates.vue";
@@ -153,6 +156,8 @@ import AccountantGetAttendance from "./layouts/attendance/AccountantGetAttendanc
 import AccontntGetMinutes from "./layouts/meetingMenutes/AccontntGetMinutes.vue";
 import AccontntCreateUpdate from "./layouts/meetingMenutes/AccontntCreateUpdate.vue";
 import AccntntGetALlReceipts from "./layouts/receipts/AccntntGetALlReceipts.vue";
+import AccCreateBudget from "./layouts/accountant/AccCreateBudget.vue";
+import AccMyBudgets from "./layouts/accountant/AccMyBudgets.vue";
 import HodGetAllRequests from "./layouts/requests/HodGetAllRequests.vue";
 import HodCreateAttendance from "./layouts/attendance/HodCreateAttendance.vue";
 import HodManageAllAttendance from "./layouts/attendance/HodManageAllAttendance.vue";
@@ -166,7 +171,6 @@ import ApproveSchedule from "./layouts/priceshedules/ApproveRejectSchedule.vue";
 import ApproveRejectSchedule from "./layouts/priceshedules/ApproveRejectSchedule.vue";
 import ViewRequests from "./layouts/requests/ViewRequests.vue";
 import ApproveAllRequests from "./layouts/requests/ApproveAllRequests.vue";
-import AccntantCreateUpdate from "./layouts/allUpdates/AccntantCreateUpdate.vue";
 import TendersReport from "./layouts/tenders/TendersReport.vue";
 import ReportForAssignsTenders from "./layouts/assignTenders/ReportForAssignsTenders.vue";
 import ReportForTenderDocuSubmission from "./layouts/tenderSubmissions/ReportForTenderDocuSubmission.vue";
@@ -231,6 +235,8 @@ import AccManageRequests from "./layouts/requests/AccManageRequests.vue";
 import AccManageExtendedRequests from "./layouts/extend-request/AccManageExtendedRequests.vue";
 import AccManageInvoices from "./layouts/invoices/AccManageInvoices.vue";
 import DepartmentUpdates from "./layouts/updates/DepartmentUpdates.vue";
+import HrManagePerformance from "./layouts/performance/HrManagePerformance.vue";
+import HrCreatePerformance from "./layouts/performance/HrCreatePerformance.vue";
 
 const baseURL = '/';
 
@@ -605,14 +611,14 @@ const routes = [
                 name: 'AdminViewAttendance',
                 component: AdminViewAttendance,
                 props: true,
-                meta: { requiresAuth: true, allowedRoles: [1] }
+                meta: { requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: 'admin/print-minutes',
                 name: 'AdminViewMinutes',
                 component: AdminViewMinutes,
                 props: true,
-                meta: { requiresAuth: true, allowedRoles: [1] }
+                meta: { requiresAuth: true, allowedRoles: [1, 7, 8] }
             },
             {
                 path: 'all-schedules',
@@ -640,133 +646,133 @@ const routes = [
                 name:'TendersReport',
                 component: TendersReport,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/report-for/assigned-tenders',
                 name:'ReportForAssignsTenders',
                 component: ReportForAssignsTenders,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/report-for/assigned-tenders',
                 name:'ReportForTenderDocuSubmission',
                 component:ReportForTenderDocuSubmission,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/report-for/projects',
                 name:'ReportForProjects',
                 component:ReportForProjects,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/report-for/submittedreceipts',
                 name:'ReportForSubmittedReceipts',
                 component: ReportForSubmittedReceipts,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/report-for/updates',
                 name:'ReportForUpdates',
                 component: ReportForUpdates,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/view/tenders',
                 name:'AdminGetTenders',
                 component: AdminGetTenders,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/view/assigned-tenders',
                 name:' AdminViewAssignedTenders',
                 component:  AdminViewAssignedTenders,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/view/submitted-tenders',
                 name:'AdminViewSubmittedTenders',
                 component:  AdminViewSubmittedTenders,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/view/intetions',
                 name:'AdminViewIntentions',
                 component:  AdminViewIntentions,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/view/awarding-letters',
                 name:'AdminViewAwardedLetters',
                 component:  AdminViewAwardedLetters,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/view/security-desclaration',
                 name:'AdminViewSecurityDeclaration',
                 component:   AdminViewSecurityDeclaration,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/view/insurance-bond',
                 name:'AdminViewInsuranceBond',
                 component:  AdminViewInsuranceBond,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/quotations',
                 name:'AdminManageSchedule',
                 component:  AdminManageSchedule,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/create-appointment-letter',
                 name:'CreateAppointmentLetter',
                 component:  CreateAppointmentLetter,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/appointment-letters',
                 name:'AppointmentLetters',
                 component:  AppointmentLetters,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/view-appointment-letter/:letter_id',
                 name:'ViewAppointmentLetter',
                 component:  AcceptAppointmentLetter,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/assigned-projects',
                 name:'AllAssignedProjects',
                 component:AllAssignedProjectsVue,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path:'/assign-project',
                 name:'AssignProject',
                 component:AssignProjectVue,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/edit-assignedproject/:project_id',
@@ -780,77 +786,77 @@ const routes = [
                 name:'Analyses',
                 component: Analyses,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/approve-analysis/:analysis_id',
                 name:'ApproveAnalyses',
                 component: ApproveAnalyses,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/all-requests',
                 name:'AdminViewProjectRequests',
                 component: AdminViewProjectRequests,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/all/extentions-for-project',
                 name:'Extentions',
                 component: Extentions,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/extended-project',
                 name:'ExtendedProjects',
                 component: ExtendedProjects,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/extend-project',
                 name:'ExtendProject',
                 component: ExtendProject,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/intention-reports',
                 name:'IntentionToAwardsReport',
                 component: IntentionToAwardsReport,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/insurance-bond/reports',
                 name:'InsuranceBondReport',
                 component: InsuranceBondReport,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/awards-reports',
                 name:'AwardLettersReport',
                 component:AwardLettersReport,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/s-declaration-reports',
                 name:'SecurityDeclaReports',
                 component: SecurityDeclaREports,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: '/project-portofolio',
                 name:'AdminViewProjectPortofolio',
                 component: AdminViewProjectPortofolio,
                 props:true,
-                meta:{ requiresAuth: true, allowedRoles: [1] }
+                meta:{ requiresAuth: true, allowedRoles: [1, 7] }
             },
             {
                 path: 'table',
@@ -947,21 +953,21 @@ const routes = [
             {
                 path:'/user/update',
                 name:'UserUpdates',
-                component: UserUpdatesVue,
+                component: TenderUserViewUpdatesVue,
                 props:true,
                meta: { requiresAuth: true, allowedRoles: [3] }
             },
             {
                 path:'/edituser-update/:chat_id',
                 name:'EditUserUpdate',
-                component: EditUserUpdateVue,
+                component: TenderUserEditUpdatesVue,
                 props:true,
                meta: { requiresAuth: true, allowedRoles: [3] }
             },
             {
                 path:'/user/submit-update',
                 name:'UserSubmitUpdate',
-                component: SubmitUpdateVue,
+                component: TenderUserSubmitUpdatesVue,
                 props:true,
                meta: { requiresAuth: true, allowedRoles: [3] }
             },
@@ -1083,6 +1089,12 @@ const routes = [
                 component: CreateExtention,
                 props:true,
                 meta:{ requiresAuth: true, allowedRoles: [3] }
+            },
+            {
+                path: '/user/leave-management',
+                name: 'UserLeaveManagement',
+                component: HrManageLeave,
+                meta: { requiresAuth: true, allowedRoles: [3] }
             },
         ],
     },
@@ -1243,6 +1255,13 @@ const routes = [
                 meta:{ requiresAuth: true, allowedRoles: [4] }
             },
             {
+                path:'/tenderuser-create/attendance',
+                name:'TenderUserCreateAttendance',
+                component: TenderUserCreateAttendanceVue,
+                props:true,
+                meta:{ requiresAuth: true, allowedRoles: [4] }
+            },
+            {
                 path:'/tenderuser-view/minutes',
                 name:'TenderUserViewMinutes',
                 component: TenderUserViewMinutes,
@@ -1250,9 +1269,30 @@ const routes = [
                 meta:{ requiresAuth: true, allowedRoles: [4] }
             },
             {
+                path:'/tenderuser-create/minutes',
+                name:'TenderUserCreateMinutes',
+                component: TenderUserCreateMinutesVue,
+                props:true,
+                meta:{ requiresAuth: true, allowedRoles: [4] }
+            },
+            {
                 path:'/tenderuses-get/allrequests',
                 name:'TenderUserGetALlRequests',
                 component: TenderUserGetALlRequests,
+                props:true,
+                meta:{ requiresAuth: true, allowedRoles: [4] }
+            },
+            {
+                path:'/tenderuser-reports',
+                name:'TenderUserReports',
+                component: TenderUserReportsVue,
+                props:true,
+                meta:{ requiresAuth: true, allowedRoles: [4] }
+            },
+            {
+                path:'/tenderuser-award-reports',
+                name:'TenderUserAwardReports',
+                component: TenderUserAwardReportsVue,
                 props:true,
                 meta:{ requiresAuth: true, allowedRoles: [4] }
             },
@@ -1311,6 +1351,12 @@ const routes = [
                 component: SecurityDeclaration,
                 props:true,
                 meta:{ requiresAuth: true, allowedRoles: [4] }
+            },
+            {
+                path: '/tenderuser/leave-management',
+                name: 'TenderUserLeaveManagement',
+                component: HrManageLeave,
+                meta: { requiresAuth: true, allowedRoles: [4] }
             },
         ],
     },
@@ -1404,19 +1450,25 @@ const routes = [
             {
                 path: '/hod/view-update',
                 name: 'HodViewUpdate',
-                component: HodViewUpdateVue,
+                component: TenderUserViewUpdatesVue,
+                meta: { requiresAuth: true, allowedRoles: [2] }
+            },
+            {
+                path: '/hod/leave-management',
+                name: 'HodLeaveManagement',
+                component: HrManageLeave,
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
             {
                 path: '/hod/submit-update',
                 name: 'HodSubmitUpdate',
-                component: HodSubmitUpdateVue,
+                component: TenderUserSubmitUpdatesVue,
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
             {
                 path: '/hod/edit-update/:chat_id',
                 name: 'HodEditUpdate',
-                component: HodEditUpdateVue,
+                component: TenderUserEditUpdatesVue,
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [2] }
             },
@@ -1501,19 +1553,19 @@ const routes = [
             {
                 path: '/accntnant-view-update', 
                 name: 'AccntantViewUpdate',
-                component: AccntantViewUpdateVue,
+                component: TenderUserViewUpdatesVue,
                 meta: { requiresAuth: true, allowedRoles: [5] }
             },
             {
                 path: '/accntnant/submit-update',
                 name: 'AccntantCreateUpdate',
-                component: AccntantCreateUpdate,
+                component: TenderUserSubmitUpdatesVue,
                 meta: { requiresAuth: true, allowedRoles: [5] }
             },
             {
                 path: '/accntnantedit-update/:chat_id',
                 name: 'AccntantEditUpdate',
-                component: AccntantEditUpdateVue,  
+                component: TenderUserEditUpdatesVue,  
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [5] }
             },
@@ -1599,6 +1651,24 @@ const routes = [
                 component: DepartmentUpdates,
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [2, 3, 4, 5, 6] }
+            },
+            {
+                path: '/accountant/create-budget',
+                name: 'AccCreateBudget',
+                component: AccCreateBudget,
+                meta: { requiresAuth: true, allowedRoles: [5] }
+            },
+            {
+                path: '/accountant/my-budgets',
+                name: 'AccMyBudgets',
+                component: AccMyBudgets,
+                meta: { requiresAuth: true, allowedRoles: [5] }
+            },
+            {
+                path: '/accountant/leave-management',
+                name: 'AccLeaveManagement',
+                component: HrManageLeave,
+                meta: { requiresAuth: true, allowedRoles: [5] }
             },
         ],
     },
@@ -1694,20 +1764,20 @@ const routes = [
             {
                 path: '/hr-create-update',
                 name: 'HrCreateUpdate',
-                component: HrCreateUpdate,
+                component: TenderUserCreateUpdateVue,
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
             {
                 path: '/hr-edit-update/:chat_id',
                 name: 'HrEditUpdate',
-                component: HrEditUpdate,
+                component: TenderUserEditUpdatesVue,
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
             {
                 path: '/hr-view-updates',
                 name: 'HrViewUpdates',
-                component: HrViewUpdates,
+                component: TenderUserViewUpdatesVue,
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
             {
@@ -1742,15 +1812,175 @@ const routes = [
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
             {
+                path: '/hr/performance-management',
+                name: 'HrManagePerformance',
+                component: HrManagePerformance,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
+                path: '/hr/create-performance',
+                name: 'HrCreatePerformance',
+                component: HrCreatePerformance,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
+            {
                 path: '/hr-create-minutes-test',
                 name: 'HrCreateMinutesTest',
                 component: HrCreateMinutes,
                 meta: { requiresAuth: true, allowedRoles: [6] }
             },
+            {
+                path: '/hr/leave-management',
+                name: 'HrManageLeave',
+                component: HrLeaveManagement,
+                meta: { requiresAuth: true, allowedRoles: [6] }
+            },
         ],
     },
 
-    // GUEST LAYOUT (No authentication required)
+    // CEO LAYOUT (Role ID: 7 - CEO/Boss Manager)
+    {
+        path: '/ceo',
+        component: CEOLayout,
+        meta: { requiresAuth: true, allowedRoles: [7] },
+        children: [
+            {
+                path: 'dashboard',
+                name: 'CEODashboard',
+                component: CEODashboardVue,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'analytics',
+                name: 'CEOAnalytics',
+                component: CEOAnalyticsVue,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'budget',
+                name: 'BudgetManagement',
+                component: BudgetManagementVue,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'reports',
+                name: 'AdvancedReporting',
+                component: AdvancedReportingVue,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'tenders',
+                name: 'CEOTenders',
+                component: CEOTendersVue,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'quotations',
+                name: 'CEOQuotations',
+                component: CEOQuotationsVue,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'performance-evaluations',
+                name: 'CEOPerformance',
+                component: CEOPerformanceVue,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'leave-management',
+                name: 'CEOLeaveManagement',
+                component: HrManageLeave,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            // CEO REPORT ROUTES
+            {
+                path: 'tenders-report',
+                name: 'TendersReport',
+                component: TendersReport,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'report-for/assigned-tenders',
+                name: 'ReportForAssignsTenders',
+                component: ReportForAssignsTenders,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'report-for/tender-docu-submission',
+                name: 'ReportForTenderDocuSubmission',
+                component: ReportForTenderDocuSubmission,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'report-for/projects',
+                name: 'ReportForProjects',
+                component: ReportForProjects,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'report-for/submittedreceipts',
+                name: 'ReportForSubmittedReceipts',
+                component: ReportForSubmittedReceipts,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'report-for/updates',
+                name: 'ReportForUpdates',
+                component: ReportForUpdates,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'intention-reports',
+                name: 'IntentionToAwardsReport',
+                component: IntentionToAwardsReport,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'insurance-bond/reports',
+                name: 'InsuranceBondReport',
+                component: InsuranceBondReport,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'awards-reports',
+                name: 'AwardLettersReport',
+                component: AwardLettersReport,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 's-declaration-reports',
+                name: 'SecurityDeclaReports',
+                component: SecurityDeclaREports,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'print-attendance',
+                name: 'AdminViewAttendance',
+                component: AdminViewAttendance,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+            {
+                path: 'print-minutes',
+                name: 'AdminViewMinutes',
+                component: AdminViewMinutes,
+                props: true,
+                meta: { requiresAuth: true, allowedRoles: [7] }
+            },
+        ]
+    },
+
+    // GUEST LAYOUT
     {
         path: '/',
         component: GuestLayout,
@@ -1793,7 +2023,7 @@ const routes = [
                 component: UserProfile1,
                 meta: { requiresAuth: true, allowedRoles: [1, 2, 3, 4, 5, 6] }
             },
-        ]
+        ],
     },
 
     // ERROR LAYOUT
@@ -1807,8 +2037,10 @@ const routes = [
                 name: 'Error404',
                 component: Error404,
             },
-        ]
+        ],
     },
+
+    // Catch-all route for 404 - MUST be last
     {
         path: '/:pathMatch(.*)*',
         redirect: { name: 'Error404' }
@@ -1828,7 +2060,8 @@ const roleDashboards = {
     3: '/user/dashboard',      // User
     4: '/tenders/dashboard',   // Tenders
     5: '/accountDash',         // Accountant
-    6: '/hrDash'              // HR
+    6: '/hrDash',              // HR
+    7: '/ceo/dashboard'         // CEO/Boss Manager
 };
 
 // Navigation guard to check authentication and role-based access

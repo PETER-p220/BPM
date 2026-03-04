@@ -196,10 +196,10 @@ const navigations = ref([
     active: false,
     children: [
       {
-        icon: "fas fa-plus text-yellow-500",
-        label: "Create Update",
+        icon: "fas fa-plus text-yellow-500",     
+        label: "Create Update",     
         name: "UserCreateUpdate",
-        path: "SubmitUpdate",
+        path: "UserSubmitUpdate",
         active: false
       },
       {
@@ -211,6 +211,13 @@ const navigations = ref([
       },
       
     ]
+  },
+  {
+    icon: "fas fa-calendar-alt text-purple-500",
+    label: "Leave Management",
+    name: "LeaveManagement",
+    path: "UserLeaveManagement",
+    active: false
   },
   {
     icon: "fas fa-user-circle text-gray-500",

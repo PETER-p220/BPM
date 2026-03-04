@@ -242,6 +242,43 @@ const navigations = ref([
     ]
   },
   {
+    icon: "fas fa-chart-line",
+    label: "Performance Management",
+    name: "PerformanceManagement",
+    active: false,
+    children: [
+      {
+        icon: "fas fa-tachometer-alt",
+        label: "Manage Performance",
+        name: "HrManagePerformance",
+        path: "HrManagePerformance",
+        active: false
+      },
+      {
+        icon: "fas fa-plus-circle",
+        label: "Create Evaluation",
+        name: "HrCreatePerformance",
+        path: "HrCreatePerformance",
+        active: false
+      }
+    ]
+  },
+  {
+    icon: "fas fa-calendar-alt",
+    label: "Leave Management",
+    name: "LeaveManagement",
+    active: false,
+    children: [
+      {
+        icon: "fas fa-calendar-check",
+        label: "Manage Leaves",
+        name: "HrManageLeave",
+        path: "HrManageLeave",
+        active: false
+      }
+    ]
+  },
+  {
     icon: "fas fa-users",
     label: "Meetings",
     name: "MeetingsManagement",

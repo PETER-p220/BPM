@@ -169,38 +169,12 @@
               </router-link>
             </div>
 
-            <!-- Help Text -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
-              <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
-              <div class="text-sm text-blue-800">
-                <p class="font-medium mb-1">Tips for creating award letters:</p>
-                <ul class="list-disc list-inside space-y-1 text-blue-700">
-                  <li>Ensure the PDF is properly formatted and readable</li>
-                  <li>Include all necessary legal and contractual information</li>
-                  <li>Verify the tender selection before submission</li>
-                </ul>
-              </div>
-            </div>
+            
           </form>
         </div>
       </div>
 
-      <!-- Additional Information Card -->
-      <div class="mt-6 bg-white rounded-lg shadow-md border border-gray-200 p-6">
-        <div class="flex items-start gap-4">
-          <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <i class="fas fa-info-circle text-amber-600"></i>
-          </div>
-          <div>
-            <h3 class="font-semibold text-gray-800 mb-2">Important Information</h3>
-            <div class="text-sm text-gray-600 space-y-2">
-              <p>• Award letters are official documents that notify successful bidders</p>
-              <p>• Ensure all information is accurate before submission</p>
-              <p>• The document will be permanently stored and associated with the selected tender</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </div>
   </div>
 </template>

@@ -130,6 +130,7 @@ const currentRoute = useRoute();
 
 const navigations = ref([
   {},
+  
   {
     icon: "fas fa-chart-line",
     label: "Dashboard",
@@ -218,6 +219,35 @@ const navigations = ref([
         active: false
       }
     ]
+  },
+  {
+    icon: "fas fa-calculator",
+    label: "Budget Management",
+    name: "BudgetManagement",
+    active: false,
+    children: [
+      {
+        icon: "fas fa-plus-circle",
+        label: "Create Budget",
+        name: "AccCreateBudget",
+        path: "AccCreateBudget",
+        active: false
+      },
+      {
+        icon: "fas fa-list",
+        label: "My Budgets",
+        name: "AccMyBudgets",
+        path: "AccMyBudgets",
+        active: false
+      }
+    ]
+  },
+  {
+    icon: "fas fa-calendar-alt",
+    label: "Leave Management",
+    name: "LeaveManagement",
+    path: "AccLeaveManagement",
+    active: false
   },
   {
     icon: "fas fa-upload",

@@ -159,6 +159,12 @@ const navigations = ref([
   },
   { type: 'separator' },
   {
+    icon: 'fas fa-calendar-alt text-green-400',
+    label: 'Leave Management',
+    name: 'HodLeaveManagement',
+  },
+  { type: 'separator' },
+  {
     icon: 'fas fa-upload text-blue-400',
     label: 'Updates',
     active: false,

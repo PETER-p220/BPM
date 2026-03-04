@@ -1,25 +1,20 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6 lg:p-8" style="font-family: 'cygre', serif;">
-    <!-- Header Section -->
-    <div class="max-w-7xl mx-auto">
-      <div class="mb-8">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Project Analyses</h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Review and manage project cost analyses
-            </p>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="text-sm text-gray-600 dark:text-gray-400">
-              <span class="font-medium">{{ allProjects.length }}</span> project{{ allProjects.length !== 1 ? 's' : '' }}
-            </div>
-          </div>
+    <div class="max-w-7xl mx-auto space-y-6">
+
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Project Analyses</h1>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Review and manage project cost analyses</p>
+        </div>
+        <div class="text-sm text-gray-600 dark:text-gray-400">
+          <span class="font-medium">{{ allProjects.length }}</span> project{{ allProjects.length !== 1 ? 's' : '' }}
         </div>
       </div>
 
-      <!-- Search Section -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
+      <!-- Search -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <i class="fas fa-search text-gray-400"></i>
@@ -33,268 +28,175 @@
         </div>
       </div>
 
-      <!-- Projects List -->
-      <div class="space-y-6">
-        <div
-          v-for="project in filteredProjects"
-          :key="project.project_id"
-          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700"
-        >
-          <!-- Project Header -->
-          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-750 p-6 border-b border-gray-200 dark:border-gray-600">
-            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-              <div class="flex-1">
-                <div class="flex items-start gap-3">
-                  <div class="h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-project-diagram text-white text-xl"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                      {{ project.project.project_name }}
-                    </h3>
-                    <div class="mt-2 flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-300">
-                      <div class="flex items-center gap-1">
-                        <i class="fas fa-user text-gray-400"></i>
-                        <span>{{ project.user?.name || 'N/A' }}</span>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <i class="fas fa-calendar text-gray-400"></i>
-                        <span>{{ formatDate(project.created_at) }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <!-- Loading -->
+      <div v-if="loading" class="flex justify-center items-center py-24">
+        <div class="flex items-center gap-3 text-gray-500 dark:text-gray-400">
+          <i class="fas fa-spinner fa-spin text-2xl"></i>
+          <span class="text-lg">Loading project analyses...</span>
+        </div>
+      </div>
 
-              <!-- Status Badge -->
-              <div>
-                <span
-                  :class="statusBadgeClass(project.status)"
-                  class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold"
-                >
-                  <i :class="statusIcon(project.status)" class="mr-2"></i>
-                  {{ project.status.charAt(0).toUpperCase() + project.status.slice(1) }}
-                </span>
-                <p v-if="project.status === 'rejected' && project.reason_for_reject" 
-                   class="mt-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded">
-                  <i class="fas fa-info-circle mr-1"></i>
-                  <strong>Reason:</strong> {{ project.reason_for_reject }}
-                </p>
-              </div>
-            </div>
-          </div>
+      <!-- Empty State -->
+      <div
+        v-else-if="!filteredProjects.length"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-12 text-center"
+      >
+        <i class="fas fa-chart-bar text-gray-300 dark:text-gray-600 text-6xl mb-4 block"></i>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No analyses found</h3>
+        <p class="text-gray-500 dark:text-gray-400">
+          {{ filter ? 'Try adjusting your search criteria' : 'No project analyses available at the moment' }}
+        </p>
+      </div>
 
-          <!-- Financial Summary -->
-          <div class="p-6 bg-gray-50 dark:bg-gray-750 border-b border-gray-200 dark:border-gray-700">
-            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center">
-              <i class="fas fa-chart-line mr-2 text-blue-500"></i>
-              Financial Summary
-            </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Amount (VAT Excl)</div>
-                <div class="text-lg font-bold text-gray-900 dark:text-white">
-                  {{ formatCurrency(project.total_amount_vat_excl) }}
-                </div>
-              </div>
-              <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Amount (VAT Incl)</div>
-                <div class="text-lg font-bold text-gray-900 dark:text-white">
-                  {{ formatCurrency(project.total_amount_vat_incl) }}
-                </div>
-              </div>
-              <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Amount Needed</div>
-                <div class="text-lg font-bold text-gray-900 dark:text-white">
-                  {{ formatCurrency(project.total_amount_needed) }}
-                </div>
-              </div>
-              <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Site Contingency</div>
-                <div class="text-lg font-bold text-gray-900 dark:text-white">
-                  {{ formatCurrency(project.site_contingency) }}
-                </div>
-              </div>
-              <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Investment</div>
-                <div class="text-lg font-bold text-gray-900 dark:text-white">
-                  {{ formatCurrency(project.total_investment) }}
-                </div>
-              </div>
-              <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700">
-                <div class="text-xs text-green-700 dark:text-green-400 mb-1">Projected Profit</div>
-                <div class="text-lg font-bold text-green-800 dark:text-green-300">
-                  {{ formatCurrency(project.projected_profit) }}
-                </div>
-                <div class="text-xs text-green-600 dark:text-green-400 mt-1">
-                  {{ project.projected_profit_percentage }}% margin
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Analysis Items Table -->
-          <div class="p-6">
-            <div class="flex items-center justify-between mb-4">
-              <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center">
-                <i class="fas fa-list mr-2 text-blue-500"></i>
-                Analysis Items
-                <span class="ml-2 text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
-                  {{ project.items.length }}
-                </span>
-              </h4>
-            </div>
-
-            <!-- Desktop Table View -->
-            <div class="hidden lg:block overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-              <table class="w-full text-sm">
-                <thead class="bg-gray-100 dark:bg-gray-700">
-                  <tr>
-                    <th colspan="6" class="px-4 py-2 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 border-b border-r border-gray-300 dark:border-gray-600">
-                      QUOTED PRICES (VAT EXCL)
-                    </th>
-                    <th colspan="3" class="px-4 py-2 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 border-b border-r border-gray-300 dark:border-gray-600">
-                      BUYING PRICES (VAT INCL)
-                    </th>
-                    <th colspan="2" class="px-4 py-2 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-300 dark:border-gray-600">
-                      ADDITIONAL INFO
-                    </th>
-                  </tr>
-                  <tr class="bg-gray-50 dark:bg-gray-750">
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">S/N</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Description</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Q. Qty</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Unit</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Q. Rate</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Q. Amount</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Qty</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Rate</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Amount</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Source</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300">Urgent</th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  <tr v-for="item in project.items" :key="item.analysis_id" class="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
-                    <td class="px-3 py-3 text-gray-900 dark:text-white font-medium">{{ item.serial_number }}</td>
-                    <td class="px-3 py-3 text-gray-700 dark:text-gray-300 max-w-xs" :title="item.item_description">
-                      {{ item.item_description || 'N/A' }}
-                    </td>
-                    <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.quoted_quantity || '-' }}</td>
-                    <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.quoted_unit || '-' }}</td>
-                    <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ formatCurrency(item.quoted_rate) }}</td>
-                    <td class="px-3 py-3 text-gray-900 dark:text-white font-semibold">{{ formatCurrency(item.quoted_amount) }}</td>
-                    <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.quantity || '-' }}</td>
-                    <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ formatCurrency(item.rate) }}</td>
-                    <td class="px-3 py-3 text-gray-900 dark:text-white font-semibold">{{ formatCurrency(item.amount) }}</td>
-                    <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.source || 'N/A' }}</td>
-                    <td class="px-3 py-3">
-                      <span v-if="item.urgent_status === 'Yes'" class="inline-flex items-center px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-medium">
-                        <i class="fas fa-exclamation-circle mr-1"></i>
-                        Urgent
-                      </span>
-                      <span v-else class="text-gray-500 dark:text-gray-400 text-xs">No</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Mobile Card View -->
-            <div class="lg:hidden space-y-3">
-              <div
-                v-for="item in project.items"
-                :key="item.analysis_id"
-                class="bg-gray-50 dark:bg-gray-750 rounded-lg p-4 border border-gray-200 dark:border-gray-600"
-              >
-                <div class="flex items-start justify-between mb-3">
-                  <div class="font-semibold text-gray-900 dark:text-white">
-                    #{{ item.serial_number }}
-                  </div>
-                  <span v-if="item.urgent_status === 'Yes'" class="inline-flex items-center px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-medium">
-                    <i class="fas fa-exclamation-circle mr-1"></i>
-                    Urgent
-                  </span>
-                </div>
-                
-                <div class="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                  {{ item.item_description || 'N/A' }}
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">Quoted Amount</div>
-                    <div class="font-semibold text-gray-900 dark:text-white">{{ formatCurrency(item.quoted_amount) }}</div>
-                  </div>
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">Buying Amount</div>
-                    <div class="font-semibold text-gray-900 dark:text-white">{{ formatCurrency(item.amount) }}</div>
-                  </div>
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">Source</div>
-                    <div class="text-gray-700 dark:text-gray-300">{{ item.source || 'N/A' }}</div>
-                  </div>
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">Unit</div>
-                    <div class="text-gray-700 dark:text-gray-300">{{ item.quoted_unit || '-' }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Action Buttons (if pending) -->
-          <div v-if="project.status === 'pending'" class="p-6 bg-gray-50 dark:bg-gray-750 border-t border-gray-200 dark:border-gray-700">
-            <div class="flex gap-3 justify-end">
-              <button
-                @click="openApprovalDialog(project.project_id, 'rejected')"
-                class="inline-flex items-center px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 font-medium rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-              >
-                <i class="fas fa-times-circle mr-2"></i>
-                Reject
-              </button>
-              <button
-                @click="openApprovalDialog(project.project_id, 'approved')"
-                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors shadow-sm"
-              >
-                <i class="fas fa-check-circle mr-2"></i>
-                Approve Analysis
-              </button>
-            </div>
-          </div>
+      <!-- ══════════════════════════════════════════════
+           PROJECTS SUMMARY TABLE
+      ══════════════════════════════════════════════ -->
+      <div v-else class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+        <!-- Table Header Bar -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex items-center justify-between">
+          <h2 class="text-base font-semibold text-white flex items-center gap-2">
+            <i class="fas fa-table"></i>
+            All Project Analyses
+          </h2>
+          <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">
+            {{ filteredProjects.length }} of {{ allProjects.length }} projects
+          </span>
         </div>
 
-        <!-- Empty State -->
-        <div v-if="filteredProjects.length === 0" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-12 text-center">
-          <i class="fas fa-chart-bar text-gray-300 dark:text-gray-600 text-6xl mb-4"></i>
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No analyses found</h3>
-          <p class="text-gray-500 dark:text-gray-400">
-            {{ filter ? 'Try adjusting your search criteria' : 'No project analyses available at the moment' }}
-          </p>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="th">#</th>
+                <th class="th" style="min-width:220px;">Project Name</th>
+                <th class="th text-center" style="min-width:130px;">Manager</th>
+                <th class="th text-center" style="min-width:110px;">Status</th>
+                <th class="th text-center" style="min-width:80px;">Items</th>
+                <th class="th text-right" style="min-width:160px;">Total (VAT Excl)</th>
+                <th class="th text-right" style="min-width:160px;">Total (VAT Incl)</th>
+                <th class="th text-right" style="min-width:150px;">Projected Profit</th>
+                <th class="th text-center" style="min-width:120px;">Created</th>
+                <th class="th text-center" style="min-width:140px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr
+                v-for="(project, index) in filteredProjects"
+                :key="project.project_id"
+                class="hover:bg-blue-50/40 dark:hover:bg-gray-700/50 transition-colors duration-150"
+              >
+                <!-- # -->
+                <td class="td text-center text-gray-400 dark:text-gray-500 font-medium text-xs">
+                  {{ (currentPage - 1) * itemsPerPage + index + 1 }}
+                </td>
+
+                <!-- Project Name -->
+                <td class="td">
+                  <div class="flex items-center gap-3">
+                    <div class="h-8 w-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <i class="fas fa-project-diagram text-white text-xs"></i>
+                    </div>
+                    <span class="font-semibold text-gray-900 dark:text-white leading-tight">
+                      {{ project.project?.project_name || 'Unnamed Project' }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Manager -->
+                <td class="td text-center">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <div class="w-6 h-6 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                      <i class="fas fa-user text-gray-500 dark:text-gray-400 text-xs"></i>
+                    </div>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ project.user?.name || '—' }}</span>
+                  </div>
+                </td>
+
+                <!-- Status -->
+                <td class="td text-center">
+                  <span :class="statusBadgeClass(project.status)" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold">
+                    <i :class="statusIcon(project.status)" class="mr-1 text-xs"></i>
+                    {{ project.status.charAt(0).toUpperCase() + project.status.slice(1) }}
+                  </span>
+                </td>
+
+                <!-- Items -->
+                <td class="td text-center">
+                  <span class="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+                    {{ project.items?.length || 0 }}
+                  </span>
+                </td>
+
+                <!-- VAT Excl -->
+                <td class="td text-right font-medium text-blue-700 dark:text-blue-400 tabular-nums">
+                  {{ formatCurrency(project.total_amount_vat_excl) }}
+                </td>
+
+                <!-- VAT Incl -->
+                <td class="td text-right font-medium text-green-700 dark:text-green-400 tabular-nums">
+                  {{ formatCurrency(project.total_amount_vat_incl) }}
+                </td>
+
+                <!-- Projected Profit -->
+                <td class="td text-right tabular-nums">
+                  <span :class="project.projected_profit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'" class="font-semibold">
+                    {{ formatCurrency(project.projected_profit) }}
+                  </span>
+                  <div class="text-xs text-gray-400 dark:text-gray-500">{{ project.projected_profit_percentage }}%</div>
+                </td>
+
+                <!-- Created -->
+                <td class="td text-center text-sm text-gray-600 dark:text-gray-400">
+                  {{ formatDate(project.created_at) }}
+                </td>
+
+                <!-- Actions -->
+                <td class="td text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <button
+                      @click="openDetailModal(project)"
+                      class="view-btn group"
+                      title="View full analysis"
+                    >
+                      <i class="fas fa-eye mr-1.5 group-hover:scale-110 transition-transform duration-150"></i>
+                      View
+                    </button>
+                    <button
+                      v-if="project.status === 'pending'"
+                      @click="openApprovalDialog(project.project_id, 'approved')"
+                      class="review-btn"
+                      title="Review project"
+                    >
+                      <i class="fas fa-check-circle mr-1.5"></i>
+                      Review
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <!-- Pagination -->
-      <div v-if="allProjects.length > itemsPerPage" class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div v-if="allProjects.length > itemsPerPage" class="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="text-sm text-gray-700 dark:text-gray-300">
-          Showing 
+          Showing
           <span class="font-medium">{{ Math.min((currentPage - 1) * itemsPerPage + 1, allProjects.length) }}</span>
-          to 
+          to
           <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, allProjects.length) }}</span>
-          of 
+          of
           <span class="font-medium">{{ allProjects.length }}</span>
           projects
         </div>
-        
         <div class="flex items-center gap-2">
-          <button 
-            :disabled="currentPage === 1" 
-            @click="changePage(currentPage - 1)" 
+          <button
+            :disabled="currentPage === 1"
+            @click="changePage(currentPage - 1)"
             class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <i class="fas fa-chevron-left"></i>
           </button>
-          
           <div class="flex items-center gap-1">
             <button
               v-for="page in visiblePages"
@@ -306,14 +208,11 @@
                   ? 'bg-blue-600 text-white'
                   : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
               ]"
-            >
-              {{ page }}
-            </button>
+            >{{ page }}</button>
           </div>
-          
-          <button 
-            :disabled="currentPage * itemsPerPage >= allProjects.length" 
-            @click="changePage(currentPage + 1)" 
+          <button
+            :disabled="currentPage * itemsPerPage >= allProjects.length"
+            @click="changePage(currentPage + 1)"
             class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <i class="fas fa-chevron-right"></i>
@@ -322,9 +221,251 @@
       </div>
     </div>
 
-    <!-- Approval Dialog -->
-    <div v-if="showDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
+    <!-- ══════════════════════════════════════════════
+         FULL PROJECT DETAIL MODAL
+    ══════════════════════════════════════════════ -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div
+          v-if="showDetailModal && detailProject"
+          class="fixed inset-0 z-50 flex items-start justify-center p-4 pt-10 bg-black/50 backdrop-blur-sm"
+          @click.self="closeDetailModal"
+        >
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl max-h-[88vh] flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700">
+
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex-shrink-0">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3 flex-1 min-w-0">
+                  <div class="h-10 w-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-project-diagram text-white text-base"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <h2 class="text-lg font-bold text-white truncate">
+                      {{ detailProject.project?.project_name || 'Unnamed Project' }}
+                    </h2>
+                    <div class="flex flex-wrap gap-4 text-sm text-blue-100 mt-1">
+                      <div class="flex items-center gap-1">
+                        <i class="fas fa-user text-blue-200"></i>
+                        <span>{{ detailProject.user?.name || 'N/A' }}</span>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <i class="fas fa-calendar text-blue-200"></i>
+                        <span>{{ formatDate(detailProject.created_at) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 flex-shrink-0">
+                  <span :class="statusBadgeClass(detailProject.status)" class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold">
+                    <i :class="statusIcon(detailProject.status)" class="mr-1"></i>
+                    {{ detailProject.status.charAt(0).toUpperCase() + detailProject.status.slice(1) }}
+                  </span>
+                  <button
+                    v-if="detailProject.status === 'pending'"
+                    @click="openApprovalDialog(detailProject.project_id, 'approved')"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-green-500 hover:bg-green-600 rounded-lg transition-colors"
+                  >
+                    <i class="fas fa-check-circle"></i>
+                    Review
+                  </button>
+                  <button
+                    @click="closeDetailModal"
+                    class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                    title="Close"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Rejection Reason -->
+              <div
+                v-if="detailProject.status === 'rejected' && detailProject.reason_for_reject"
+                class="mt-3 bg-red-900/20 border border-red-400/30 rounded-lg p-3"
+              >
+                <p class="text-sm text-red-200">
+                  <i class="fas fa-info-circle mr-2"></i>
+                  <strong>Reason:</strong> {{ detailProject.reason_for_reject }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Modal Scrollable Body -->
+            <div class="overflow-y-auto flex-1 p-6 space-y-6">
+
+              <!-- Financial Summary -->
+              <div>
+                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                  <i class="fas fa-chart-line text-blue-500"></i>
+                  Financial Summary
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div class="bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Amount (VAT Excl)</div>
+                    <div class="text-lg font-bold text-gray-900 dark:text-white">{{ formatCurrency(detailProject.total_amount_vat_excl) }}</div>
+                  </div>
+                  <div class="bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Amount (VAT Incl)</div>
+                    <div class="text-lg font-bold text-gray-900 dark:text-white">{{ formatCurrency(detailProject.total_amount_vat_incl) }}</div>
+                  </div>
+                  <div class="bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Amount Needed</div>
+                    <div class="text-lg font-bold text-gray-900 dark:text-white">{{ formatCurrency(detailProject.total_amount_needed) }}</div>
+                  </div>
+                  <div class="bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Site Contingency</div>
+                    <div class="text-lg font-bold text-gray-900 dark:text-white">{{ formatCurrency(detailProject.site_contingency) }}</div>
+                  </div>
+                  <div class="bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Investment</div>
+                    <div class="text-lg font-bold text-gray-900 dark:text-white">{{ formatCurrency(detailProject.total_investment) }}</div>
+                  </div>
+                  <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700">
+                    <div class="text-xs text-green-700 dark:text-green-400 mb-1">Projected Profit</div>
+                    <div class="text-lg font-bold text-green-800 dark:text-green-300">{{ formatCurrency(detailProject.projected_profit) }}</div>
+                    <div class="text-xs text-green-600 dark:text-green-400 mt-1">{{ detailProject.projected_profit_percentage }}% margin</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Analysis Items Table -->
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <i class="fas fa-list text-blue-500"></i>
+                    Analysis Items
+                    <span class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs px-2 py-0.5 rounded-full">
+                      {{ detailProject.items?.length || 0 }}
+                    </span>
+                  </h4>
+                </div>
+
+                <!-- Desktop Table -->
+                <div class="hidden lg:block overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                  <table class="w-full text-sm">
+                    <thead class="bg-gray-100 dark:bg-gray-700">
+                      <tr>
+                        <th colspan="6" class="px-4 py-2 text-center text-xs font-semibold text-blue-700 dark:text-blue-300 border-b border-r border-gray-300 dark:border-gray-600">
+                          QUOTED PRICES (VAT EXCL)
+                        </th>
+                        <th colspan="3" class="px-4 py-2 text-center text-xs font-semibold text-green-700 dark:text-green-300 border-b border-r border-gray-300 dark:border-gray-600">
+                          BUYING PRICES (VAT INCL)
+                        </th>
+                        <th colspan="2" class="px-4 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 border-b border-gray-300 dark:border-gray-600">
+                          ADDITIONAL INFO
+                        </th>
+                      </tr>
+                      <tr class="bg-gray-50 dark:bg-gray-750">
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">S/N</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600" style="min-width:220px;">Description</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Q. Qty</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Unit</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Q. Rate</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Q. Amount</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Qty</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Rate</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Amount</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">Source</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300">Urgent</th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                      <tr
+                        v-for="item in detailProject.items"
+                        :key="item.analysis_id"
+                        class="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+                      >
+                        <td class="px-3 py-3 text-gray-900 dark:text-white font-medium">{{ item.serial_number }}</td>
+                        <td class="px-3 py-3 text-gray-700 dark:text-gray-300 max-w-xs" :title="item.item_description">
+                          {{ item.item_description || 'N/A' }}
+                        </td>
+                        <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.quoted_quantity || '-' }}</td>
+                        <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.quoted_unit || '-' }}</td>
+                        <td class="px-3 py-3 text-gray-700 dark:text-gray-300 tabular-nums">{{ formatCurrency(item.quoted_rate) }}</td>
+                        <td class="px-3 py-3 text-blue-700 dark:text-blue-400 font-semibold tabular-nums">{{ formatCurrency(item.quoted_amount) }}</td>
+                        <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.quantity || '-' }}</td>
+                        <td class="px-3 py-3 text-gray-700 dark:text-gray-300 tabular-nums">{{ formatCurrency(item.rate) }}</td>
+                        <td class="px-3 py-3 text-green-700 dark:text-green-400 font-semibold tabular-nums">{{ formatCurrency(item.amount) }}</td>
+                        <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.source || 'N/A' }}</td>
+                        <td class="px-3 py-3">
+                          <span v-if="item.urgent_status === 'Yes'" class="inline-flex items-center px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-medium">
+                            <i class="fas fa-exclamation-circle mr-1"></i>Urgent
+                          </span>
+                          <span v-else class="text-gray-500 dark:text-gray-400 text-xs">No</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Mobile Cards -->
+                <div class="lg:hidden space-y-3">
+                  <div
+                    v-for="item in detailProject.items"
+                    :key="item.analysis_id"
+                    class="bg-gray-50 dark:bg-gray-750 rounded-lg p-4 border border-gray-200 dark:border-gray-600"
+                  >
+                    <div class="flex items-start justify-between mb-3">
+                      <div class="font-semibold text-gray-900 dark:text-white">#{{ item.serial_number }}</div>
+                      <span v-if="item.urgent_status === 'Yes'" class="inline-flex items-center px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-medium">
+                        <i class="fas fa-exclamation-circle mr-1"></i>Urgent
+                      </span>
+                    </div>
+                    <div class="text-sm text-gray-700 dark:text-gray-300 mb-3">{{ item.item_description || 'N/A' }}</div>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <div class="text-gray-500 dark:text-gray-400">Quoted Amount</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">{{ formatCurrency(item.quoted_amount) }}</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 dark:text-gray-400">Buying Amount</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">{{ formatCurrency(item.amount) }}</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 dark:text-gray-400">Source</div>
+                        <div class="text-gray-700 dark:text-gray-300">{{ item.source || 'N/A' }}</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 dark:text-gray-400">Unit</div>
+                        <div class="text-gray-700 dark:text-gray-300">{{ item.quoted_unit || '-' }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Approve / Reject Buttons (if pending) -->
+              <div v-if="detailProject.status === 'pending'" class="flex gap-3 justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  @click="openApprovalDialog(detailProject.project_id, 'rejected')"
+                  class="inline-flex items-center px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 font-medium rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                >
+                  <i class="fas fa-times-circle mr-2"></i>Reject
+                </button>
+                <button
+                  @click="openApprovalDialog(detailProject.project_id, 'approved')"
+                  class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+                >
+                  <i class="fas fa-check-circle mr-2"></i>Approve Analysis
+                </button>
+              </div>
+
+            </div><!-- end scrollable body -->
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- ══════════════════════════════════════════════
+         APPROVAL DIALOG
+    ══════════════════════════════════════════════ -->
+    <div
+      v-if="showDialog"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4"
+      @click.self="closeDialog"
+    >
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-gray-700">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
           <h3 class="text-xl font-bold text-gray-900 dark:text-white">
             {{ approvalStatus === 'approved' ? 'Approve' : 'Reject' }} Analysis
@@ -368,9 +509,7 @@
             :disabled="approvalStatus === 'rejected' && !rejectionReason"
             :class="[
               'px-4 py-2 rounded-lg font-medium transition-colors',
-              approvalStatus === 'approved'
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-red-600 hover:bg-red-700 text-white',
+              approvalStatus === 'approved' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white',
               'disabled:opacity-50 disabled:cursor-not-allowed'
             ]"
           >
@@ -393,34 +532,38 @@ const analyses = ref([]);
 const filter = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const loading = ref(false);
 const toast = useToast();
 const router = useRouter();
 
-// Approval dialog state
 const showDialog = ref(false);
 const selectedProjectId = ref(null);
 const approvalStatus = ref('approved');
 const rejectionReason = ref('');
+
+const showDetailModal = ref(false);
+const detailProject = ref(null);
 
 onMounted(async () => {
   await fetchAnalyses();
 });
 
 async function fetchAnalyses() {
+  loading.value = true;
   try {
     const response = await axios.get('/api/analysis');
     if (response.data.status === 200 && Array.isArray(response.data.data)) {
-      const groupedAnalyses = groupByProject(response.data.data);
-      analyses.value = groupedAnalyses;
+      analyses.value = groupByProject(response.data.data);
     } else {
       throw new Error('Invalid API response format');
     }
   } catch (error) {
     handleError(error);
+  } finally {
+    loading.value = false;
   }
 }
 
-// Group analyses by project_id
 function groupByProject(data) {
   const grouped = {};
   data.forEach(item => {
@@ -443,34 +586,36 @@ function groupByProject(data) {
         items: []
       };
     }
-
-    // Add item to project's items array
     grouped[projectId].items.push(item);
-    
-    // Calculate financial totals for this project
     const quotedAmount = parseFloat(item.quoted_amount || (item.quantity * item.rate) || 0);
     const buyingAmount = parseFloat(item.amount || 0);
-    
-    // VAT calculations (18% VAT rate)
     const vatRate = 0.18;
     const vatAmount = quotedAmount * vatRate;
-    
     grouped[projectId].total_amount_vat_excl += quotedAmount;
     grouped[projectId].total_amount_vat_incl += quotedAmount + vatAmount;
     grouped[projectId].total_amount_needed += buyingAmount;
-    grouped[projectId].site_contingency += quotedAmount * 0.1; // 10% contingency
-    grouped[projectId].total_investment += quotedAmount * 1.2; // 20% investment factor
-    grouped[projectId].projected_profit += quotedAmount - buyingAmount; // Profit margin
+    grouped[projectId].site_contingency += quotedAmount * 0.1;
+    grouped[projectId].total_investment += quotedAmount * 1.2;
+    grouped[projectId].projected_profit += quotedAmount - buyingAmount;
   });
-  
-  // Calculate profit percentage for each project
   Object.values(grouped).forEach(project => {
     if (project.total_amount_vat_incl > 0) {
       project.projected_profit_percentage = Math.round((project.projected_profit / project.total_amount_vat_incl) * 100 * 100) / 100;
     }
   });
-  
   return Object.values(grouped);
+}
+
+function openDetailModal(project) {
+  detailProject.value = project;
+  showDetailModal.value = true;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetailModal() {
+  showDetailModal.value = false;
+  detailProject.value = null;
+  document.body.style.overflow = '';
 }
 
 const allProjects = computed(() =>
@@ -481,54 +626,40 @@ const allProjects = computed(() =>
 
 const filteredProjects = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return allProjects.value.slice(start, end);
+  return allProjects.value.slice(start, start + itemsPerPage);
 });
 
-const totalPages = computed(() => {
-  return Math.ceil(allProjects.value.length / itemsPerPage);
-});
+const totalPages = computed(() => Math.ceil(allProjects.value.length / itemsPerPage));
 
 const visiblePages = computed(() => {
   const pages = [];
   const total = totalPages.value;
   const current = currentPage.value;
-  
   if (total <= 5) {
-    for (let i = 1; i <= total; i++) {
-      pages.push(i);
-    }
+    for (let i = 1; i <= total; i++) pages.push(i);
+  } else if (current <= 3) {
+    pages.push(1, 2, 3, 4);
+  } else if (current >= total - 2) {
+    pages.push(total - 3, total - 2, total - 1, total);
   } else {
-    if (current <= 3) {
-      pages.push(1, 2, 3, 4);
-    } else if (current >= total - 2) {
-      pages.push(total - 3, total - 2, total - 1, total);
-    } else {
-      pages.push(current - 1, current, current + 1);
-    }
+    pages.push(current - 1, current, current + 1);
   }
-  
   return pages;
 });
 
 function formatDate(dateString) {
   const date = new Date(dateString);
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function formatCurrency(value) {
   if (!value) return 'N/A';
-  return new Intl.NumberFormat('en-TZ', {
-    style: 'currency',
-    currency: 'TZS',
-    minimumFractionDigits: 2
-  }).format(value);
+  return new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS', minimumFractionDigits: 2 }).format(value);
 }
 
 function statusBadgeClass(status) {
   const classes = {
-    pending: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
+    pending:  'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
     approved: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
     rejected: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
   };
@@ -536,11 +667,7 @@ function statusBadgeClass(status) {
 }
 
 function statusIcon(status) {
-  const icons = {
-    pending: 'fas fa-clock',
-    approved: 'fas fa-check-circle',
-    rejected: 'fas fa-times-circle'
-  };
+  const icons = { pending: 'fas fa-clock', approved: 'fas fa-check-circle', rejected: 'fas fa-times-circle' };
   return icons[status] || 'fas fa-circle';
 }
 
@@ -589,13 +716,15 @@ async function submitApproval() {
       status: approvalStatus.value,
       reason_for_reject: approvalStatus.value === 'rejected' ? rejectionReason.value : null
     };
-
     const response = await axios.post('/api/approve-analysis', payload);
-
     if (response.data.status === 200) {
       toast.success(response.data.message);
       await fetchAnalyses();
       closeDialog();
+      // Refresh detailProject if it was the one reviewed
+      if (detailProject.value?.project_id === selectedProjectId.value) {
+        detailProject.value = analyses.value.find(p => p.project_id === selectedProjectId.value) || null;
+      }
     } else {
       throw new Error(response.data.message);
     }
@@ -606,26 +735,42 @@ async function submitApproval() {
 </script>
 
 <style scoped>
-/* Custom scrollbar for tables */
-.overflow-x-auto::-webkit-scrollbar {
-  height: 8px;
+.th {
+  @apply px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider;
 }
 
-.overflow-x-auto::-webkit-scrollbar-thumb {
-  background-color: #9CA3AF;
-  border-radius: 4px;
+.td {
+  @apply px-4 py-3 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap;
 }
 
-.overflow-x-auto::-webkit-scrollbar-track {
-  background-color: #F3F4F6;
+.view-btn {
+  @apply inline-flex items-center px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 dark:text-blue-300 dark:bg-blue-900/30 dark:border-blue-700 dark:hover:bg-blue-600 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-all duration-200 shadow-sm;
 }
 
-/* Dark mode scrollbar */
-.dark .overflow-x-auto::-webkit-scrollbar-thumb {
-  background-color: #4B5563;
+.review-btn {
+  @apply inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-all duration-200 shadow-sm;
 }
 
-.dark .overflow-x-auto::-webkit-scrollbar-track {
-  background-color: #1F2937;
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
+
+/* Scrollbars */
+.overflow-x-auto::-webkit-scrollbar { height: 8px; }
+.overflow-x-auto::-webkit-scrollbar-thumb { background-color: #9CA3AF; border-radius: 4px; }
+.overflow-x-auto::-webkit-scrollbar-track { background-color: #F3F4F6; }
+.dark .overflow-x-auto::-webkit-scrollbar-thumb { background-color: #4B5563; }
+.dark .overflow-x-auto::-webkit-scrollbar-track { background-color: #1F2937; }
+
+.overflow-y-auto::-webkit-scrollbar { width: 6px; }
+.overflow-y-auto::-webkit-scrollbar-thumb { background-color: #9CA3AF; border-radius: 4px; }
+.overflow-y-auto::-webkit-scrollbar-track { background-color: #F3F4F6; }
+.dark .overflow-y-auto::-webkit-scrollbar-thumb { background-color: #4B5563; }
+.dark .overflow-y-auto::-webkit-scrollbar-track { background-color: #1F2937; }
+
+/* Modal transition */
+.modal-enter-active,
+.modal-leave-active { transition: opacity 0.2s ease; }
+.modal-enter-from,
+.modal-leave-to { opacity: 0; }
 </style>
