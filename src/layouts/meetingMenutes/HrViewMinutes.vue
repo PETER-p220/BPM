@@ -1,7 +1,7 @@
 <template>
   <div class="view-minutes-container">
     <div class="page-header">
-      <h2 class="page-title">HR Meeting Minutes</h2>
+      <h2 class="page-title">Tender Meeting Minutes</h2>
       <p class="page-subtitle">View and manage meeting minutes</p>
     </div>
 
@@ -79,15 +79,11 @@
                 {{ formatDate(minute.meeting_date) || '-' }}
               </td>
               <td class="attendees">
-                <div class="attendees-list">
-                  <span
-                    v-for="(attendee, i) in getAttendeesList(minute.attendees)"
-                    :key="i"
-                    class="attendee-tag"
-                  >
-                    {{ attendee }}
-                  </span>
-                </div>
+                <button class="btn btn-attendees" @click="viewMinute(minute)">
+                  <i class="fas fa-users"></i>
+                  {{ getAttendeesList(minute.attendees).length }}
+                  {{ getAttendeesList(minute.attendees).length === 1 ? 'Attendee' : 'Attendees' }}
+                </button>
               </td>
               <td class="text-cell">
                 <div class="truncated" :title="minute.agenda">{{ minute.agenda || '-' }}</div>
@@ -102,10 +98,7 @@
                 <button class="btn btn-view" @click="viewMinute(minute)">
                   <i class="fas fa-eye"></i>
                 </button>
-                <button class="btn btn-edit" @click="editMinute(minute)">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-delete" @click="deleteMinute(minute.minutes_id)">
+                <button class="btn btn-delete" @click="deleteMinute(minute)">
                   <i class="fas fa-trash"></i>
                 </button>
               </td>
@@ -337,11 +330,6 @@ const closeViewModal = () => {
   showViewModal.value = false
 }
 
-const editMinute = (minute) => {
-  console.log('Edit:', minute)
-  // → implement your edit logic here
-}
-
 const deleteMinute = (minute) => {
   recordToDelete.value = minute
   showDeleteModal.value = true
@@ -403,12 +391,12 @@ const exportToPDF = () => {
       fontStyle: 'bold'
     },
     columnStyles: {
-      0: { cellWidth: 45 },  // Title
-      1: { cellWidth: 28 },  // Date
-      2: { cellWidth: 55 },  // Attendees
-      3: { cellWidth: 60 },  // Agenda
-      4: { cellWidth: 60 },  // Decisions
-      5: { cellWidth: 45 }   // Next Meeting
+      0: { cellWidth: 45 },
+      1: { cellWidth: 28 },
+      2: { cellWidth: 55 },
+      3: { cellWidth: 60 },
+      4: { cellWidth: 60 },
+      5: { cellWidth: 45 }
     },
     margin: { top: 30, left: 14, right: 14, bottom: 20 }
   })
@@ -605,19 +593,25 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-.attendees-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.attendee-tag {
+.btn-attendees {
   background: #e0f2fe;
   color: #1e40af;
-  padding: 0.25rem 0.6rem;
-  border-radius: 5px;
-  font-size: 0.78rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid #bfdbfe;
+  cursor: pointer;
+  transition: all 0.15s;
   white-space: nowrap;
+}
+
+.btn-attendees:hover {
+  background: #bfdbfe;
+  color: #1e3a8a;
 }
 
 .text-cell .truncated {
@@ -652,15 +646,6 @@ onMounted(() => {
 
 .btn-view:hover {
   background: #4f46e5;
-}
-
-.btn-edit {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-edit:hover {
-  background: #2563eb;
 }
 
 .btn-delete {
@@ -800,27 +785,6 @@ onMounted(() => {
   background: #4b5563;
 }
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 10px;
-  padding: 2rem;
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
 .modal-header {
   display: flex;
   align-items: center;
@@ -841,16 +805,6 @@ onMounted(() => {
 .modal-icon.danger {
   background: #fee2e2;
   color: #dc2626;
-}
-
-.modal-title {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  color: #1e293b;
-}
-
-.modal-body {
-  margin-bottom: 1.5rem;
 }
 
 .modal-message {
@@ -887,16 +841,6 @@ onMounted(() => {
 .modal-actions {
   display: flex;
   gap: 1rem;
-}
-
-.btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-weight: 500;
 }
 
 .btn-secondary {

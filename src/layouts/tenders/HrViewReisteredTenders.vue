@@ -146,16 +146,7 @@
             <i class="fas fa-inbox text-6xl text-gray-300"></i>
           </div>
           <h3 class="text-xl font-semibold text-gray-900 mb-2">No Tenders Yet</h3>
-          <p class="text-gray-600 mb-6">Start by creating your first tender</p>
-          <router-link to="/create-tender">
-            <button
-              class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-all font-medium shadow-md"
-              style="background-color: #2e4053"
-            >
-              <i class="fas fa-plus"></i>
-              Create First Tender
-            </button>
-          </router-link>
+          
         </div>
       </div>
 

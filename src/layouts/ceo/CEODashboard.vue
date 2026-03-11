@@ -438,8 +438,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from '@/axios';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { optimizedRequest, requestWithRetry } from '@/utils/api';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
@@ -483,7 +483,12 @@ const trends = ref({
 const loading = ref(true);
 const budgetLoading = ref(true);
 
+// Auto-refresh intervals
+let refreshInterval = null;
+let healthCheckInterval = null;
+
 onMounted(async () => {
+  // Initial data load
   await Promise.all([
     fetchDashboardData(),
     fetchUser(),
@@ -495,12 +500,40 @@ onMounted(async () => {
   ]);
   loading.value = false;
   budgetLoading.value = false;
+
+  // Set up auto-refresh (every 5 minutes for main data)
+  refreshInterval = setInterval(() => {
+    Promise.all([
+      fetchDashboardData(),
+      fetchPendingApprovals(),
+      fetchRecentActivities(),
+      fetchTrends(),
+      fetchBudgetReductions()
+    ]);
+  }, 5 * 60 * 1000);
+
+  // Set up health check (every 2 minutes)
+  healthCheckInterval = setInterval(() => {
+    fetchSystemHealth();
+  }, 2 * 60 * 1000);
+});
+
+onUnmounted(() => {
+  // Clean up intervals
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+  }
+  if (healthCheckInterval) {
+    clearInterval(healthCheckInterval);
+    healthCheckInterval = null;
+  }
 });
 
 async function fetchDashboardData() {
   try {
-    const response = await axios.get('/api/dashboard/stats');
-    const data = response.data?.data || {};
+    const response = await optimizedRequest('/api/dashboard/stats');
+    const data = response?.data || {};
     
     stats.value = {
       totalTenders: data.tenders?.registered || 0,
@@ -521,9 +554,9 @@ async function fetchDashboardData() {
 async function fetchDashboardDataFallback() {
   try {
     const [tendersRes, quotationsRes, projectsRes] = await Promise.all([
-      axios.get('/api/tenders'),
-      axios.get('/api/price-shedules'),
-      axios.get('/api/projects')
+      optimizedRequest('/api/tenders'),
+      optimizedRequest('/api/price-shedules'),
+      optimizedRequest('/api/projects')
     ]);
     const tenders = tendersRes.data.data || [];
     const quotations = quotationsRes.data.data || [];
@@ -559,12 +592,12 @@ async function fetchDashboardDataFallback() {
 
 async function fetchUser() {
   try {
-    const response = await axios.get('/api/user/profile');
-    user.value = response.data?.data || null;
+    const response = await optimizedRequest('/api/user/profile');
+    user.value = response?.data || null;
   } catch (error) {
     try {
-      const response = await axios.get('/api/user');
-      user.value = response.data?.data || null;
+      const response = await optimizedRequest('/api/user');
+      user.value = response?.data || null;
     } catch (err) {
       console.error('Error fetching user:', err);
       user.value = null;
@@ -576,8 +609,8 @@ async function fetchPendingApprovals() {
   try {
     // Fetch pending tenders and projects that need CEO approval
     const [deadlineTenders, failedProjects] = await Promise.all([
-      axios.get('/api/count/deadline-reached/tenders'),
-      axios.get('/api/count/failed-projects')
+      optimizedRequest('/api/count/deadline-reached/tenders'),
+      optimizedRequest('/api/count/failed-projects')
     ]);
 
     const deadlineCount = deadlineTenders.data?.count || 0;
@@ -608,8 +641,8 @@ async function fetchPendingApprovals() {
 
 async function fetchBudgetReductions() {
   try {
-    const response = await axios.get('/api/budget/reductions');
-    budgetReductions.value = response.data?.data || {
+    const response = await optimizedRequest('/api/budget/reductions');
+    const data = response?.data || {
       total_original_budget: 0,
       total_reduced_budget: 0,
       total_current_budget: 0,
@@ -618,8 +651,11 @@ async function fetchBudgetReductions() {
       recent_reductions: [],
       budget_reduction_trend: []
     };
+    
+    budgetReductions.value = data;
   } catch (error) {
     console.error('Error fetching budget reductions:', error);
+    toast.error('Failed to load budget reductions');
     budgetReductions.value = {
       total_original_budget: 0,
       total_reduced_budget: 0,
@@ -638,8 +674,8 @@ async function fetchRecentActivities() {
   try {
     // Fetch recent activities from various sources
     const [awardedTenders, completedProjects] = await Promise.all([
-      axios.get('/api/count/awarded-tenders'),
-      axios.get('/api/count/completed-projects')
+      optimizedRequest('/api/count/awarded-tenders'),
+      optimizedRequest('/api/count/completed-projects')
     ]);
 
     const awardedCount = awardedTenders.data?.count || 0;
@@ -682,8 +718,8 @@ async function fetchRecentActivities() {
 
 async function fetchSystemHealth() {
   try {
-    const response = await axios.get('/api/system/health');
-    const data = response.data?.data || {};
+    const response = await optimizedRequest('/api/system/health');
+    const data = response?.data || {};
     
     systemHealth.value = {
       overall: data.overall || 'unknown',
@@ -711,8 +747,8 @@ async function fetchSystemHealth() {
 
 async function fetchTrends() {
   try {
-    const response = await axios.get('/api/dashboard/trends');
-    const data = response.data?.data || {};
+    const response = await optimizedRequest('/api/dashboard/trends');
+    const data = response?.data || {};
     
     trends.value = {
       tender_growth: data.tender_growth || 0,
@@ -840,7 +876,7 @@ function getTimeAgo(type) {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
 /* Custom animations */
 @keyframes pulse-slow {

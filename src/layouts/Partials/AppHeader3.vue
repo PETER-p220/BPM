@@ -9,7 +9,7 @@
             <i class="text-white cursor-pointer fas fa-sun" v-if="display == 'dark'" @click="setDisplay('light')"></i>
             <i class="text-white cursor-pointer fas fa-moon" v-if="display == 'light'" @click="setDisplay('dark')"></i>
             <div class="flex items-center">
-                <ProfileDropdown3 />
+                <ProfileDropdown4 />
             </div>
         </div>
     </div>

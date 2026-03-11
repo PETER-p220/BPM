@@ -126,6 +126,13 @@ const navigations = ref([
   },
   { type: 'separator' },
   {
+    icon: "fas fa-user",
+    label: "Profile",
+    name: "UserProfile3",
+    path: "UserProfile3",
+    active: false
+  },
+  {
     icon: 'fas fa-project-diagram text-teal-400',
     label: 'Projects',
     active: false,
@@ -229,9 +236,9 @@ const leave = (el) => {
   For best performance, move this font link to index.html:
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+@import url('https://fonts.2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 
 /* =====================
    BASE

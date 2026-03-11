@@ -1,431 +1,261 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 dark:from-gray-950 dark:via-blue-950/10 dark:to-gray-950 px-4 py-8 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl">
-      <!-- Header -->
-      <div class="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex items-center gap-4">
-          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-600/30">
-            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
-              Invoice Management
-            </h1>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              Create, send and track accountant invoices
-            </p>
-          </div>
-        </div>
-
-        <button
-          @click="openCreateDialog"
-          class="group relative inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:shadow-blue-500/20"
-        >
-          <svg class="h-5 w-5 transition-transform group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Create Invoice
-        </button>
+  <div class="invoice-root">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <div class="header-eyebrow">Finance · Accountant</div>
+        <h1 class="header-title">Invoice Management</h1>
+        <p class="header-sub">Create, send and track accountant invoices</p>
       </div>
+      <button @click="openCreateDialog" class="btn-primary">
+        New Invoice
+      </button>
+    </div>
 
-      <!-- Statistics Cards -->
-      <div class="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div
-          v-for="stat in statCards"
-          :key="stat.label"
-          class="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 dark:bg-gray-900"
-        >
-          <div class="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-blue-500/5 transition-transform group-hover:scale-125" />
-          <div class="relative flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ stat.label }}</p>
-              <p class="mt-3 text-3xl font-extrabold text-gray-900 dark:text-gray-100">{{ stat.value }}</p>
-            </div>
-            <div :class="stat.iconBg" class="flex h-14 w-14 items-center justify-center rounded-xl shadow-lg">
-              <svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-html="stat.icon" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Search + Filters + Export -->
-      <div class="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-        <div class="relative flex-1 max-w-xl">
-          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-            <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input
-            v-model="filter"
-            type="text"
-            placeholder="Search by number, client, item..."
-            class="form-input"
-          />
-          <button
-            v-if="filter"
-            @click="filter = ''"
-            class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-4">
-          <select
-            v-model="statusFilter"
-            @change="currentPage = 1"
-            class="rounded-xl border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
-          >
-            <option value="">All Status</option>
-            <option value="draft">Draft</option>
-            <option value="sent">Sent</option>
-            <option value="paid">Paid</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-
-          <div class="flex gap-3">
-            <button
-              @click="exportToExcel"
-              class="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:border-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Excel
-            </button>
-            <button
-              @click="exportToPDF"
-              class="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:border-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-              PDF
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Table -->
-      <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl shadow-gray-200/40 dark:border-gray-800 dark:bg-gray-900 dark:shadow-gray-900/30">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-            <thead class="bg-gray-50/80 dark:bg-gray-800/40">
-              <tr>
-                <th class="w-12 px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">#</th>
-                <th class="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Inv. No.</th>
-                <th class="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Title</th>
-                <th class="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Client</th>
-                <th class="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">TIN</th>
-                <th class="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">VRN</th>
-                <th class="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Description</th>
-                <th class="px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Cars</th>
-                <th class="px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Months</th>
-                <th class="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">UOM</th>
-                <th class="px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Unit Price</th>
-                <th class="px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Gross</th>
-                <th class="px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 bg-blue-50/40 dark:bg-blue-950/20">Total</th>
-                <th class="px-6 py-5 text-center text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Status</th>
-                <th class="w-32 px-6 py-5 text-center text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-              <tr
-                v-for="(invoice, index) in paginatedInvoices"
-                :key="invoice.id"
-                class="group transition-colors duration-150 hover:bg-blue-50/30 dark:hover:bg-blue-950/20"
-              >
-                <td class="whitespace-nowrap px-6 py-5 text-sm text-gray-500 dark:text-gray-400">
-                  {{ index + 1 + (currentPage - 1) * itemsPerPage }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-sm font-semibold text-blue-600 dark:text-blue-400">
-                  {{ invoice.invoice_number }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {{ invoice.title || '—' }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {{ invoice.client_name }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-sm text-gray-700 dark:text-gray-300">
-                  {{ invoice.tin || '—' }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-sm text-gray-700 dark:text-gray-300">
-                  {{ invoice.vrn || '—' }}
-                </td>
-                <td class="max-w-xs px-6 py-5 text-sm text-gray-700 dark:text-gray-300 truncate" :title="invoice.item_description">
-                  {{ invoice.item_description || '—' }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-right text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {{ invoice.number_of_cars || '—' }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-right text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {{ invoice.period_months || '—' }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-sm text-gray-600 dark:text-gray-400">
-                  <span class="inline-flex rounded bg-gray-100 px-2.5 py-1 text-xs font-medium dark:bg-gray-800">
-                    {{ invoice.uom || '—' }}
-                  </span>
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-right text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  {{ formatCurrency(invoice.unit_price) }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-right text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  {{ formatCurrency(invoice.gross_value) }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-right text-lg font-bold text-blue-700 dark:text-blue-400">
-                  {{ formatCurrency(invoice.total_amount) }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-center">
-                  <span :class="statusBadgeClass(invoice.status)" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold">
-                    <span class="h-2 w-2 rounded-full" :class="statusDotClass(invoice.status)" />
-                    {{ invoice.status ? invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1) : 'N/A' }}
-                  </span>
-                </td>
-                <td class="whitespace-nowrap px-6 py-5 text-center">
-                  <div class="flex justify-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
-                    <button @click="openEditDialog(invoice)" class="rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700">
-                      Edit
-                    </button>
-                    <button @click="downloadInvoice(invoice.id)" class="rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-700">
-                      PDF
-                    </button>
-                    <button
-                      v-if="invoice.status === 'draft'"
-                      @click="sendInvoice(invoice.id)"
-                      class="rounded-lg bg-green-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-green-700"
-                    >
-                      Send
-                    </button>
-                    <button
-                      v-if="invoice.status === 'sent'"
-                      @click="openMarkPaidDialog(invoice)"
-                      class="rounded-lg bg-purple-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-purple-700"
-                    >
-                      Mark Paid
-                    </button>
-                    <button
-                      v-if="['draft', 'cancelled'].includes(invoice.status)"
-                      @click="deleteInvoice(invoice.id)"
-                      class="rounded-lg bg-red-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Empty State -->
-        <div v-if="paginatedInvoices.length === 0" class="py-24 text-center">
-          <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-            <svg class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <h3 class="mt-6 text-xl font-semibold text-gray-900 dark:text-gray-100">
-            {{ filter ? 'No matching invoices found' : 'No invoices yet' }}
-          </h3>
-          <p class="mt-3 text-gray-600 dark:text-gray-400">
-            {{ filter ? 'Try changing your search or filter' : 'Create your first invoice to get started' }}
-          </p>
-          <button v-if="filter" @click="filter = ''" class="mt-6 inline-flex items-center rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-            Clear search
-          </button>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div v-if="filteredInvoices.length > itemsPerPage" class="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
-        <p class="text-sm text-gray-600 dark:text-gray-400">
-          Showing <span class="font-medium text-gray-900 dark:text-gray-100">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>–
-          <span class="font-medium text-gray-900 dark:text-gray-100">{{ Math.min(currentPage * itemsPerPage, filteredInvoices.length) }}</span> of
-          <span class="font-medium text-gray-900 dark:text-gray-100">{{ filteredInvoices.length }}</span>
-        </p>
-
-        <nav class="flex items-center gap-1">
-          <button
-            :disabled="currentPage === 1"
-            @click="currentPage--"
-            class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-          >
-            Previous
-          </button>
-
-          <button
-            v-for="page in visiblePages"
-            :key="page"
-            @click="typeof page === 'number' && changePage(page)"
-            :class="[
-              'min-w-[2.5rem] rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-              page === currentPage
-                ? 'bg-blue-600 text-white'
-                : typeof page === 'number'
-                ? 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
-                : 'text-gray-400 cursor-default'
-            ]"
-            :disabled="typeof page !== 'number'"
-          >
-            {{ page }}
-          </button>
-
-          <button
-            :disabled="currentPage >= Math.ceil(filteredInvoices.length / itemsPerPage)"
-            @click="currentPage++"
-            class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-          >
-            Next
-          </button>
-        </nav>
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div v-for="stat in statCards" :key="stat.label" class="stat-card">
+        <div class="stat-label">{{ stat.label }}</div>
+        <div class="stat-value">{{ stat.value }}</div>
+        <div class="stat-bar" :style="{ width: stat.barWidth || '40%', background: stat.barColor || '#1e3a8a' }"></div>
       </div>
     </div>
 
-    <!-- Create / Edit Dialog -->
-    <Transition name="dialog">
-      <div v-if="showDialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div class="relative w-full max-w-5xl rounded-2xl bg-white shadow-2xl dark:bg-gray-900 max-h-[92vh] overflow-y-auto">
-          <div class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white/95 px-6 py-5 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/95">
-            <div class="flex items-center gap-4">
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/40">
-                <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {{ isEditing ? 'Edit Invoice' : 'Create Invoice' }}
-              </h2>
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <input
+          v-model="filter"
+          type="text"
+          placeholder="Search by number, client, item…"
+          class="search-input"
+        />
+        <button v-if="filter" @click="filter = ''" class="search-clear">×</button>
+      </div>
+
+      <div class="toolbar-right">
+        <select v-model="statusFilter" @change="currentPage = 1" class="filter-select">
+          <option value="">All Status</option>
+          <option value="draft">Draft</option>
+          <option value="sent">Sent</option>
+          <option value="paid">Paid</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+
+        <button @click="exportToExcel" class="btn-outline">Excel</button>
+        <button @click="exportToPDF" class="btn-outline">PDF</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="th-slim">#</th>
+              <th>Inv. No.</th>
+              <th>Title</th>
+              <th>Client</th>
+              <th>TIN</th>
+              <th>VRN</th>
+              <th>Description</th>
+              <th class="th-num">Cars</th>
+              <th class="th-num">Months</th>
+              <th>UOM</th>
+              <th class="th-num">Unit Price</th>
+              <th class="th-num">Gross</th>
+              <th class="th-num th-total">Total</th>
+              <th class="th-center">Status</th>
+              <th class="th-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(invoice, index) in paginatedInvoices"
+              :key="invoice.id"
+              class="table-row"
+            >
+              <td class="td-muted td-slim">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
+              <td class="td-invno">{{ invoice.invoice_number }}</td>
+              <td class="td-medium">{{ invoice.title || '—' }}</td>
+              <td class="td-bold">{{ invoice.client_name }}</td>
+              <td class="td-muted">{{ invoice.tin || '—' }}</td>
+              <td class="td-muted">{{ invoice.vrn || '—' }}</td>
+              <td class="td-desc" :title="invoice.item_description">{{ invoice.item_description || '—' }}</td>
+              <td class="td-num">{{ invoice.number_of_cars || '—' }}</td>
+              <td class="td-num">{{ invoice.period_months || '—' }}</td>
+              <td><span class="uom-tag">{{ invoice.uom || '—' }}</span></td>
+              <td class="td-num td-mono">{{ formatCurrency(invoice.unit_price) }}</td>
+              <td class="td-num td-mono">{{ formatCurrency(invoice.gross_value) }}</td>
+              <td class="td-num td-total-val">{{ formatCurrency(invoice.total_amount) }}</td>
+              <td class="td-center">
+                <span :class="['status-badge', 'status-' + invoice.status]">
+                  {{ invoice.status ? invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1) : 'N/A' }}
+                </span>
+              </td>
+              <td class="td-center">
+                <div class="action-group">
+                  <button @click="openEditDialog(invoice)" class="act-btn act-edit">Edit</button>
+                  <button @click="downloadInvoice(invoice.id)" class="act-btn act-pdf">PDF</button>
+                  <button v-if="invoice.status === 'draft'" @click="sendInvoice(invoice.id)" class="act-btn act-send">Send</button>
+                  <button v-if="invoice.status === 'sent'" @click="openMarkPaidDialog(invoice)" class="act-btn act-paid">Paid</button>
+                  <button v-if="['draft', 'cancelled'].includes(invoice.status)" @click="deleteInvoice(invoice.id)" class="act-btn act-del">Del</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div v-if="paginatedInvoices.length === 0" class="empty-state">
+        <div class="empty-title">{{ filter ? 'No matching invoices' : 'No invoices yet' }}</div>
+        <div class="empty-sub">{{ filter ? 'Try adjusting your search or filter.' : 'Create your first invoice to get started.' }}</div>
+        <button v-if="filter" @click="filter = ''" class="btn-outline mt-3">Clear Search</button>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div v-if="filteredInvoices.length > itemsPerPage" class="pagination">
+      <span class="pagination-info">
+        {{ (currentPage - 1) * itemsPerPage + 1 }}–{{ Math.min(currentPage * itemsPerPage, filteredInvoices.length) }}
+        of {{ filteredInvoices.length }}
+      </span>
+      <div class="pagination-nav">
+        <button :disabled="currentPage === 1" @click="currentPage--" class="pg-btn">Prev</button>
+        <button
+          v-for="page in visiblePages"
+          :key="page"
+          @click="typeof page === 'number' && changePage(page)"
+          :class="['pg-btn', page === currentPage ? 'pg-active' : '', typeof page !== 'number' ? 'pg-ellipsis' : '']"
+          :disabled="typeof page !== 'number'"
+        >{{ page }}</button>
+        <button :disabled="currentPage >= Math.ceil(filteredInvoices.length / itemsPerPage)" @click="currentPage++" class="pg-btn">Next</button>
+      </div>
+    </div>
+
+    <!-- ── Create / Edit Dialog ── -->
+    <Transition name="fade">
+      <div v-if="showDialog" class="dialog-overlay" @click.self="closeDialog">
+        <div class="dialog-box dialog-lg">
+          <div class="dialog-header">
+            <div>
+              <div class="dialog-eyebrow">{{ isEditing ? 'Editing' : 'New' }}</div>
+              <h2 class="dialog-title">{{ isEditing ? 'Edit Invoice' : 'Create Invoice' }}</h2>
             </div>
-            <button @click="closeDialog" class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <button @click="closeDialog" class="dialog-close">×</button>
           </div>
 
-          <div class="p-6 lg:p-8">
-            <form @submit.prevent="submitInvoice" class="space-y-10">
-              <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-                <!-- Client Information -->
-                <div class="space-y-6">
-                  <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Client Information</h3>
-                  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Invoice Number <span class="text-red-500">*</span></label>
-                      <input v-model="form.invoice_number" type="text" required class="form-input" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Title</label>
-                      <input v-model="form.title" type="text" class="form-input" placeholder="Invoice title" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Client Name <span class="text-red-500">*</span></label>
-                      <input v-model="form.client_name" type="text" required class="form-input" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Client Email</label>
-                      <input v-model="form.client_email" type="email" class="form-input" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Client Phone <span class="text-red-500">*</span></label>
-                      <input v-model="form.client_phone" type="tel" required class="form-input" placeholder="+255 ..." />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">TIN</label>
-                      <input v-model="form.tin" type="text" class="form-input" placeholder="Tax Identification Number" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">VRN</label>
-                      <input v-model="form.vrn" type="text" class="form-input" placeholder="VAT Registration Number" />
-                    </div>
-                    <div class="sm:col-span-2">
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Address</label>
-                      <textarea v-model="form.address" rows="2" class="form-input resize-none"></textarea>
-                    </div>
+          <div class="dialog-body">
+            <form @submit.prevent="submitInvoice" class="form-grid-2col">
+              <!-- Client Info -->
+              <div class="form-section">
+                <div class="form-section-title">Client Information</div>
+                <div class="form-row-2">
+                  <div class="form-field">
+                    <label class="field-label">Invoice Number <span class="req">*</span></label>
+                    <input v-model="form.invoice_number" type="text" required class="field-input" />
                   </div>
-                </div>
-
-                <!-- Service Details -->
-                <div class="space-y-6">
-                  <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Service Details</h3>
-                  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    <div class="sm:col-span-2">
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Item Description <span class="text-red-500">*</span></label>
-                      <textarea v-model="form.item_description" rows="3" required class="form-input resize-none"></textarea>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">No. of Cars <span class="text-red-500">*</span></label>
-                      <input v-model.number="form.number_of_cars" type="number" min="0" required @input="calculateTotals" class="form-input" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Period (Months) <span class="text-red-500">*</span></label>
-                      <input v-model.number="form.period_months" type="number" min="0" step="0.01" required @input="calculateTotals" class="form-input" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">UOM <span class="text-red-500">*</span></label>
-                      <select v-model="form.uom" required class="form-input">
-                        <option value="">Select UOM</option>
-                        <option value="per_bus">Per Bus</option>
-                        <option value="per_fleet">Per Fleet</option>
-                        <option value="per_month">Per Month</option>
-                        <option value="per_year">Per Year</option>
-                        <option value="per_trip">Per Trip</option>
-                        <option value="per_day">Per Day</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Unit Price (TZS) <span class="text-red-500">*</span></label>
-                      <input v-model.number="form.unit_price" type="number" min="0" step="0.01" required @input="calculateTotals" class="form-input" placeholder="0.00" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">VAT Rate (%)</label>
-                      <input v-model.number="form.tax_rate" type="number" step="0.01" min="0" max="100" @input="calculateTotals" class="form-input" placeholder="18" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Invoice Date <span class="text-red-500">*</span></label>
-                      <input v-model="form.invoice_date" type="date" required class="form-input" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Due Date <span class="text-red-500">*</span></label>
-                      <input v-model="form.due_date" type="date" required class="form-input" />
-                    </div>
+                  <div class="form-field">
+                    <label class="field-label">Title</label>
+                    <input v-model="form.title" type="text" class="field-input" placeholder="Invoice title" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Client Name <span class="req">*</span></label>
+                    <input v-model="form.client_name" type="text" required class="field-input" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Client Email</label>
+                    <input v-model="form.client_email" type="email" class="field-input" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Client Phone <span class="req">*</span></label>
+                    <input v-model="form.client_phone" type="tel" required class="field-input" placeholder="+255 …" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">TIN</label>
+                    <input v-model="form.tin" type="text" class="field-input" placeholder="Tax Identification Number" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">VRN</label>
+                    <input v-model="form.vrn" type="text" class="field-input" placeholder="VAT Registration Number" />
+                  </div>
+                  <div class="form-field form-field-full">
+                    <label class="field-label">Address</label>
+                    <textarea v-model="form.address" rows="2" class="field-input field-textarea"></textarea>
                   </div>
                 </div>
               </div>
 
-              <!-- Totals Card -->
-              <div class="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-8 dark:from-blue-950/20 dark:to-indigo-950/20 border border-blue-100 dark:border-blue-900/40 shadow-sm">
-                <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
-                  <div class="text-center">
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Gross Value</p>
-                    <p class="mt-3 text-3xl font-bold text-gray-900 dark:text-gray-100">{{ formatCurrency(form.gross_value) }}</p>
+              <!-- Service Details -->
+              <div class="form-section">
+                <div class="form-section-title">Service Details</div>
+                <div class="form-row-2">
+                  <div class="form-field form-field-full">
+                    <label class="field-label">Item Description <span class="req">*</span></label>
+                    <textarea v-model="form.item_description" rows="3" required class="field-input field-textarea"></textarea>
                   </div>
-                  <div class="text-center border-x border-blue-100 dark:border-blue-900/40">
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">VAT Amount</p>
-                    <p class="mt-3 text-3xl font-bold text-amber-600 dark:text-amber-400">{{ formatCurrency(form.tax_amount) }}</p>
+                  <div class="form-field">
+                    <label class="field-label">No. of Cars <span class="req">*</span></label>
+                    <input v-model.number="form.number_of_cars" type="number" min="0" required @input="calculateTotals" class="field-input" />
                   </div>
-                  <div class="text-center">
-                    <p class="text-sm font-medium text-blue-600 dark:text-blue-400 font-semibold">Total Amount</p>
-                    <p class="mt-3 text-4xl font-extrabold text-blue-700 dark:text-blue-300">{{ formatCurrency(form.total_amount) }}</p>
+                  <div class="form-field">
+                    <label class="field-label">Period (Months) <span class="req">*</span></label>
+                    <input v-model.number="form.period_months" type="number" min="0" step="0.01" required @input="calculateTotals" class="field-input" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">UOM <span class="req">*</span></label>
+                    <select v-model="form.uom" required class="field-input field-select">
+                      <option value="">Select UOM</option>
+                      <option value="per_bus">Per Bus</option>
+                      <option value="per_fleet">Per Fleet</option>
+                      <option value="per_month">Per Month</option>
+                      <option value="per_year">Per Year</option>
+                      <option value="per_trip">Per Trip</option>
+                      <option value="per_day">Per Day</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Unit Price (TZS) <span class="req">*</span></label>
+                    <input v-model.number="form.unit_price" type="number" min="0" step="0.01" required @input="calculateTotals" class="field-input" placeholder="0.00" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">VAT Rate (%)</label>
+                    <input v-model.number="form.tax_rate" type="number" step="0.01" min="0" max="100" @input="calculateTotals" class="field-input" placeholder="18" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Invoice Date <span class="req">*</span></label>
+                    <input v-model="form.invoice_date" type="date" required class="field-input" />
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Due Date <span class="req">*</span></label>
+                    <input v-model="form.due_date" type="date" required class="field-input" />
                   </div>
                 </div>
               </div>
 
-              <div class="flex justify-end gap-4 pt-6">
-                <button type="button" @click="closeDialog" class="rounded-xl border border-gray-300 px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  :disabled="isSubmitting"
-                  class="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 disabled:opacity-60"
-                >
+              <!-- Totals -->
+              <div class="totals-strip">
+                <div class="totals-item">
+                  <span class="totals-label">Gross Value</span>
+                  <span class="totals-val">{{ formatCurrency(form.gross_value) }}</span>
+                </div>
+                <div class="totals-divider"></div>
+                <div class="totals-item">
+                  <span class="totals-label">VAT Amount</span>
+                  <span class="totals-val totals-vat">{{ formatCurrency(form.tax_amount) }}</span>
+                </div>
+                <div class="totals-divider"></div>
+                <div class="totals-item totals-total">
+                  <span class="totals-label">Total Amount</span>
+                  <span class="totals-val totals-big">{{ formatCurrency(form.total_amount) }}</span>
+                </div>
+              </div>
+
+              <div class="dialog-footer">
+                <button type="button" @click="closeDialog" class="btn-ghost">Cancel</button>
+                <button type="submit" :disabled="isSubmitting" class="btn-primary">
                   {{ isSubmitting ? 'Saving…' : (isEditing ? 'Update Invoice' : 'Create Invoice') }}
                 </button>
               </div>
@@ -435,38 +265,41 @@
       </div>
     </Transition>
 
-    <!-- Send Invoice Dialog -->
-    <Transition name="dialog">
-      <div v-if="showSendDialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div class="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl dark:bg-gray-900">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Send Invoice</h3>
-            <button @click="showSendDialog = false" class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div class="p-6 space-y-4">
+    <!-- ── Send Dialog ── -->
+    <Transition name="fade">
+      <div v-if="showSendDialog" class="dialog-overlay" @click.self="showSendDialog = false">
+        <div class="dialog-box dialog-sm">
+          <div class="dialog-header">
             <div>
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Send Method <span class="text-red-500">*</span></label>
-              <div class="grid grid-cols-3 gap-2">
-                <button v-for="m in sendMethods" :key="m.value" @click="sendForm.send_method = m.value"
-                  :class="['py-2.5 rounded-xl border-2 text-xs font-bold transition-all', sendForm.send_method === m.value ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' : 'border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400']"
+              <div class="dialog-eyebrow">Action</div>
+              <h2 class="dialog-title">Send Invoice</h2>
+            </div>
+            <button @click="showSendDialog = false" class="dialog-close">×</button>
+          </div>
+          <div class="dialog-body">
+            <div class="form-field">
+              <label class="field-label">Send Method <span class="req">*</span></label>
+              <div class="method-grid">
+                <button
+                  v-for="m in sendMethods"
+                  :key="m.value"
+                  type="button"
+                  @click="sendForm.send_method = m.value"
+                  :class="['method-btn', sendForm.send_method === m.value ? 'method-active' : '']"
                 >{{ m.label }}</button>
               </div>
             </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Personal Message</label>
-              <textarea v-model="sendForm.message" rows="3" placeholder="Add a personal message..." class="form-input resize-none text-sm"></textarea>
+            <div class="form-field mt-4">
+              <label class="field-label">Personal Message</label>
+              <textarea v-model="sendForm.message" rows="3" placeholder="Add a personal message…" class="field-input field-textarea"></textarea>
             </div>
-            <div class="px-3.5 py-2.5 bg-blue-50 dark:bg-blue-900/15 border border-blue-200 dark:border-blue-800/40 rounded-xl text-xs text-blue-700 dark:text-blue-300">
-              Invoice will be sent via <strong>{{ sendForm.send_method === 'both' ? 'Email & WhatsApp' : sendForm.send_method === 'email' ? 'Email' : 'WhatsApp' }}</strong>.
+            <div class="info-strip mt-4">
+              Sending via <strong>{{ sendForm.send_method === 'both' ? 'Email & WhatsApp' : sendForm.send_method === 'email' ? 'Email' : 'WhatsApp' }}</strong>
             </div>
-            <div class="flex gap-3 pt-1">
-              <button @click="showSendDialog = false" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition">Cancel</button>
-              <button @click="submitSendInvoice" :disabled="isSubmitting" class="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-green-500/25 disabled:opacity-50">
-                {{ isSubmitting ? 'Sending...' : 'Send Invoice' }}
+            <div class="dialog-footer mt-4">
+              <button @click="showSendDialog = false" class="btn-ghost">Cancel</button>
+              <button @click="submitSendInvoice" :disabled="isSubmitting" class="btn-primary">
+                {{ isSubmitting ? 'Sending…' : 'Send Invoice' }}
               </button>
             </div>
           </div>
@@ -474,49 +307,43 @@
       </div>
     </Transition>
 
-    <!-- Mark Paid Dialog -->
-    <Transition name="dialog">
-      <div v-if="showMarkPaidDialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div class="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl dark:bg-gray-900">
-          <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-              <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/40">
-                <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Mark as Paid</h3>
+    <!-- ── Mark Paid Dialog ── -->
+    <Transition name="fade">
+      <div v-if="showMarkPaidDialog" class="dialog-overlay" @click.self="showMarkPaidDialog = false">
+        <div class="dialog-box dialog-sm">
+          <div class="dialog-header">
+            <div>
+              <div class="dialog-eyebrow">Action</div>
+              <h2 class="dialog-title">Mark as Paid</h2>
             </div>
-            <button @click="showMarkPaidDialog = false" class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <button @click="showMarkPaidDialog = false" class="dialog-close">×</button>
           </div>
-          <div class="p-6 space-y-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Payment Date <span class="text-red-500">*</span></label>
-              <input v-model="paidForm.payment_date" type="date" required class="form-input" />
+          <div class="dialog-body">
+            <div class="form-row-2">
+              <div class="form-field">
+                <label class="field-label">Payment Date <span class="req">*</span></label>
+                <input v-model="paidForm.payment_date" type="date" required class="field-input" />
+              </div>
+              <div class="form-field">
+                <label class="field-label">Payment Method <span class="req">*</span></label>
+                <select v-model="paidForm.payment_method" required class="field-input field-select">
+                  <option value="">Select method</option>
+                  <option value="cash">Cash</option>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="mobile_money">Mobile Money</option>
+                  <option value="cheque">Cheque</option>
+                  <option value="credit_card">Credit Card</option>
+                </select>
+              </div>
+              <div class="form-field form-field-full">
+                <label class="field-label">Payment Reference</label>
+                <input v-model="paidForm.payment_reference" type="text" placeholder="Transaction reference" class="field-input" />
+              </div>
             </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Payment Method <span class="text-red-500">*</span></label>
-              <select v-model="paidForm.payment_method" required class="form-input">
-                <option value="">Select method</option>
-                <option value="cash">Cash</option>
-                <option value="bank_transfer">Bank Transfer</option>
-                <option value="mobile_money">Mobile Money</option>
-                <option value="cheque">Cheque</option>
-                <option value="credit_card">Credit Card</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Payment Reference</label>
-              <input v-model="paidForm.payment_reference" type="text" placeholder="Transaction reference number" class="form-input" />
-            </div>
-            <div class="flex gap-3 pt-1">
-              <button @click="showMarkPaidDialog = false" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition">Cancel</button>
-              <button @click="submitMarkPaid" :disabled="isSubmitting" class="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-green-500/25 disabled:opacity-50">
-                {{ isSubmitting ? 'Processing...' : 'Confirm Payment' }}
+            <div class="dialog-footer mt-4">
+              <button @click="showMarkPaidDialog = false" class="btn-ghost">Cancel</button>
+              <button @click="submitMarkPaid" :disabled="isSubmitting" class="btn-success">
+                {{ isSubmitting ? 'Processing…' : 'Confirm Payment' }}
               </button>
             </div>
           </div>
@@ -545,14 +372,6 @@ const isEditing = ref(false)
 const isSubmitting = ref(false)
 const selectedInvoice = ref(null)
 
-const statusTabs = [
-  { label: 'All', value: '' },
-  { label: 'Draft', value: 'draft' },
-  { label: 'Sent', value: 'sent' },
-  { label: 'Paid', value: 'paid' },
-  { label: 'Cancelled', value: 'cancelled' },
-]
-
 const sendMethods = [
   { label: 'Email', value: 'email' },
   { label: 'WhatsApp', value: 'whatsapp' },
@@ -560,10 +379,10 @@ const sendMethods = [
 ]
 
 const statCards = computed(() => [
-  { label: 'Total Invoices', value: stats.value.total_invoices || 0, iconBg: 'bg-blue-600', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />' },
-  { label: 'Paid', value: stats.value.paid_invoices || 0, iconBg: 'bg-green-600', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />' },
-  { label: 'Pending', value: (stats.value.draft_invoices || 0) + (stats.value.sent_invoices || 0), iconBg: 'bg-yellow-500', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />' },
-  { label: 'Total Amount', value: formatCurrency(stats.value.total_amount || 0), iconBg: 'bg-purple-600', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' },
+  { label: 'Total Invoices', value: stats.value.total_invoices || 0, barWidth: '60%', barColor: '#1e3a8a' },
+  { label: 'Paid', value: stats.value.paid_invoices || 0, barWidth: '45%', barColor: '#15803d' },
+  { label: 'Pending', value: (stats.value.draft_invoices || 0) + (stats.value.sent_invoices || 0), barWidth: '35%', barColor: '#b45309' },
+  { label: 'Total Revenue', value: formatCurrency(stats.value.total_amount || 0), barWidth: '80%', barColor: '#6d28d9' },
 ])
 
 const sendForm = ref({ send_method: 'email', message: '' })
@@ -610,21 +429,6 @@ const visiblePages = computed(() => {
   else if (totalPages > 1) result.push(totalPages)
   return [...new Set(result)]
 })
-
-function statusBadgeClass(status) {
-  const map = {
-    draft: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
-    sent: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20',
-    paid: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 border border-green-200 dark:border-green-500/20',
-    cancelled: 'bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300 border border-red-200 dark:border-red-500/20'
-  }
-  return map[status] || map.draft
-}
-
-function statusDotClass(status) {
-  const map = { draft: 'bg-slate-400', sent: 'bg-blue-500', paid: 'bg-green-500', cancelled: 'bg-red-500' }
-  return map[status] || 'bg-slate-400'
-}
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount || 0)
@@ -725,9 +529,7 @@ async function submitSendInvoice() {
       showSendDialog.value = false
       await fetchInvoices()
       await fetchStatistics()
-      if (response.data.results?.whatsapp_url) {
-        window.open(response.data.results.whatsapp_url, '_blank')
-      }
+      if (response.data.results?.whatsapp_url) window.open(response.data.results.whatsapp_url, '_blank')
     } else {
       toast.error(response.data.message)
     }
@@ -775,8 +577,6 @@ function changePage(page) {
   if (typeof page === 'number') currentPage.value = page
 }
 
-// ─── EXPORT & PDF ───────────────────────────────────────────────────────────────
-
 async function exportToExcel() {
   try {
     const response = await axios.get('/api/accountant/invoices/export/excel', { responseType: 'blob' })
@@ -821,18 +621,17 @@ async function downloadInvoice(id) {
 
 function showPDFModal(html, filename, landscape) {
   const overlay = document.createElement('div')
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;'
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;'
   const container = document.createElement('div')
-  container.style.cssText = 'background:white;border-radius:12px;max-width:96%;max-height:96%;overflow:auto;display:flex;flex-direction:column;'
+  container.style.cssText = 'background:white;border-radius:8px;max-width:96%;max-height:96%;overflow:auto;display:flex;flex-direction:column;'
   const toolbar = document.createElement('div')
-  toolbar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #e2e8f0;gap:8px;position:sticky;top:0;background:white;z-index:1;'
+  toolbar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #e2e8f0;gap:8px;position:sticky;top:0;background:white;z-index:1;'
   toolbar.innerHTML = `
-    <span style="font-weight:700;font-size:14px;color:#1e293b;">${filename}</span>
+    <span style="font-weight:700;font-size:13px;color:#1e293b;">${filename}</span>
     <div style="display:flex;gap:8px;">
-      <button id="pdf-download" style="background:#3b82f6;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Download PDF</button>
-      <button id="pdf-close" style="background:#f1f5f9;color:#475569;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Close</button>
-    </div>
-  `
+      <button id="pdf-download" style="background:#1e3a8a;color:white;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">Download PDF</button>
+      <button id="pdf-close" style="background:#f1f5f9;color:#475569;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">Close</button>
+    </div>`
   const contentWrapper = document.createElement('div')
   contentWrapper.style.cssText = 'padding:20px;overflow:auto;'
   contentWrapper.innerHTML = html
@@ -867,143 +666,93 @@ async function printElement(element, filename, landscape = false) {
       document.body.removeChild(a); URL.revokeObjectURL(url)
       toast.success('PDF downloaded')
       return
-    } catch (e) {
-      console.warn('html2pdf fallback', e)
-    }
-    // Fallback: browser print
+    } catch (e) {}
     const pw = window.open('', '_blank', 'width=900,height=700')
     if (!pw) { toast.error('Popup blocked'); return }
     pw.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${filename}</title>
-      <style>
-        @page { size: A4 ${landscape ? 'landscape' : 'portrait'}; margin: ${landscape ? '8mm 6mm' : '10mm 8mm'}; }
-        body { margin:0;font-family:Arial,Helvetica,sans-serif;font-size:10pt;-webkit-print-color-adjust:exact;print-color-adjust:exact; }
-        * { box-sizing: border-box; }
-        table { border-collapse: collapse; }
-        tr,td,th { page-break-inside: avoid; }
-        img { max-width:100%;height:auto; }
-      </style></head><body>${element.outerHTML}
-      <script>setTimeout(()=>window.print(),1200)<\/script></body></html>`)
+      <style>@page{size:A4 ${landscape?'landscape':'portrait'};margin:${landscape?'8mm 6mm':'10mm 8mm'}}body{margin:0;font-family:Arial,sans-serif;font-size:10pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}*{box-sizing:border-box}table{border-collapse:collapse}tr,td,th{page-break-inside:avoid}</style>
+      </head><body>${element.outerHTML}<script>setTimeout(()=>window.print(),1200)<\/script></body></html>`)
     pw.document.close()
   } catch (err) {
     toast.error('PDF generation failed')
   }
 }
 
-// ─── PDF CONTENT TEMPLATES ──────────────────────────────────────────────────
-
 function createInvoiceHTML(data) {
   const { invoice, company, status_badge, client_info, tax_info, notes } = data
   const fc = (v) => new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS', minimumFractionDigits: 0 }).format(v || 0)
   return `
-  <div class="page" style="width:190mm;margin:0 auto;background:#fff;font-family:Arial,Helvetica,sans-serif;font-size:10pt;color:#1e293b;">
-    <!-- Top accent bar -->
-    <div style="height:5px;background:linear-gradient(90deg,#1e3a8a,#3b82f6);"></div>
-    <!-- Header -->
+  <div style="width:190mm;margin:0 auto;background:#fff;font-family:Arial,Helvetica,sans-serif;font-size:10pt;color:#1e293b;">
+    <div style="height:4px;background:linear-gradient(90deg,#1e3a8a,#3b82f6);"></div>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:20px 28px 14px;border-bottom:1px solid #e2e8f0;">
       <div style="display:flex;align-items:flex-start;gap:14px;">
-        <div style="width:60px;height:60px;background:#f8fafc;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+        <div style="width:56px;height:56px;background:#f8fafc;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
           <img src="/images/tera.jpeg" alt="Logo" style="max-width:100%;max-height:100%;object-fit:contain;" onerror="this.style.display='none'" />
         </div>
         <div>
-          <div style="font-size:15px;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">${company?.name || ''}</div>
-          <div style="font-size:8.5px;color:#64748b;margin-top:4px;line-height:1.5;">${(company?.address || '').replace(/\n/g,'<br>')}${company?.contacts ? '<br>' + company.contacts : ''}</div>
+          <div style="font-size:14px;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">${company?.name || ''}</div>
+          <div style="font-size:8px;color:#64748b;margin-top:3px;line-height:1.5;">${(company?.address || '').replace(/\n/g,'<br>')}${company?.contacts ? '<br>' + company.contacts : ''}</div>
         </div>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:28px;font-weight:900;color:#1e3a8a;letter-spacing:-1px;">INVOICE</div>
+        <div style="font-size:26px;font-weight:900;color:#1e3a8a;letter-spacing:-1px;">INVOICE</div>
         <div style="font-size:11px;font-weight:700;color:#475569;">#${invoice?.invoice_number || ''}</div>
-        <span style="display:inline-block;margin-top:6px;padding:3px 10px;border-radius:999px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;background:${status_badge?.bg || '#f1f5f9'};color:${status_badge?.fg || '#475569'};">
+        <span style="display:inline-block;margin-top:5px;padding:2px 10px;border-radius:3px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;background:${status_badge?.bg || '#f1f5f9'};color:${status_badge?.fg || '#475569'};">
           ${status_badge?.text || invoice?.status || ''}
         </span>
       </div>
     </div>
-    <!-- Date strip -->
     <div style="display:flex;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
-      <div style="padding:10px 18px;border-right:1px solid #e2e8f0;flex:1;">
-        <div style="font-size:7.5px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:0.8px;">Invoice Date</div>
-        <div style="font-size:11px;font-weight:700;color:#1e293b;margin-top:2px;">${invoice?.invoice_date || ''}</div>
-      </div>
-      <div style="padding:10px 18px;border-right:1px solid #e2e8f0;flex:1;">
-        <div style="font-size:7.5px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:0.8px;">Due Date</div>
-        <div style="font-size:11px;font-weight:700;color:#1e293b;margin-top:2px;">${invoice?.due_date || ''}</div>
-      </div>
-      <div style="padding:10px 18px;flex:1;">
-        <div style="font-size:7.5px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:0.8px;">VAT Rate</div>
-        <div style="font-size:11px;font-weight:700;color:#1e293b;margin-top:2px;">${invoice?.tax_rate || 0}%</div>
-      </div>
+      <div style="padding:9px 18px;border-right:1px solid #e2e8f0;flex:1;"><div style="font-size:7px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:0.8px;">Invoice Date</div><div style="font-size:10px;font-weight:700;color:#1e293b;margin-top:2px;">${invoice?.invoice_date || ''}</div></div>
+      <div style="padding:9px 18px;border-right:1px solid #e2e8f0;flex:1;"><div style="font-size:7px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:0.8px;">Due Date</div><div style="font-size:10px;font-weight:700;color:#1e293b;margin-top:2px;">${invoice?.due_date || ''}</div></div>
+      <div style="padding:9px 18px;flex:1;"><div style="font-size:7px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:0.8px;">VAT Rate</div><div style="font-size:10px;font-weight:700;color:#1e293b;margin-top:2px;">${invoice?.tax_rate || 0}%</div></div>
     </div>
-    <!-- Info grid -->
-    <div style="display:flex;gap:0;padding:18px 28px;border-bottom:1px solid #e2e8f0;">
+    <div style="display:flex;padding:16px 28px;border-bottom:1px solid #e2e8f0;">
       <div style="flex:1;padding-right:18px;border-right:1px solid #e2e8f0;">
-        <div style="font-size:7.5px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:8px;letter-spacing:0.8px;">Bill To</div>
-        <div style="font-weight:700;color:#1e3a8a;font-size:11px;margin-bottom:5px;">${invoice?.client_name || ''}</div>
-        ${(client_info || []).map(i => `<div style="display:flex;gap:6px;margin-bottom:3px;"><span style="font-size:9px;font-weight:700;color:#475569;min-width:55px;">${i.label}</span><span style="font-size:9px;color:#64748b;">${i.value}</span></div>`).join('')}
+        <div style="font-size:7px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:7px;">Bill To</div>
+        <div style="font-weight:700;color:#1e3a8a;font-size:10px;margin-bottom:4px;">${invoice?.client_name || ''}</div>
+        ${(client_info || []).map(i => `<div style="display:flex;gap:6px;margin-bottom:2px;"><span style="font-size:8.5px;font-weight:700;color:#475569;min-width:50px;">${i.label}</span><span style="font-size:8.5px;color:#64748b;">${i.value}</span></div>`).join('')}
       </div>
       <div style="flex:1;padding:0 18px;border-right:1px solid #e2e8f0;">
-        <div style="font-size:7.5px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:8px;letter-spacing:0.8px;">Tax Details</div>
-        ${(tax_info || []).map(i => `<div style="display:flex;gap:6px;margin-bottom:3px;"><span style="font-size:9px;font-weight:700;color:#475569;min-width:45px;">${i.label}</span><span style="font-size:9px;color:#64748b;">${i.value}</span></div>`).join('')}
+        <div style="font-size:7px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:7px;">Tax Details</div>
+        ${(tax_info || []).map(i => `<div style="display:flex;gap:6px;margin-bottom:2px;"><span style="font-size:8.5px;font-weight:700;color:#475569;min-width:40px;">${i.label}</span><span style="font-size:8.5px;color:#64748b;">${i.value}</span></div>`).join('')}
       </div>
       <div style="flex:1;padding-left:18px;">
-        <div style="font-size:7.5px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:8px;letter-spacing:0.8px;">Amount Due</div>
-        <div style="font-size:18px;font-weight:900;color:#1e3a8a;">${fc(invoice?.total_amount)}</div>
+        <div style="font-size:7px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:7px;">Amount Due</div>
+        <div style="font-size:16px;font-weight:900;color:#1e3a8a;">${fc(invoice?.total_amount)}</div>
       </div>
     </div>
-    <!-- Items Table -->
-    <div style="padding:18px 28px;">
-      <div style="font-size:7.5px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:10px;letter-spacing:0.8px;">Items & Services</div>
-      <table style="width:100%;border-collapse:collapse;font-size:9.5px;">
-        <thead>
-          <tr style="background:#1e3a8a;color:#fff;">
-            <th style="padding:8px 10px;text-align:left;font-size:8px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">Description</th>
-            <th style="padding:8px 10px;text-align:center;font-size:8px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">Cars</th>
-            <th style="padding:8px 10px;text-align:center;font-size:8px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">Period</th>
-            <th style="padding:8px 10px;text-align:right;font-size:8px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">Unit Price</th>
-            <th style="padding:8px 10px;text-align:right;font-size:8px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="background:#f8fafc;">
-            <td style="padding:10px;border-bottom:1px solid #e2e8f0;">
-              <div style="font-weight:700;color:#1e293b;">${invoice?.item_description || ''}</div>
-              <div style="font-size:8.5px;color:#64748b;margin-top:2px;">${invoice?.uom ? 'UOM: ' + invoice.uom : ''}</div>
-            </td>
-            <td style="padding:10px;border-bottom:1px solid #e2e8f0;text-align:center;font-weight:600;">${invoice?.number_of_cars || 1}</td>
-            <td style="padding:10px;border-bottom:1px solid #e2e8f0;text-align:center;font-weight:600;">${invoice?.period_months || ''} mo</td>
-            <td style="padding:10px;border-bottom:1px solid #e2e8f0;text-align:right;font-weight:600;">${fc(invoice?.unit_price)}</td>
-            <td style="padding:10px;border-bottom:1px solid #e2e8f0;text-align:right;font-weight:800;color:#1e3a8a;">${fc(invoice?.gross_value)}</td>
-          </tr>
-        </tbody>
+    <div style="padding:16px 28px;">
+      <div style="font-size:7px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:8px;">Items & Services</div>
+      <table style="width:100%;border-collapse:collapse;font-size:9px;">
+        <thead><tr style="background:#1e3a8a;color:#fff;">
+          <th style="padding:7px 10px;text-align:left;font-size:7.5px;text-transform:uppercase;">Description</th>
+          <th style="padding:7px 10px;text-align:center;font-size:7.5px;text-transform:uppercase;">Cars</th>
+          <th style="padding:7px 10px;text-align:center;font-size:7.5px;text-transform:uppercase;">Period</th>
+          <th style="padding:7px 10px;text-align:right;font-size:7.5px;text-transform:uppercase;">Unit Price</th>
+          <th style="padding:7px 10px;text-align:right;font-size:7.5px;text-transform:uppercase;">Subtotal</th>
+        </tr></thead>
+        <tbody><tr style="background:#f8fafc;">
+          <td style="padding:9px 10px;border-bottom:1px solid #e2e8f0;"><div style="font-weight:700;">${invoice?.item_description || ''}</div><div style="font-size:8px;color:#64748b;margin-top:1px;">${invoice?.uom ? 'UOM: ' + invoice.uom : ''}</div></td>
+          <td style="padding:9px 10px;border-bottom:1px solid #e2e8f0;text-align:center;font-weight:600;">${invoice?.number_of_cars || 1}</td>
+          <td style="padding:9px 10px;border-bottom:1px solid #e2e8f0;text-align:center;font-weight:600;">${invoice?.period_months || ''} mo</td>
+          <td style="padding:9px 10px;border-bottom:1px solid #e2e8f0;text-align:right;font-weight:600;">${fc(invoice?.unit_price)}</td>
+          <td style="padding:9px 10px;border-bottom:1px solid #e2e8f0;text-align:right;font-weight:800;color:#1e3a8a;">${fc(invoice?.gross_value)}</td>
+        </tr></tbody>
       </table>
-      <!-- Totals block -->
-      <div style="display:flex;justify-content:flex-end;margin-top:12px;">
-        <div style="width:240px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
-          <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
-            <span style="font-size:9.5px;color:#64748b;">Subtotal</span>
-            <span style="font-size:9.5px;font-weight:700;color:#1e293b;">${fc(invoice?.gross_value)}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
-            <span style="font-size:9.5px;color:#64748b;">VAT (${invoice?.tax_rate || 0}%)</span>
-            <span style="font-size:9.5px;font-weight:700;color:#1e293b;">${fc(invoice?.tax_amount)}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;padding:10px 12px;background:#1e3a8a;">
-            <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#fff;">Amount Due</span>
-            <span style="font-size:14px;font-weight:900;color:#fff;">${fc(invoice?.total_amount)}</span>
-          </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+        <div style="width:220px;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;">
+          <div style="display:flex;justify-content:space-between;padding:6px 12px;background:#f8fafc;border-bottom:1px solid #e2e8f0;"><span style="font-size:9px;color:#64748b;">Subtotal</span><span style="font-size:9px;font-weight:700;">${fc(invoice?.gross_value)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 12px;background:#f8fafc;border-bottom:1px solid #e2e8f0;"><span style="font-size:9px;color:#64748b;">VAT (${invoice?.tax_rate || 0}%)</span><span style="font-size:9px;font-weight:700;">${fc(invoice?.tax_amount)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 12px;background:#1e3a8a;"><span style="font-size:8.5px;font-weight:700;text-transform:uppercase;color:#fff;">Amount Due</span><span style="font-size:13px;font-weight:900;color:#fff;">${fc(invoice?.total_amount)}</span></div>
         </div>
       </div>
-      <!-- Notes -->
-      ${notes || invoice?.notes ? `
-      <div style="margin-top:16px;">
-        <div style="font-size:7.5px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:6px;letter-spacing:0.8px;">Notes</div>
-        <div style="font-size:9.5px;color:#64748b;line-height:1.5;">${notes || invoice?.notes}</div>
-      </div>` : ''}
+      ${notes || invoice?.notes ? `<div style="margin-top:14px;"><div style="font-size:7px;font-weight:800;text-transform:uppercase;color:#b45309;border-bottom:1.5px solid #b45309;padding-bottom:3px;margin-bottom:5px;">Notes</div><div style="font-size:9px;color:#64748b;line-height:1.5;">${notes || invoice?.notes}</div></div>` : ''}
     </div>
-    <!-- Footer -->
-    <div style="margin-top:auto;padding:12px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:8.5px;color:#94a3b8;">
-      <span>Thank you for your business.</span>
-      <span>Generated: ${new Date().toLocaleDateString()}</span>
+    <div style="padding:10px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:8px;color:#94a3b8;margin-top:auto;">
+      <span>Thank you for your business.</span><span>Generated: ${new Date().toLocaleDateString()}</span>
     </div>
-    <div style="height:4px;background:linear-gradient(90deg,#b45309,#1e3a8a);"></div>
+    <div style="height:3px;background:linear-gradient(90deg,#b45309,#1e3a8a);"></div>
   </div>`
 }
 
@@ -1011,68 +760,55 @@ function createInvoiceListHTML(data) {
   const { invoices: invs, company, generated, total_records, grand_total } = data
   const fc = (v) => new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS', minimumFractionDigits: 0 }).format(v || 0)
   return `
-  <div class="invoice-list-report" style="font-family:Arial,Helvetica,sans-serif;font-size:9.5px;color:#1e293b;padding:14px 20px;width:270mm;margin:0 auto;">
-    <div style="height:4px;background:linear-gradient(90deg,#1e3a8a,#b45309);margin-bottom:14px;"></div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-      <div>
-        <div style="font-size:14px;font-weight:800;color:#1e3a8a;">${company?.name || ''}</div>
-        <div style="font-size:8px;color:#94a3b8;margin-top:3px;">${company?.address || ''}</div>
-      </div>
-      <div style="text-align:right;font-size:8.5px;color:#475569;line-height:1.6;">
-        <div style="font-size:11px;font-weight:700;color:#1e3a8a;">TAX INVOICE REPORT</div>
-        <div>Generated: ${generated}</div>
-        <div>Records: ${total_records} | Grand Total: <strong>${fc(grand_total)}</strong></div>
-      </div>
+  <div style="font-family:Arial,sans-serif;font-size:9px;color:#1e293b;padding:12px 16px;width:270mm;margin:0 auto;">
+    <div style="height:3px;background:linear-gradient(90deg,#1e3a8a,#b45309);margin-bottom:12px;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+      <div><div style="font-size:13px;font-weight:800;color:#1e3a8a;">${company?.name || ''}</div><div style="font-size:7.5px;color:#94a3b8;margin-top:2px;">${company?.address || ''}</div></div>
+      <div style="text-align:right;font-size:8px;color:#475569;line-height:1.5;"><div style="font-size:10px;font-weight:700;color:#1e3a8a;">TAX INVOICE REPORT</div><div>Generated: ${generated}</div><div>Records: ${total_records} · Grand Total: <strong>${fc(grand_total)}</strong></div></div>
     </div>
-    <div style="border-top:1.5px solid #e2e8f0;margin-bottom:8px;"></div>
-    <table style="width:100%;border-collapse:collapse;font-size:8.5px;">
-      <thead>
-        <tr style="background:#1e3a8a;color:#fff;">
-          <th style="padding:7px 8px;text-align:left;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Invoice No.</th>
-          <th style="padding:7px 8px;text-align:left;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Client</th>
-          <th style="padding:7px 8px;text-align:left;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Description</th>
-          <th style="padding:7px 8px;text-align:right;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Cars</th>
-          <th style="padding:7px 8px;text-align:right;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Period</th>
-          <th style="padding:7px 8px;text-align:right;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Unit Price</th>
-          <th style="padding:7px 8px;text-align:right;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Tax</th>
-          <th style="padding:7px 8px;text-align:right;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Total</th>
-          <th style="padding:7px 8px;text-align:left;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Date</th>
-          <th style="padding:7px 8px;text-align:center;font-size:7.5px;text-transform:uppercase;letter-spacing:0.5px;">Status</th>
-        </tr>
-      </thead>
+    <div style="border-top:1.5px solid #e2e8f0;margin-bottom:7px;"></div>
+    <table style="width:100%;border-collapse:collapse;font-size:8px;">
+      <thead><tr style="background:#1e3a8a;color:#fff;">
+        <th style="padding:6px 7px;text-align:left;font-size:7px;text-transform:uppercase;">Invoice No.</th>
+        <th style="padding:6px 7px;text-align:left;font-size:7px;text-transform:uppercase;">Client</th>
+        <th style="padding:6px 7px;text-align:left;font-size:7px;text-transform:uppercase;">Description</th>
+        <th style="padding:6px 7px;text-align:right;font-size:7px;text-transform:uppercase;">Cars</th>
+        <th style="padding:6px 7px;text-align:right;font-size:7px;text-transform:uppercase;">Period</th>
+        <th style="padding:6px 7px;text-align:right;font-size:7px;text-transform:uppercase;">Unit Price</th>
+        <th style="padding:6px 7px;text-align:right;font-size:7px;text-transform:uppercase;">Tax</th>
+        <th style="padding:6px 7px;text-align:right;font-size:7px;text-transform:uppercase;">Total</th>
+        <th style="padding:6px 7px;text-align:left;font-size:7px;text-transform:uppercase;">Date</th>
+        <th style="padding:6px 7px;text-align:center;font-size:7px;text-transform:uppercase;">Status</th>
+      </tr></thead>
       <tbody>
         ${(invs || []).map((inv, idx) => {
           const statusColors = { paid: ['#dcfce7','#15803d'], sent: ['#dbeafe','#1d4ed8'], cancelled: ['#fee2e2','#b91c1c'], draft: ['#f1f5f9','#64748b'] }
           const [bg, fg] = statusColors[inv.status] || statusColors.draft
-          const desc = (inv.item_description || '').substring(0, 40) + (inv.item_description?.length > 40 ? '…' : '')
-          return `
-          <tr style="border-bottom:1px solid #e2e8f0;${idx % 2 === 0 ? 'background:#f8fafc;' : ''}">
-            <td style="padding:6px 8px;font-weight:700;color:#1e3a8a;">${inv.invoice_number}</td>
-            <td style="padding:6px 8px;font-weight:600;">${inv.client_name}</td>
-            <td style="padding:6px 8px;color:#475569;">${desc}</td>
-            <td style="padding:6px 8px;text-align:right;">${inv.number_of_cars}</td>
-            <td style="padding:6px 8px;text-align:right;">${inv.period_months}</td>
-            <td style="padding:6px 8px;text-align:right;">${fc(inv.unit_price)}</td>
-            <td style="padding:6px 8px;text-align:right;">${fc(inv.tax_amount)}</td>
-            <td style="padding:6px 8px;text-align:right;font-weight:800;color:#1e3a8a;">${fc(inv.total_amount)}</td>
-            <td style="padding:6px 8px;color:#64748b;">${inv.invoice_date}</td>
-            <td style="padding:6px 8px;text-align:center;"><span style="background:${bg};color:${fg};padding:2px 7px;border-radius:999px;font-size:7.5px;font-weight:700;text-transform:uppercase;">${inv.status}</span></td>
+          const desc = (inv.item_description || '').substring(0, 38) + (inv.item_description?.length > 38 ? '…' : '')
+          return `<tr style="border-bottom:1px solid #e2e8f0;${idx % 2 === 0 ? 'background:#f8fafc;' : ''}">
+            <td style="padding:5px 7px;font-weight:700;color:#1e3a8a;">${inv.invoice_number}</td>
+            <td style="padding:5px 7px;font-weight:600;">${inv.client_name}</td>
+            <td style="padding:5px 7px;color:#475569;">${desc}</td>
+            <td style="padding:5px 7px;text-align:right;">${inv.number_of_cars}</td>
+            <td style="padding:5px 7px;text-align:right;">${inv.period_months}</td>
+            <td style="padding:5px 7px;text-align:right;">${fc(inv.unit_price)}</td>
+            <td style="padding:5px 7px;text-align:right;">${fc(inv.tax_amount)}</td>
+            <td style="padding:5px 7px;text-align:right;font-weight:800;color:#1e3a8a;">${fc(inv.total_amount)}</td>
+            <td style="padding:5px 7px;color:#64748b;">${inv.invoice_date}</td>
+            <td style="padding:5px 7px;text-align:center;"><span style="background:${bg};color:${fg};padding:2px 6px;border-radius:3px;font-size:7px;font-weight:700;text-transform:uppercase;">${inv.status}</span></td>
           </tr>`
         }).join('')}
       </tbody>
-      <tfoot>
-        <tr style="background:#f1f5f9;border-top:2px solid #1e3a8a;">
-          <td colspan="7" style="padding:7px 8px;font-weight:700;color:#1e3a8a;font-size:9px;text-align:right;text-transform:uppercase;letter-spacing:0.5px;">Grand Total</td>
-          <td style="padding:7px 8px;font-weight:900;color:#1e3a8a;font-size:11px;text-align:right;">${fc(grand_total)}</td>
-          <td colspan="2"></td>
-        </tr>
-      </tfoot>
+      <tfoot><tr style="background:#f1f5f9;border-top:2px solid #1e3a8a;">
+        <td colspan="7" style="padding:6px 7px;font-weight:700;color:#1e3a8a;font-size:8.5px;text-align:right;text-transform:uppercase;">Grand Total</td>
+        <td style="padding:6px 7px;font-weight:900;color:#1e3a8a;font-size:10px;text-align:right;">${fc(grand_total)}</td>
+        <td colspan="2"></td>
+      </tr></tfoot>
     </table>
-    <div style="margin-top:12px;display:flex;justify-content:space-between;font-size:8px;color:#94a3b8;">
-      <span>${company?.name || ''} — Confidential Invoice Report</span>
-      <span>Generated: ${generated}</span>
+    <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:7.5px;color:#94a3b8;">
+      <span>${company?.name || ''} — Confidential Invoice Report</span><span>Generated: ${generated}</span>
     </div>
-    <div style="height:3px;background:linear-gradient(90deg,#b45309,#1e3a8a);margin-top:10px;"></div>
+    <div style="height:2px;background:linear-gradient(90deg,#b45309,#1e3a8a);margin-top:8px;"></div>
   </div>`
 }
 
@@ -1083,23 +819,539 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.2?family=Sora:wght@300;400;500;600;700;800&display=swap');
 
-.form-input {
-  @apply block w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition shadow-sm;
+/* ─── Root ─────────────────────────────────────── */
+.invoice-root {
+  font-family: 'Sora', sans-serif;
+  min-height: 100vh;
+  background: #f6f7fb;
+  padding: 32px 28px;
+  color: #1e293b;
 }
 
-.dialog-enter-active,
-.dialog-leave-active {
-  transition: opacity 0.2s ease;
+/* ─── Page Header ───────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
-.dialog-enter-from,
-.dialog-leave-to {
-  opacity: 0;
+.header-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+.header-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+.header-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 3px;
 }
 
-.overflow-x-auto::-webkit-scrollbar { height: 6px; }
-.overflow-x-auto::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 4px; }
-.dark .overflow-x-auto::-webkit-scrollbar-thumb { background-color: #475569; }
-.overflow-x-auto::-webkit-scrollbar-track { background: transparent; }
+/* ─── Stat Cards ─────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+@media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .stats-grid { grid-template-columns: 1fr; } }
+
+.stat-card {
+  background: #fff;
+  border: 1px solid #e8ecf0;
+  border-radius: 10px;
+  padding: 16px 18px 14px;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.stat-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  transform: translateY(-1px);
+}
+.stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.stat-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 0 2px 0 0;
+  transition: width 0.6s ease;
+}
+
+/* ─── Toolbar ────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.search-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 380px;
+}
+.search-input {
+  width: 100%;
+  border: 1px solid #dde1e7;
+  border-radius: 8px;
+  background: #fff;
+  padding: 9px 36px 9px 14px;
+  font-size: 13px;
+  font-family: 'Sora', sans-serif;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-input:focus { border-color: #1e3a8a; box-shadow: 0 0 0 3px rgba(30,58,138,0.08); }
+.search-input::placeholder { color: #b0b8c4; }
+.search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #94a3b8;
+  line-height: 1;
+}
+.toolbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.filter-select {
+  border: 1px solid #dde1e7;
+  border-radius: 8px;
+  background: #fff;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-family: 'Sora', sans-serif;
+  color: #475569;
+  outline: none;
+  cursor: pointer;
+}
+.filter-select:focus { border-color: #1e3a8a; }
+
+/* ─── Buttons ────────────────────────────────────── */
+.btn-primary {
+  background: #1e3a8a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+  letter-spacing: 0.01em;
+}
+.btn-primary:hover { background: #1e40af; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.btn-success {
+  background: #15803d;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-success:hover { background: #166534; }
+.btn-success:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-ghost {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #dde1e7;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-ghost:hover { background: #f1f5f9; }
+
+.btn-outline {
+  background: #fff;
+  color: #475569;
+  border: 1px solid #dde1e7;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn-outline:hover { background: #f8fafc; border-color: #b0b8c4; }
+
+/* ─── Table ──────────────────────────────────────── */
+.table-wrap {
+  background: #fff;
+  border: 1px solid #e8ecf0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.table-scroll { overflow-x: auto; }
+.table-scroll::-webkit-scrollbar { height: 5px; }
+.table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.data-table thead tr {
+  background: #f8fafc;
+  border-bottom: 1.5px solid #e2e8f0;
+}
+.data-table th {
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #64748b;
+  white-space: nowrap;
+}
+.th-slim { width: 36px; }
+.th-num { text-align: right; }
+.th-center { text-align: center; }
+.th-total { background: rgba(30,58,138,0.04); color: #1e3a8a; }
+
+.table-row { transition: background 0.12s; border-bottom: 1px solid #f1f5f9; }
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: #fafbff; }
+
+.data-table td {
+  padding: 11px 14px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.td-slim { width: 36px; }
+.td-muted { color: #94a3b8; font-size: 12px; }
+.td-invno { font-weight: 700; color: #1e3a8a; font-size: 12px; }
+.td-medium { color: #475569; font-size: 12px; }
+.td-bold { font-weight: 600; color: #0f172a; }
+.td-num { text-align: right; font-weight: 500; }
+.td-mono { font-variant-numeric: tabular-nums; }
+.td-desc { max-width: 180px; overflow: hidden; text-overflow: ellipsis; color: #64748b; font-size: 12px; }
+.td-center { text-align: center; }
+.td-total-val { font-weight: 800; color: #1e3a8a; font-size: 13px; background: rgba(30,58,138,0.03); }
+
+.uom-tag {
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ─── Status Badge ───────────────────────────────── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+}
+.status-draft  { background: #f1f5f9; color: #475569; }
+.status-sent   { background: #dbeafe; color: #1d4ed8; }
+.status-paid   { background: #dcfce7; color: #15803d; }
+.status-cancelled { background: #fee2e2; color: #b91c1c; }
+
+/* ─── Action Buttons ─────────────────────────────── */
+.action-group { display: flex; gap: 4px; justify-content: center; align-items: center; }
+.act-btn {
+  padding: 4px 9px;
+  border: none;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  letter-spacing: 0.2px;
+}
+.act-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.act-edit { background: #1e3a8a; color: #fff; }
+.act-pdf  { background: #4f46e5; color: #fff; }
+.act-send { background: #0f766e; color: #fff; }
+.act-paid { background: #7c3aed; color: #fff; }
+.act-del  { background: #dc2626; color: #fff; }
+
+/* ─── Empty State ─────────────────────────────────── */
+.empty-state {
+  padding: 60px 24px;
+  text-align: center;
+}
+.empty-title { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+.empty-sub { font-size: 12.5px; color: #94a3b8; }
+.mt-3 { margin-top: 12px; }
+
+/* ─── Pagination ─────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.pagination-info { font-size: 12px; color: #64748b; }
+.pagination-nav { display: flex; align-items: center; gap: 4px; }
+.pg-btn {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Sora', sans-serif;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.12s;
+  min-width: 36px;
+  text-align: center;
+}
+.pg-btn:hover:not(:disabled) { background: #f8fafc; border-color: #c0c8d4; }
+.pg-btn:disabled { opacity: 0.45; cursor: default; }
+.pg-active { background: #1e3a8a !important; color: #fff !important; border-color: #1e3a8a !important; }
+.pg-ellipsis { border: none; background: transparent; cursor: default; color: #94a3b8; }
+
+/* ─── Dialogs ─────────────────────────────────────── */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.65);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+.dialog-box {
+  background: #fff;
+  border-radius: 14px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.dialog-lg { max-width: 900px; }
+.dialog-sm { max-width: 460px; }
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e8ecf0;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+}
+.dialog-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #94a3b8;
+  margin-bottom: 3px;
+}
+.dialog-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+.dialog-close {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.12s;
+}
+.dialog-close:hover { background: #e2e8f0; }
+
+.dialog-body { padding: 20px 24px; }
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 16px;
+}
+
+/* ─── Form ────────────────────────────────────────── */
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+}
+.form-grid-2col .totals-strip,
+.form-grid-2col .dialog-footer { grid-column: 1 / -1; }
+@media (max-width: 700px) { .form-grid-2col { grid-template-columns: 1fr; } }
+
+.form-section { padding-bottom: 8px; }
+.form-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #94a3b8;
+  border-bottom: 1.5px solid #e8ecf0;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 500px) { .form-row-2 { grid-template-columns: 1fr; } }
+
+.form-field { display: flex; flex-direction: column; gap: 4px; }
+.form-field-full { grid-column: 1 / -1; }
+
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: 0.2px;
+}
+.req { color: #dc2626; }
+
+.field-input {
+  border: 1px solid #dde1e7;
+  border-radius: 7px;
+  background: #fafbfc;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: 'Sora', sans-serif;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.field-input:focus { border-color: #1e3a8a; box-shadow: 0 0 0 3px rgba(30,58,138,0.08); background: #fff; }
+.field-input::placeholder { color: #c0c8d4; }
+.field-textarea { resize: none; }
+.field-select { cursor: pointer; }
+.mt-4 { margin-top: 16px; }
+
+/* ─── Totals Strip ───────────────────────────────── */
+.totals-strip {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e8ecf0;
+  border-radius: 10px;
+  padding: 16px 24px;
+  gap: 0;
+  margin: 8px 0 4px;
+}
+.totals-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.totals-total { flex: 1.2; }
+.totals-divider {
+  width: 1px;
+  height: 40px;
+  background: #e2e8f0;
+  margin: 0 16px;
+}
+.totals-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #94a3b8; }
+.totals-val { font-size: 16px; font-weight: 800; color: #0f172a; font-variant-numeric: tabular-nums; }
+.totals-vat { color: #b45309; }
+.totals-big { font-size: 20px; color: #1e3a8a; }
+
+/* ─── Send Method ─────────────────────────────────── */
+.method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+.method-btn {
+  padding: 9px 6px;
+  border: 1.5px solid #dde1e7;
+  border-radius: 7px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.12s;
+  text-align: center;
+}
+.method-btn:hover { border-color: #1e3a8a; color: #1e3a8a; }
+.method-active { border-color: #1e3a8a !important; background: #eff4ff !important; color: #1e3a8a !important; }
+
+/* ─── Info Strip ─────────────────────────────────── */
+.info-strip {
+  background: #eff4ff;
+  border: 1px solid #c7d7fc;
+  border-radius: 7px;
+  padding: 9px 14px;
+  font-size: 12px;
+  color: #1e3a8a;
+}
+
+/* ─── Transitions ────────────────────────────────── */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.18s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

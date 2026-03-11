@@ -23,10 +23,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <select v-model="fiscalYear" @change="loadBudgets" class="bg-transparent text-sm text-slate-700 dark:text-slate-300 outline-none">
+                <option value="2029">FY 2029</option>
+                <option value="2028">FY 2028</option>
+                <option value="2027">FY 2027</option>
                 <option value="2026">FY 2026</option>
                 <option value="2025">FY 2025</option>
-                <option value="2024">FY 2024</option>
-                <option value="2023">FY 2023</option>
               </select>
             </div>               
             
@@ -303,5 +304,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.2?family=DM+Sans:wght@400;500;600;700&display=swap');
 </style>

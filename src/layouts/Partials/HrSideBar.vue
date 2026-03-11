@@ -264,6 +264,13 @@ const navigations = ref([
     ]
   },
   {
+    icon: "fas fa-user",
+    label: "Profile",
+    name: "UserProfile5",
+    path: "UserProfile5",
+    active: false
+  },
+  {
     icon: "fas fa-calendar-alt",
     label: "Leave Management",
     name: "LeaveManagement",

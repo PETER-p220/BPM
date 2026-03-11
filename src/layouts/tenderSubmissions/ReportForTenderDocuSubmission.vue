@@ -272,7 +272,7 @@ function exportToPDF() {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
 /* ── Base ── */
 .tender-page {

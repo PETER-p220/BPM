@@ -274,5 +274,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.2?family=DM+Sans:wght@400;500;600;700&display=swap');
 </style>

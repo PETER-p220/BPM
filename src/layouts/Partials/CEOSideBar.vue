@@ -17,35 +17,40 @@
 
     <!-- Navigation Menu -->
     <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-      <router-link
-        v-for="item in simpleMenuItems"
-        :key="item.name"
-        :to="item.path"
-        :class="[
-          'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group',
-          isActive(item.name)
-            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-        ]"
-      >
-        <div :class="[
-          'w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200',
-          isActive(item.name)
-            ? 'bg-white/20 shadow-inner'
-            : 'bg-slate-800 group-hover:bg-slate-700'
-        ]">
-          <svg class="w-5 h-5" :class="isActive(item.name) ? 'text-white' : 'text-slate-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
-          </svg>
-        </div>
-        <div class="flex-1">
-          <p class="font-medium">{{ item.label }}</p>
-          <p class="text-xs opacity-70">{{ item.description }}</p>
-        </div>
-        <div v-if="item.badge" class="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
-          {{ item.badge }}
-        </div>
-      </router-link>
+      <template v-for="item in simpleMenuItems" :key="item.name || 'separator'">
+        <!-- Separator -->
+        <div v-if="item.type === 'separator'" class="border-t border-slate-700 my-2"></div>
+        
+        <!-- Regular Menu Item -->
+        <router-link
+          v-else
+          :to="item.path"
+          :class="[
+            'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group',
+            isActive(item.name)
+              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+              : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+          ]"
+        >
+          <div :class="[
+            'w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200',
+            isActive(item.name)
+              ? 'bg-white/20 shadow-inner'
+              : 'bg-slate-800 group-hover:bg-slate-700'
+          ]">
+            <svg class="w-5 h-5" :class="isActive(item.name) ? 'text-white' : 'text-slate-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p class="font-medium">{{ item.label }}</p>
+            <p class="text-xs opacity-70">{{ item.description }}</p>
+          </div>
+          <div v-if="item.badge" class="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
+            {{ item.badge }}
+          </div>
+        </router-link>
+      </template>
 
       <!-- Print Reports Module -->
       <div
@@ -107,19 +112,75 @@
 
     <!-- User Profile Section -->
     <div class="p-4 border-t border-slate-800">
-      <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold">
-          {{ (user?.name || 'CEO')[0]?.toUpperCase() }}
-        </div>
-        <div class="flex-1">
-          <p class="text-sm font-semibold text-white">{{ user?.name || 'CEO' }}</p>
-          <p class="text-xs text-slate-400">Chief Executive Officer</p>
-        </div>
-        <button @click="logout" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-all">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
+      <div class="relative">
+        <!-- Profile Button -->
+        <button 
+          @click="toggleProfileMenu" 
+          class="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-all group"
+        >
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-105 transition-transform">
+            {{ (user?.name || 'CEO')[0]?.toUpperCase() }}
+          </div>
+          <div class="flex-1 text-left">
+            <p class="text-sm font-semibold text-white">{{ user?.name || 'CEO' }}</p>
+            <p class="text-xs text-slate-400">Chief Executive Officer</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              @click.stop="goToProfile" 
+              class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-600 transition-all"
+              title="View Profile"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </button>
+            <button 
+              @click.stop="logout" 
+              class="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-600 transition-all"
+              title="Logout"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </div>
         </button>
+
+        <!-- Profile Dropdown Menu -->
+        <div 
+          v-if="profileMenuOpen" 
+          class="absolute bottom-full left-0 right-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden z-50"
+        >
+          <router-link 
+            to="/ceo/profile" 
+            @click="closeProfileMenu"
+            class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors"
+          >
+            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">My Profile</p>
+              <p class="text-xs text-slate-400">View and edit profile</p>
+            </div>
+          </router-link>
+          
+          <div class="border-t border-slate-700"></div>
+          
+          <button 
+            @click="handleLogout" 
+            class="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors"
+          >
+            <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <div class="flex-1 text-left">
+              <p class="text-sm font-medium text-red-400">Logout</p>
+              <p class="text-xs text-slate-400">Sign out of account</p>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -133,6 +194,7 @@ import axios from '@/axios';
 const router = useRouter();
 const route = useRoute();
 const user = ref(null);
+const profileMenuOpen = ref(false);
 
 const simpleMenuItems = ref([
   {
@@ -154,6 +216,13 @@ const simpleMenuItems = ref([
     label: 'Budget',
     description: 'Financial planning & analysis',
     path: '/ceo/budget',
+    icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+  },
+  {
+    name: 'CEOFinancialRecords',
+    label: 'Financial Records',
+    description: 'Complete financial overview & exports',
+    path: '/ceo/financial-records',
     icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
   },
   {
@@ -192,6 +261,14 @@ const simpleMenuItems = ref([
     description: 'Manage employee leave requests',
     path: '/ceo/leave-management',
     icon: 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
+  },
+  { type: 'separator' },
+  {
+    name: 'Profile',
+    label: 'Profile',
+    description: 'Personal settings & information',
+    path: '/ceo/profile',
+    icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
   }
 ]);
 
@@ -338,6 +415,37 @@ function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   router.push('/login');
+}
+
+// Profile menu functions
+function toggleProfileMenu() {
+  profileMenuOpen.value = !profileMenuOpen.value;
+}
+
+function closeProfileMenu() {
+  profileMenuOpen.value = false;
+}
+
+function goToProfile() {
+  closeProfileMenu();
+  router.push('/ceo/profile');
+}
+
+function handleLogout() {
+  closeProfileMenu();
+  logout();
+}
+
+// Close profile menu when clicking outside
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+function handleClickOutside(event) {
+  const profileSection = event.target.closest('.relative');
+  if (!profileSection) {
+    profileMenuOpen.value = false;
+  }
 }
 </script>
 

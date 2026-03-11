@@ -345,7 +345,7 @@ function openPreview(fileUrl) {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
 .dialog-enter-active, .dialog-leave-active { transition: opacity 0.2s ease; }
 .dialog-enter-from, .dialog-leave-to { opacity: 0; }

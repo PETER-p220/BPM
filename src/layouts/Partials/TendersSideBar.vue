@@ -104,6 +104,7 @@ const navigations = ref([
     ],
   },
 
+  
   {
     icon: 'fas fa-trophy',
     label: 'Awards',
@@ -209,36 +210,6 @@ const navigations = ref([
     ],
   },
   {
-    icon: "fas fa-tools",
-    label: "Operations",
-    name: "OperationsManagement",
-    path: "TenderUserVGetAllReceipts",
-    active: false,
-    children: [
-      {
-        icon: "fas fa-receipt",
-        label: "My Receipts",
-        name: "TenderUserVGetAllReceipts",
-        path: "TenderUserVGetAllReceipts",
-        active: false
-      },
-      {
-        icon: "fas fa-hand-paper",
-        label: "My Requests",
-        name: "TenderUserGetALlRequests",
-        path: "TenderUserGetALlRequests",
-        active: false
-      },
-      {
-        icon: "fas fa-tasks",
-        label: "Project Activities",
-        name: "TenderUserViewActivity",
-        path: "TenderUserViewActivity",
-        active: false
-      }
-    ],
-  },
-  {
     icon: "fas fa-calendar-alt",
     label: "Leave Management",
     name: "LeaveManagement",
@@ -267,7 +238,15 @@ const navigations = ref([
         active: false
       }
     ],
-  }
+    
+  },
+  {
+    icon: "fas fa-user",
+    label: "Profile",
+    name: "UserProfile2",
+    path: "UserProfile2",
+    active: false
+  },
 ]);
 
 const clickNavigation = (item, index) => {

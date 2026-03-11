@@ -47,7 +47,6 @@
           </button>
         </div>
       </div>
-
       <!-- Search and Actions -->
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="relative flex-1">
@@ -61,7 +60,6 @@
             class="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
         </div>
-        
         <div class="flex items-center gap-2">
           <button
             @click="approveSelected"
@@ -73,7 +71,6 @@
             </svg>
             Approve Selected ({{ selectedTenders.length }})
           </button>
-          
           <button
             @click="rejectSelected"
             :disabled="selectedTenders.length === 0"
@@ -255,6 +252,95 @@
         </div>
       </div>
     </div>
+
+    <!-- Tender Details Modal -->
+    <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- Header -->
+        <div class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 rounded-t-xl">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Tender Details</h3>
+            <button @click="closeDetailsModal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div v-if="selectedTender" class="p-6 space-y-6">
+          <!-- Tender Information -->
+          <div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">
+            <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">Tender Information</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Tender Number</span>
+                <p class="text-sm text-slate-900 dark:text-white font-medium">{{ selectedTender.tender_number || '—' }}</p>
+              </div>
+              <div>
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Title</span>
+                <p class="text-sm text-slate-900 dark:text-white font-medium">{{ selectedTender.title || '—' }}</p>
+              </div>
+              <div>
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Type</span>
+                <p class="text-sm text-slate-900 dark:text-white font-medium">{{ selectedTender.tender_type || 'General' }}</p>
+              </div>
+              <div>
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Value</span>
+                <p class="text-sm text-slate-900 dark:text-white font-medium">{{ formatCurrency(selectedTender.value) }}</p>
+              </div>
+              <div>
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Status</span>
+                <div class="mt-1">
+                  <span :class="getStatusClasses(selectedTender.status)" class="px-3 py-1 text-xs font-semibold rounded-full">
+                    {{ selectedTender.status?.toUpperCase() || 'PENDING' }}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submitted Date</span>
+                <p class="text-sm text-slate-900 dark:text-white font-medium">{{ formatDate(selectedTender.created_at) }}</p>
+              </div>
+              <div>
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submission Deadline</span>
+                <p class="text-sm text-slate-900 dark:text-white font-medium">{{ formatDate(selectedTender.bid_submission) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div v-if="selectedTender.description" class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">
+            <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">Description</h4>
+            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ selectedTender.description }}</p>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-3">
+            <button
+              v-if="selectedTender.status === 'pending'"
+              @click="approveTender(selectedTender); closeDetailsModal()"
+              class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Approve Tender
+            </button>
+            <button
+              v-if="selectedTender.status === 'pending'"
+              @click="rejectTender(selectedTender); closeDetailsModal()"
+              class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Reject Tender
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -277,6 +363,7 @@ const showApprovalModal = ref(false);
 const modalMode = ref('approve');
 const rejectionReason = ref('');
 const selectedTender = ref(null);
+const showDetailsModal = ref(false);
 
 const statusTabs = computed(() => [
   { label: 'All Tenders', value: 'all', count: tenders.value.length },
@@ -368,8 +455,8 @@ function toggleSelectAll() {
 }
 
 function viewTender(tender) {
-  // Navigate to tender details
-  window.open(`/tenders/${tender.tender_id}`, '_blank');
+  selectedTender.value = tender;
+  showDetailsModal.value = true;
 }
 
 function approveTender(tender) {
@@ -426,6 +513,11 @@ function closeModal() {
   showApprovalModal.value = false;
   selectedTender.value = null;
   rejectionReason.value = '';
+}
+
+function closeDetailsModal() {
+  showDetailsModal.value = false;
+  selectedTender.value = null;
 }
 
 function exportData() {

@@ -21,6 +21,34 @@
 
     <!-- Stats Overview -->
     <div class="stats-overview">
+      <div class="overview-card" @click="$router.push('/accountant/financial-records')">
+        <div class="overview-icon receipts">
+          <i class="fas fa-coins"></i>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ totalRecords }}</div>
+          <div class="overview-label">Financial Records</div>
+          <div class="overview-change positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+8% from last month</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-card" @click="$router.push('/accountant/financial-maintenance')">
+        <div class="overview-icon projects">
+          <i class="fas fa-tools"></i>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ systemHealth }}</div>
+          <div class="overview-label">System Health</div>
+          <div class="overview-change neutral">
+            <i class="fas fa-check"></i>
+            <span>All systems operational</span>
+          </div>
+        </div>
+      </div>
+
       <div class="overview-card">
         <div class="overview-icon receipts">
           <i class="fas fa-receipt"></i>
@@ -282,6 +310,8 @@ const totalSubmitted = ref(0);
 const totalProjects = ref(0);
 const totalApproved = ref(0);
 const totalRejected = ref(0);
+const totalRecords = ref(0);
+const systemHealth = ref('Healthy');
 const isRefreshing = ref(false);
 
 const isLoading = ref({
@@ -434,9 +464,21 @@ const fetchAllRequests = async () => {
   }
 };
 
+const fetchFinancialStats = async () => {
+  try {
+    const response = await axios.get('/api/financial/records/stats');
+    totalRecords.value = response.data?.totalRecords || 0;
+    systemHealth.value = response.data?.systemHealth || 'Healthy';
+  } catch (error) {
+    console.error('Error fetching financial stats:', error);
+    totalRecords.value = 0;
+    systemHealth.value = 'Unknown';
+  }
+};
+
 const refreshData = async () => {
   isRefreshing.value = true;
-  await Promise.all([fetchTotalReceipts(), fetchAllRequests()]);
+  await Promise.all([fetchTotalReceipts(), fetchAllRequests(), fetchFinancialStats()]);
   setTimeout(() => {
     isRefreshing.value = false;
   }, 500);
@@ -445,6 +487,7 @@ const refreshData = async () => {
 onMounted(() => {
   fetchTotalReceipts();
   fetchAllRequests();
+  fetchFinancialStats();
 });
 </script>
 

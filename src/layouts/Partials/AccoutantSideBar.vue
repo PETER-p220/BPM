@@ -243,10 +243,39 @@ const navigations = ref([
     ]
   },
   {
+    icon: "fas fa-coins",
+    label: "Financial Management",
+    name: "FinancialManagement",
+    active: false,
+    children: [
+      {
+        icon: "fas fa-file-invoice-dollar",
+        label: "Financial Records",
+        name: "FinancialRecords",
+        path: "FinancialRecords",
+        active: false
+      },
+      {
+        icon: "fas fa-tools",
+        label: "Financial Maintenance",
+        name: "FinancialMaintenance",
+        path: "FinancialMaintenance",
+        active: false
+      }
+    ]
+  },
+  {
     icon: "fas fa-calendar-alt",
     label: "Leave Management",
     name: "LeaveManagement",
     path: "AccLeaveManagement",
+    active: false
+  },
+  {
+    icon: "fas fa-user",
+    label: "Profile",
+    name: "UserProfile4",
+    path: "UserProfile4",
     active: false
   },
   {
@@ -311,24 +340,31 @@ const getIconWrapperClass = (navigation) => {
   }
   return '';
 };
+
 </script>
 
 <style scoped>
 .sidebar-container {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(to bottom, #1e293b, #0f172a);
   color: white;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   overflow: hidden;
+  position: fixed;
+  width: 280px;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
 /* Header */
 .sidebar-header {
-  padding: 1.25rem 1rem;
+  padding: 1rem 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
+  min-height: auto;
 }
 
 .header-content {
@@ -343,14 +379,14 @@ const getIconWrapperClass = (navigation) => {
 }
 
 .logo-icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.125rem;
+  font-size: 1rem;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
@@ -359,7 +395,7 @@ const getIconWrapperClass = (navigation) => {
 }
 
 .logo-title {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 700;
   color: white;
   margin: 0;
@@ -367,7 +403,7 @@ const getIconWrapperClass = (navigation) => {
 }
 
 .logo-subtitle {
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   color: #94a3b8;
   margin: 0;
   font-weight: 500;
@@ -379,7 +415,9 @@ const getIconWrapperClass = (navigation) => {
 .nav-menu {
   flex: 1;
   overflow-y: auto;
-  padding: 0.75rem 0.5rem;
+  overflow-x: hidden;
+  padding: 0.5rem 0.5rem;
+  min-height: 0;
 }
 
 .nav-menu::-webkit-scrollbar {
@@ -392,7 +430,6 @@ const getIconWrapperClass = (navigation) => {
 
 .nav-menu::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.3);
-  border-radius: 3px;
 }
 
 .nav-menu::-webkit-scrollbar-thumb:hover {
@@ -405,7 +442,7 @@ const getIconWrapperClass = (navigation) => {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.125rem;
 }
 
 .nav-item {
@@ -419,17 +456,20 @@ const getIconWrapperClass = (navigation) => {
 .nav-separator {
   height: 1px;
   background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
-  margin: 0.75rem 0;
+  margin: 0.5rem 0;
 }
 
 /* Navigation Link */
 .nav-link {
   position: relative;
-  padding: 0.75rem 1rem;
+  padding: 0.625rem 0.875rem;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   overflow: hidden;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 .nav-link:hover .nav-link-overlay {
@@ -554,11 +594,11 @@ const getIconWrapperClass = (navigation) => {
 /* Child List */
 .child-list {
   list-style: none;
-  margin: 0.25rem 0 0 0;
+  margin: 0.125rem 0 0 0;
   padding: 0 0 0 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 0.0625rem;
   border-left: 2px solid rgba(255, 255, 255, 0.1);
   margin-left: 1rem;
 }
@@ -650,15 +690,16 @@ const getIconWrapperClass = (navigation) => {
 
 /* Footer */
 .sidebar-footer {
-  padding: 1rem;
+  padding: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
+  min-height: auto;
 }
 
 .footer-content {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 0.625rem;
 }
 
 .user-info {

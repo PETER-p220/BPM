@@ -481,7 +481,7 @@ input[readonly] {
 
 /* Button hover effects */
 button:not(:disabled):hover {
-  transform: translateY(-1px);
+  transform: translateY(-1px);                                
 }
 
 button:not(:disabled):active {

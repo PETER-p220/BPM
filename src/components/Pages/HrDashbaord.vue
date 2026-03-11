@@ -1,73 +1,104 @@
 <template>
-  <div class="min-h-screen bg-[#f5f6fa] dark:bg-[#0d0f14] px-4 py-8 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-6xl space-y-6">
-
-      <!-- Header -->
-      <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 class="text-xl font-bold text-gray-900 dark:text-white">HR Dashboard</h1>
-          <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">System-wide metrics and overview</p>
-        </div>
-        <div class="flex gap-3 mt-2 sm:mt-0">
-          <SummaryChip label="Total Items" :value="totalSystemItems" />
-          <SummaryChip label="Active" :value="totalActiveItems" />
-          <SummaryChip label="Completion" :value="systemCompletionRate + '%'" />
-        </div>
-      </div>
-
-      <!-- Stat Cards Grid -->
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-
-        <!-- Tenders -->
-        <StatCard title="Tenders" :total="totalTenders" label="Registered" icon="contract" color="indigo" @navigate="navigate('tenders')">
-          <MetricRow label="Assigned"    :value="totalAssignedTenders" />
-          <MetricRow label="Submitted"   :value="totalTenderSubmissions" color="teal" />
-          <MetricRow label="In Progress" :value="totalOnProgressTenders" color="amber" />
-          <MetricRow label="Due Soon"    :value="totalDeadlineReachedTenders" color="amber" />
-          <MetricRow label="Expired"     :value="totalExpiredTenders" color="red" />
-          <MetricRow label="Completion"  :value="tenderCompletionRate + '%'" color="indigo" />
-        </StatCard>
-
-        <!-- Requests -->
-        <StatCard title="Requests" :total="totalRequests" label="Total" icon="inbox" color="amber" @navigate="navigate('requests')">
-          <MetricRow label="Submitted"    :value="totalRequests" />
-          <MetricRow label="Approved"     :value="approvedRequests" color="teal" />
-          <MetricRow label="Rejected"     :value="rejectedRequests" color="red" />
-          <MetricRow label="Pending"      :value="pendingRequests" color="amber" />
-          <MetricRow label="Approval Rate" :value="requestApprovalRate + '%'" color="indigo" />
-        </StatCard>
-
-        <!-- Projects -->
-        <StatCard title="Projects" :total="totalProjects" label="Total" icon="projects" color="teal" @navigate="navigate('projects')">
-          <MetricRow label="Active"       :value="totalOnProgressProjects" color="amber" />
-          <MetricRow label="Completed"    :value="totalCompletedProjects" color="teal" />
-          <MetricRow label="Failed"       :value="totalFailedProjects" color="red" />
-          <MetricRow label="Success Rate" :value="projectSuccessRate + '%'" color="indigo" />
-        </StatCard>
-
-        <!-- Price Schedules -->
-        <StatCard title="Price Schedules" :total="totalSchedules" label="Total" icon="schedules" color="pink" @navigate="navigate('schedules')">
-          <MetricRow label="Submitted" :value="totalSchedules" />
-        </StatCard>
-
-        <!-- Analyses -->
-        <StatCard title="Analyses" :total="totalAnalyses" label="Total" icon="analyses" color="cyan" @navigate="navigate('analyses')">
-          <MetricRow label="Submitted" :value="totalAnalyses" />
-        </StatCard>
-
-      </div>
-
-      <!-- Chart -->
-      <div class="rounded-xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/50 dark:bg-gray-900 p-5">
-        <div class="flex items-center justify-between mb-5 border-b border-gray-100 dark:border-gray-800 pb-4">
-          <div>
-            <p class="text-sm font-bold text-gray-900 dark:text-white">System Overview</p>
-            <p class="text-xs text-gray-400 mt-0.5">Comprehensive statistics across all modules</p>
+  <div class="min-h-screen bg-[#f5f6fa] dark:bg-[#0d0f14]">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-gray-900 dark:text-white">HR Dashboard</h1>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Human Resources Management</p>
+            </div>
+          </div>
+          
+          <!-- Profile Dropdown -->
+          <div class="flex items-center gap-3">
+            <div class="text-right hidden sm:block">
+              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ user?.name || 'HR Manager' }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Human Resources</p>
+            </div>
+            <ProfileDropdown4 />
           </div>
         </div>
-        <apexchart type="bar" :options="chartOptions" :series="chartSeries" height="320" />
       </div>
+    </div>
 
+    <!-- Main Content -->
+    <div class="px-4 py-8 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-6xl space-y-6">
+
+        <!-- Summary Chips -->
+        <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">System Overview</h2>
+            <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">System-wide metrics and statistics</p>
+          </div>
+          <div class="flex gap-3 mt-2 sm:mt-0">
+            <SummaryChip label="Total Items" :value="totalSystemItems" />
+            <SummaryChip label="Active" :value="totalActiveItems" />
+            <SummaryChip label="Completion" :value="systemCompletionRate + '%'" />
+          </div>
+        </div>
+
+        <!-- Stat Cards Grid -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+
+          <!-- Tenders -->
+          <StatCard title="Tenders" :total="totalTenders" label="Registered" icon="contract" color="indigo" @navigate="navigate('tenders')">
+            <MetricRow label="Assigned"    :value="totalAssignedTenders" />
+            <MetricRow label="Submitted"   :value="totalTenderSubmissions" color="teal" />
+            <MetricRow label="In Progress" :value="totalOnProgressTenders" color="amber" />
+            <MetricRow label="Due Soon"    :value="totalDeadlineReachedTenders" color="amber" />
+            <MetricRow label="Expired"     :value="totalExpiredTenders" color="red" />
+            <MetricRow label="Completion"  :value="tenderCompletionRate + '%'" color="indigo" />
+          </StatCard>
+
+          <!-- Requests -->
+          <StatCard title="Requests" :total="totalRequests" label="Total" icon="inbox" color="amber" @navigate="navigate('requests')">
+            <MetricRow label="Submitted"    :value="totalRequests" />
+            <MetricRow label="Approved"     :value="approvedRequests" color="teal" />
+            <MetricRow label="Rejected"     :value="rejectedRequests" color="red" />
+            <MetricRow label="Pending"      :value="pendingRequests" color="amber" />
+            <MetricRow label="Approval Rate" :value="requestApprovalRate + '%'" color="indigo" />
+          </StatCard>
+
+          <!-- Projects -->
+          <StatCard title="Projects" :total="totalProjects" label="Total" icon="projects" color="teal" @navigate="navigate('projects')">
+            <MetricRow label="Active"       :value="totalOnProgressProjects" color="amber" />
+            <MetricRow label="Completed"    :value="totalCompletedProjects" color="teal" />
+            <MetricRow label="Failed"       :value="totalFailedProjects" color="red" />
+            <MetricRow label="Success Rate" :value="projectSuccessRate + '%'" color="indigo" />
+          </StatCard>
+
+          <!-- Price Schedules -->
+          <StatCard title="Price Schedules" :total="totalSchedules" label="Total" icon="schedules" color="pink" @navigate="navigate('schedules')">
+            <MetricRow label="Submitted" :value="totalSchedules" />
+          </StatCard>
+
+          <!-- Analyses -->
+          <StatCard title="Analyses" :total="totalAnalyses" label="Total" icon="analyses" color="cyan" @navigate="navigate('analyses')">
+            <MetricRow label="Submitted" :value="totalAnalyses" />
+          </StatCard>
+
+        </div>
+
+        <!-- Chart -->
+        <div class="rounded-xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/50 dark:bg-gray-900 p-5">
+          <div class="flex items-center justify-between mb-5 border-b border-gray-100 dark:border-gray-800 pb-4">
+            <div>
+              <p class="text-sm font-bold text-gray-900 dark:text-white">System Overview</p>
+              <p class="text-xs text-gray-400 mt-0.5">Comprehensive statistics across all modules</p>
+            </div>
+          </div>
+          <apexchart type="bar" :options="chartOptions" :series="chartSeries" height="320" />
+        </div>
+
+      </div>
     </div>
   </div>
 </template>
@@ -76,7 +107,9 @@
 import { ref, computed, onMounted } from 'vue'
 import axios from '@/axios'
 import VueApexCharts from 'vue3-apexcharts'
+import ProfileDropdown4 from '../../layouts/Partials/ProfileDropdown4.vue'
 
+const user = ref(null)
 const totalTenders = ref(0)
 const totalAssignedTenders = ref(0)
 const totalTenderSubmissions = ref(0)
@@ -159,15 +192,50 @@ const fetchers = [
   ['api/count/all/on-progress/projects',    r => totalOnProgressProjects.value   = r.data.total_on_progress_projects || 0],
   ['api/count/all/deadline-reached-tenders',r => totalDeadlineReachedTenders.value = r.data.expired_tenders || 0],
   ['api/count/all-expired/tenders',         r => totalExpiredTenders.value       = r.data.expired_tenders || 0],
-  ['api/count/all-analyses',                r => totalAnalyses.value             = r.data.total_count || 0],
-  ['api/count-all/schedule',                r => totalSchedules.value            = r.data.total_count || 0],
-  ['api/count-all/requests',                r => totalRequests.value             = r.data.totalRequests || 0],
-  ['api/count-approved/requests',           r => approvedRequests.value          = r.data.approvedRequests || 0],
-  ['api/count-rejected/requests',           r => rejectedRequests.value          = r.data.rejectedRequests || 0],
+  ['api/count/all-analyses/passed',                r => totalAnalyses.value             = r.data.total_count || 0],
+  ['api/user/price-schedules/count',        r => totalSchedules.value            = r.data.total_count || 0],
+  ['api/count/requests',                    r => totalRequests.value             = r.data.totalRequests || 0],
+  ['api/count/user/requests/approved',     r => approvedRequests.value          = r.data.approvedRequests || 0],
+  ['api/count/user/requests/rejected',     r => rejectedRequests.value          = r.data.rejectedRequests || 0],
 ]
 
 onMounted(() => {
-  Promise.all(fetchers.map(([url, setter]) => axios.get(url).then(setter).catch(() => {})))
+  // Fetch user data
+  axios.get('/api/user/profile')
+    .then(response => {
+      user.value = response.data
+    })
+    .catch(error => {
+      console.error('Failed to fetch user data:', error)
+    })
+  
+  // Fetch dashboard statistics with timeout and error handling
+  const fetchWithTimeout = (url, timeout = 10000) => {
+    return Promise.race([
+      axios.get(url),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), timeout)
+      )
+    ])
+  }
+
+  // Stagger the API calls to avoid overwhelming the server
+  const criticalFetchers = fetchers.slice(0, 5) // First 5 most important
+  const secondaryFetchers = fetchers.slice(5) // Remaining ones
+  
+  // Fetch critical data first
+  Promise.all(criticalFetchers.map(([url, setter]) => 
+    fetchWithTimeout(url)
+      .then(setter)
+      .catch(() => console.warn(`Failed to fetch ${url}`))
+  )).then(() => {
+    // Fetch secondary data after critical data loads
+    Promise.all(secondaryFetchers.map(([url, setter]) => 
+      fetchWithTimeout(url, 15000)
+        .then(setter)
+        .catch(() => console.warn(`Failed to fetch ${url}`))
+    ))
+  })
 })
 </script>
 
