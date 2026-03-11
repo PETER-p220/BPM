@@ -304,7 +304,7 @@ const navigations = ref([
         name: "HrManageAttendance",
         path: "HrManageAttendance",
         active: false
-      },
+    },
       {
         icon: "fas fa-plus",
         label: "Create Minutes",

@@ -43,7 +43,8 @@
 import { computed } from "vue";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import { useRouter } from "vue-router";
-import axios from "../../axios";
+import AuthService from "../../utils/authService";
+import { useToast } from 'vue-toastification';
 
 const router = useRouter();
 
@@ -53,7 +54,7 @@ const profileRoutes = {
   2: '/hod/profile',          // HOD
   3: '/userprofile',          // User
   4: '/tendersprofile',       // Tenders
-  5: '/accntant/profile',     // Accountant
+  5: '/accountant/profile',     // Accountant
   6: '/hr/profile',           // HR
   7: '/ceo/profile',          // CEO
 };
@@ -65,12 +66,16 @@ const profileRoute = computed(() => {
 
 const logout = async () => {
   try {
-    await axios.post('api/auth/logout', {});
-    localStorage.removeItem('token');
-    localStorage.removeItem('role_id');
+    await AuthService.logout();
+    // Handle redirect in component
     router.push('/');
   } catch (error) {
-    console.error("Logout failed:", error.response ? error.response.data : error.message);
+    console.error("Logout failed:", error.message);
+    // Still redirect even if API fails
+    router.push('/');
+    // Show user feedback even if API fails
+    const toast = useToast();
+    toast.error('Logout completed. Redirecting...');
   }
 };
 </script>

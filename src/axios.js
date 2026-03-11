@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios from 'axios'
+import AuthStorage from './utils/authStorage'
 
 const instance = axios.create({
   baseURL: 'http://localhost:8000/',
@@ -7,7 +8,7 @@ const instance = axios.create({
 
 // Add a request interceptor to include the token in headers
 instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token'); // Retrieve token from local storage
+  const token = AuthStorage.getItem('token'); // Use optimized storage
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`; // Attach token to headers
   }
@@ -22,10 +23,10 @@ instance.interceptors.response.use(response => {
 }, error => {
   if (error.response && error.response.status === 401) {
     console.error('Unauthorized, redirecting to login');
-    localStorage.removeItem('token'); // Clear token on unauthorized
+    AuthStorage.clearAuth(); // Use optimized storage
     window.location.href = '/'; // Redirect to login page
   }
-  return Promise.reject(error); // Handle any other errors
+  return Promise.reject(error); // Handle any other errorsyy
 });
 
 export default instance;

@@ -194,7 +194,7 @@ const navigations = ref([
         active: false
       },
       {
-        icon: "fas fa-file-plus",
+        icon: "fas fa-plus",
         label: "Create Minutes",
         name: "TenderUserCreateMinutes",
         path: "TenderUserCreateMinutes",

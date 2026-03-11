@@ -16,6 +16,7 @@ import Table from '@components/Pages/Table.vue';
 import Form from '@components/Pages/Form.vue';
 import Card from '@components/Pages/Card.vue';
 import Error404 from '@components/Pages/Error404.vue';
+import Welcome from '@components/Pages/Welcome.vue';
 import ResetPasswordRequest from '@layouts/ResetPasswordRequest.vue';
 import ResetPasswordPage from '@layouts/ResetPasswordPage.vue';
 import AllUsers from '@layouts/users/AllUsers.vue';
@@ -1201,14 +1202,14 @@ const routes = [
             {
                 path: '/tenderuser-view/minutes',
                 name: 'TenderUserViewMinutes',
-                component: TenderUserViewMinutes,
+                component: HrViewMinutes,
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [4] }
             },
             {
                 path: '/tenderuser-create/minutes',
                 name: 'TenderUserCreateMinutes',
-                component: TenderUserCreateMinutesVue,
+                component: HrCreateMinutes,
                 props: true,
                 meta: { requiresAuth: true, allowedRoles: [4] }
             },
@@ -1915,6 +1916,11 @@ const routes = [
         children: [
             {
                 path: '/',
+                name: 'Welcome',
+                component: Welcome,
+            },
+            {
+                path: 'login',
                 name: 'Login',
                 component: Login,
             },
@@ -1999,18 +2005,18 @@ router.beforeEach((to, from, next) => {
         allowedRoles: to.meta.allowedRoles,
     });
 
-    // No token → redirect to login
+    // No token → redirect to welcome page (which has login link)
     if (to.meta.requiresAuth && !token) {
-        console.log('No token, redirecting to login');
-        next({ path: '/' });
+        console.log('No token, redirecting to welcome page');
+        next({ name: 'Welcome' });
         return;
     }
 
     if (token && role_id) {
-        // Already authenticated → redirect away from login
-        if (to.path === '/' || to.name === 'Login') {
+        // Already authenticated → redirect away from login and welcome
+        if (to.path === '/' || to.name === 'Login' || to.name === 'Welcome') {
             const dashboardPath = roleDashboards[role_id];
-            console.log(`Authenticated user on login page, redirecting to: ${dashboardPath}`);
+            console.log(`Authenticated user on login/welcome page, redirecting to: ${dashboardPath}`);
             next({ path: dashboardPath });
             return;
         }
