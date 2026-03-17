@@ -74,7 +74,7 @@ class AuthStorage {
   setBatch(items) {
     const operations = [];
     
-    Object.entries(items).forEach(([key, value]) => {
+    items.forEach((value, key) => {
       this.cache.set(key, value);
       operations.push(() => localStorage.setItem(key, value));
     });

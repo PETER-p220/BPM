@@ -1065,14 +1065,14 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: [2] }
                 },
                 {
-                    path: '/hod/compliance-submission',
-                    name: 'HodComplianceSubmission',
-                    component: ComplianceSubmission,
+                    path: '/hod/ComplianceSubmission',
+                    name: 'hodComplianceSubmission',
+                    component:ComplianceSubmission,
                     meta: { requiresAuth: true, allowedRoles: [2] }
                 },
                 {
-                    path: '/user/compliance-submission',
-                    name: 'UserComplianceSubmission',
+                    path: '/user/ComplianceSubmission',
+                    name: 'userComplianceSubmission',
                     component: ComplianceSubmission,
                     meta: { requiresAuth: true, allowedRoles: [3] }
                 },
@@ -1354,8 +1354,8 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: [4] }
                 },
                 {
-                    path: '/tenderuser/compliance-submission',
-                    name: 'TenderUserComplianceSubmission',
+                    path: '/tender/ComplianceSubmission',
+                    name: 'tenderComplianceSubmission',
                     component: ComplianceSubmission,
                     meta: { requiresAuth: true, allowedRoles: [4] }
                 },
@@ -1642,8 +1642,8 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: [5] }
                 },
                 {
-                    path: '/accountant/compliance-submission',
-                    name: 'AccountantComplianceSubmission',
+                    path: '/accountant/ComplianceSubmission',
+                    name: 'accountantComplianceSubmission',
                     component: ComplianceSubmission,
                     meta: { requiresAuth: true, allowedRoles: [5] }
                 },
@@ -1789,16 +1789,22 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: [6] }
                 },
                 {
-                    path: '/hr/compliance-submission',
-                    name: 'HrComplianceSubmission',
+                    path: '/hr/employee-management',
+                    name: 'EmployeeManagement',
+                    component: () => import('@layouts/hr/EmployeeManagement.vue'),
+                    meta: { requiresAuth: true, allowedRoles: [6] }
+                },
+                {
+                    path: '/hr/ComplianceSubmission',
+                    name: 'hrComplianceSubmission',
                     component: ComplianceSubmission,
                     meta: { requiresAuth: true, allowedRoles: [6] }
                 },
                 {
-                    path: 'hr/manage-compliance',
-                    name: 'ComplianceManagement',
+                    path: '/hr/ComplianceManagement',
+                    name: 'hrComplianceManagement',
                     component: ComplianceManagement,
-                    meta: { requiresAuth: true, allowedRoles: [6]}
+                    meta: { requiresAuth: true, allowedRoles: [6] }
                 },
             ],
         },

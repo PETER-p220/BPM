@@ -889,8 +889,8 @@ async function exportToExcel() {
   white-space: nowrap;
 }
 .em-btn:disabled { opacity: .6; cursor: not-allowed; }
-.em-btn-primary { background: red; color: #fff; box-shadow: 0 3px 12px rgba(26,86,219,.35); }
-.em-btn-primary:hover:not(:disabled) { background: blue; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,.4); }
+.em-btn-primary { background: var(--blue); color: #fff; box-shadow: 0 3px 12px rgba(26,86,219,.35); }
+.em-btn-primary:hover:not(:disabled) { background: var(--blue-lt); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,.4); }
 .em-btn-green   { background: var(--green); color: #fff; box-shadow: 0 3px 12px rgba(5,150,105,.3); }
 .em-btn-green:hover:not(:disabled)   { filter: brightness(1.1); transform: translateY(-1px); }
 .em-btn-ghost   { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
