@@ -167,7 +167,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
-import axios from '@/axios'
+import authService from '@/utils/authService'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -199,16 +199,12 @@ const LoginMethod = async () => {
   loading.value = true
 
   try {
-    const response = await axios.post('/api/auth/login', {
+    const response = await authService.login({
       email: email.value.trim(),
       password: password.value
     })
 
-    const { token, user, role_id } = response.data
-
-    localStorage.setItem('token', token)
-    localStorage.setItem('user', JSON.stringify(user))
-    localStorage.setItem('role_id', String(role_id))
+    const { user, role_id } = response
 
     toast.success(`Welcome back, ${user.name}`)
 
@@ -230,7 +226,7 @@ const LoginMethod = async () => {
       await router.replace('/')
     }
   } catch (err) {
-    const msg = err.response?.data?.message || 'Login failed. Please check your credentials.'
+    const msg = err.message || 'Login failed. Please check your credentials.'
     toast.error(msg)
   } finally {
     loading.value = false

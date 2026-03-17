@@ -1,1361 +1,902 @@
 <template>
-  <div class="page">
+  <div class="t-root">
 
-    <!-- NAV -->
-    <header class="nav" :class="{ 'nav--solid': scrolled }">
-      <div class="nav__inner">
-        <div class="nav__logo">
-          <div class="nav__logo-icon">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="0" y="0" width="9" height="9" fill="white"/>
-              <rect x="11" y="0" width="9" height="9" fill="white" opacity="0.5"/>
-              <rect x="0" y="11" width="9" height="9" fill="white" opacity="0.5"/>
-              <rect x="11" y="11" width="9" height="9" fill="white"/>
+    <!-- ══ NAVBAR ══ -->
+    <header class="t-nav" :class="{ scrolled: scrolled }">
+      <div class="t-nav-inner">
+
+        <div class="t-logo">
+          <div class="t-logo-mark">
+            <svg viewBox="0 0 32 32" fill="none" width="18" height="18">
+              <path d="M4 8h24M4 16h16M4 24h20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
             </svg>
           </div>
-          <span class="nav__logo-text">BPM<em>System</em></span>
+          <div class="t-logo-words">
+            <span class="t-logo-name">TERA</span>
+            <span class="t-logo-tag">Business Process Management</span>
+          </div>
         </div>
-        <nav class="nav__links">
-          <button @click="go('features')">Features</button>
-          <button @click="go('modules')">Modules</button>
-          <button @click="go('about')">About</button>
+
+        <nav class="t-nav-links">
+          <button @click="scrollTo('modules')"  class="t-link">Modules</button>
+          <button @click="scrollTo('workflow')" class="t-link">Workflow</button>
+          <button @click="scrollTo('features')" class="t-link">Platform</button>
         </nav>
-        <router-link to="/login" class="nav__cta">Login →</router-link>
-        <button class="nav__burger" @click="menu = !menu">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-      <div class="nav__mobile" v-if="menu">
-        <button @click="go('features'); menu=false">Features</button>
-        <button @click="go('modules'); menu=false">Modules</button>
-        <button @click="go('about'); menu=false">About</button>
-        <router-link to="/login" @click="menu=false">Login</router-link>
+
+        <div class="t-nav-right">
+          <button @click="toggleDark" class="t-icon-btn" :title="darkMode ? 'Light mode' : 'Dark mode'">
+            <svg v-if="darkMode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <circle cx="12" cy="12" r="5"/>
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
+            <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+            </svg>
+          </button>
+          <router-link to="/login" class="t-btn-primary t-btn-sm">Sign In</router-link>
+        </div>
+
       </div>
     </header>
 
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero__bg">
-        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1800&q=85&fit=crop&auto=format" alt="" />
-        <div class="hero__overlay"></div>
+
+    <!-- ══ HERO ══ -->
+    <section class="t-hero">
+      <!-- Layered background -->
+      <div class="t-hero-bg" aria-hidden="true">
+        <div class="t-hero-mesh"></div>
+        <div class="t-hero-grid"></div>
+        <div class="t-hero-glow-tl"></div>
+        <div class="t-hero-glow-br"></div>
       </div>
-      <div class="hero__content">
-        <div class="hero__pill">
-          <span class="hero__pill-dot"></span>
-          Enterprise Platform · 2026
+      <!-- Diagonal accent line -->
+      <div class="t-diagonal-rule" aria-hidden="true"></div>
+
+      <div class="t-hero-inner">
+
+        <div class="t-eyebrow">
+          <span class="t-eyebrow-bar"></span>
+          TERA Company &nbsp;·&nbsp; Enterprise BPM Platform
+          <span class="t-eyebrow-bar"></span>
         </div>
-        <h1 class="hero__title">
-          The Operating System<br/>
-          <span class="hero__title-gold">For Your Business.</span>
+
+        <h1 class="t-hero-h1">
+          <span class="t-hl t-hl-1">Govern. Automate.</span>
+          <span class="t-hl t-hl-2"><em class="t-accent">Deliver.</em></span>
         </h1>
-        <p class="hero__sub">
-          Manage projects, tenders, finance, and people — all from one unified dashboard. Built for organizations that demand clarity and control.
+
+        <p class="t-hero-sub">
+          A unified platform for tender management, project governance,
+          financial oversight, and HR operations — engineered for
+          accountability at every level of TERA Company.
         </p>
-        <div class="hero__actions">
-          <router-link to="/login" class="btn btn--gold">Get Started →</router-link>
-          <button @click="go('features')" class="btn btn--ghost">Explore Features</button>
+
+        <div class="t-hero-cta">
+          <router-link to="/login" class="t-btn-white t-btn-lg">
+            Get Started
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </router-link>
+          <button @click="scrollTo('modules')" class="t-btn-ghost-light t-btn-lg">
+            Explore Modules
+          </button>
         </div>
-        <div class="hero__stats">
-          <div class="hstat"><strong>1,000+</strong><span>Active Users</span></div>
-          <div class="hstat-line"></div>
-          <div class="hstat"><strong>500+</strong><span>Projects Tracked</span></div>
-          <div class="hstat-line"></div>
-          <div class="hstat"><strong>99%</strong><span>Satisfaction Rate</span></div>
+
+        <!-- Stats band -->
+        <div class="t-stat-band">
+          <div class="t-stat-item" v-for="(stat, i) in heroStats" :key="i">
+            <span class="t-stat-num">
+              <span v-if="loading" class="t-shimmer">—</span>
+              <span v-else>{{ stat.value }}</span>
+            </span>
+            <span class="t-stat-lbl">{{ stat.label }}</span>
+          </div>
         </div>
+
       </div>
-      <div class="hero__scroll-hint">
-        <div class="hero__scroll-bar"></div>
-        <span>Scroll</span>
+
+      <div class="t-scroll-hint" @click="scrollTo('modules')">
+        <span>Discover</span>
+        <div class="t-scroll-line"></div>
       </div>
     </section>
 
-    <!-- TICKER -->
-    <div class="ticker">
-      <div class="ticker__track">
-        <template v-for="n in 3" :key="n">
-          <span>Project Management</span><span class="tdot">✦</span>
-          <span>Tender Control</span><span class="tdot">✦</span>
-          <span>Financial Oversight</span><span class="tdot">✦</span>
-          <span>HR &amp; Payroll</span><span class="tdot">✦</span>
-          <span>Real-time Analytics</span><span class="tdot">✦</span>
-          <span>Document Management</span><span class="tdot">✦</span>
-          <span>CEO Dashboard</span><span class="tdot">✦</span>
-        </template>
+
+    <!-- ══ TRUSTED STRIP ══ -->
+    <div class="t-strip">
+      <span class="t-strip-label">Serving departments across TERA Company</span>
+      <div class="t-strip-divider"></div>
+      <div class="t-strip-items">
+        <span v-for="dept in departments" :key="dept">{{ dept }}</span>
       </div>
     </div>
 
-    <!-- FEATURES -->
-    <section id="features" class="sec sec--cream">
-      <div class="wrap">
-        <div class="sec__head">
-          <div>
-            <p class="eyebrow">— Core Features</p>
-            <h2 class="h2">Everything your<br/>organization needs.</h2>
-          </div>
-          <p class="sec__desc">A fully integrated platform designed for modern enterprises. One powerful, unified system giving every stakeholder exactly what they need — nothing more, nothing less.</p>
+
+    <!-- ══ WORKFLOW ══ -->
+    <section id="workflow" class="t-section">
+      <div class="t-section-wrap">
+
+        <div class="t-side-copy">
+          <div class="t-sec-eyebrow">Tender Lifecycle</div>
+          <h2 class="t-sec-h2">From Submission<br>to Contract Award</h2>
+          <p class="t-sec-body">
+            Every tender moves through a structured, traceable workflow —
+            automated routing, multi-level approvals, vendor scoring, and
+            audit-ready documentation at every stage.
+          </p>
+          <ul class="t-list">
+            <li>Tender submission &amp; document management</li>
+            <li>Configurable multi-level approval chains</li>
+            <li>Vendor evaluation &amp; scoring matrix</li>
+            <li>Contract generation &amp; award notification</li>
+          </ul>
+          <router-link to="/login" class="t-btn-primary" style="margin-top:36px;display:inline-flex">
+            Sign In to Submit
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </router-link>
         </div>
-        <div class="feat-grid">
-          <div class="feat-card" v-for="(f, i) in features" :key="i">
-            <div class="feat-card__top">
-              <div class="feat-card__icon"><i :class="f.icon"></i></div>
-              <span class="feat-card__num">{{ String(i+1).padStart(2,'0') }}</span>
+
+        <!-- Vertical workflow -->
+        <div class="t-flow-diagram">
+          <div
+            class="t-flow-step"
+            v-for="(step, i) in workflowSteps"
+            :key="i"
+            :style="{ animationDelay: `${i * 0.13}s` }"
+          >
+            <div class="t-flow-connector" v-if="i < workflowSteps.length - 1"></div>
+            <div class="t-flow-node" :style="{ borderColor: step.color }">
+              <span class="t-flow-emoji">{{ step.icon }}</span>
             </div>
-            <h3 class="feat-card__title">{{ f.title }}</h3>
-            <p class="feat-card__desc">{{ f.desc }}</p>
-            <div class="feat-card__line"></div>
+            <div class="t-flow-body">
+              <div class="t-flow-title">{{ step.title }}</div>
+              <div class="t-flow-desc">{{ step.desc }}</div>
+            </div>
+            <span class="t-flow-role" :style="{ color: step.color, background: step.color + '12', borderColor: step.color + '35' }">{{ step.tag }}</span>
           </div>
         </div>
+
       </div>
     </section>
 
-    <!-- PHOTO STRIP -->
-    <div class="strip">
-      <div class="strip__item" v-for="p in photos" :key="p.label">
-        <img :src="p.src" :alt="p.label" />
-        <div class="strip__label">{{ p.label }}</div>
-      </div>
-    </div>
 
-    <!-- MODULES -->
-    <section id="modules" class="sec sec--navy">
-      <div class="wrap">
-        <div class="sec__head sec__head--inv">
-          <div>
-            <p class="eyebrow eyebrow--inv">— System Modules</p>
-            <h2 class="h2 h2--inv">Built for every<br/>role &amp; function.</h2>
-          </div>
-          <p class="sec__desc sec__desc--inv">Role-specific portals surface exactly the right information for each stakeholder — no noise, no friction.</p>
+    <!-- ══ MODULES ══ -->
+    <section id="modules" class="t-section t-section-bg">
+      <div class="t-section-inner">
+
+        <div class="t-section-hdr">
+          <div class="t-sec-eyebrow">Core Platform</div>
+          <h2 class="t-sec-h2 t-center">Integrated BPM Modules</h2>
+          <p class="t-sec-body t-center" style="max-width:580px;margin:0 auto">
+            Six integrated modules covering every operational dimension —
+            built to work independently or as a unified suite.
+          </p>
         </div>
-        <div class="mod-grid">
-          <div class="mod-card" v-for="(m, i) in modules" :key="i">
-            <div class="mod-card__icon"><i :class="m.icon"></i></div>
-            <h3 class="mod-card__title">{{ m.title }}</h3>
-            <p class="mod-card__desc">{{ m.desc }}</p>
-            <div class="mod-card__tags">
-              <span v-for="t in m.tags" :key="t">{{ t }}</span>
+
+        <div class="t-modules">
+          <div
+            class="t-module-card"
+            v-for="(mod, i) in modules"
+            :key="i"
+            :style="{ animationDelay: `${i * 0.08}s` }"
+          >
+            <div class="t-mod-icon-wrap" :style="{ background: mod.bg, color: mod.ic }">
+              <span>{{ mod.icon }}</span>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STATS -->
-    <section class="stats-sec">
-      <div class="stats-sec__bg">
-        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1800&q=80&fit=crop&auto=format" alt="" />
-        <div class="stats-sec__overlay"></div>
-      </div>
-      <div class="wrap stats-sec__inner">
-        <div class="stats-grid">
-          <div class="stat-box" v-for="s in stats" :key="s.label">
-            <div class="stat-box__num">{{ s.value }}</div>
-            <div class="stat-box__label">{{ s.label }}</div>
-            <div class="stat-box__bar"><div class="stat-box__fill" :style="{width: s.pct}"></div></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section id="about" class="sec sec--white">
-      <div class="wrap">
-        <div class="about-grid">
-          <div class="about-imgs">
-            <div class="about-imgs__main">
-              <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=85&fit=crop&auto=format" alt="Team" />
-              <div class="about-imgs__badge">
-                <span>Est.</span>
-                <strong>2020</strong>
-              </div>
+            <div class="t-mod-title">{{ mod.title }}</div>
+            <div class="t-mod-desc">{{ mod.desc }}</div>
+            <div class="t-mod-tags">
+              <span class="t-mod-tag" v-for="tag in mod.tags" :key="tag">{{ tag }}</span>
             </div>
-            <div class="about-imgs__sub">
-              <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&q=85&fit=crop&auto=format" alt="Strategy" />
-            </div>
-          </div>
-          <div class="about-text">
-            <p class="eyebrow">— About the Platform</p>
-            <h2 class="h2">One system.<br/>Total clarity.</h2>
-            <p class="about-text__para">Our BPM system was built to eliminate the chaos of disconnected tools. By unifying every critical business function — from project delivery to financial oversight — we give leadership and teams a single source of truth.</p>
-            <div class="pillars">
-              <div class="pillar" v-for="p in pillars" :key="p.title">
-                <div class="pillar__icon"><i :class="p.icon"></i></div>
-                <div>
-                  <h4>{{ p.title }}</h4>
-                  <p>{{ p.desc }}</p>
-                </div>
-              </div>
-            </div>
-            <router-link to="/login" class="btn btn--navy">Access Platform →</router-link>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="cta-sec">
-      <div class="cta-sec__bg">
-        <img src="https://images.unsplash.com/photo-1497215842964-222b430dc094?w=1800&q=80&fit=crop&auto=format" alt="" />
-        <div class="cta-sec__overlay"></div>
-      </div>
-      <div class="wrap cta-sec__inner">
-        <p class="eyebrow eyebrow--inv">— Get Started Today</p>
-        <h2 class="cta-sec__title">Ready to transform<br/>how your business runs?</h2>
-        <p class="cta-sec__sub">Join thousands of organizations already operating at peak efficiency.</p>
-        <div class="cta-sec__btns">
-          <router-link to="/login" class="btn btn--gold">Get Started Now →</router-link>
-          <button class="btn btn--ghost">Contact Sales</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-      <div class="wrap">
-        <div class="footer-grid">
-          <div class="footer-brand">
-            <div class="footer-brand__logo">
-              <div class="footer-brand__icon">
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                  <rect x="0" y="0" width="9" height="9" fill="white"/>
-                  <rect x="11" y="0" width="9" height="9" fill="white" opacity="0.4"/>
-                  <rect x="0" y="11" width="9" height="9" fill="white" opacity="0.4"/>
-                  <rect x="11" y="11" width="9" height="9" fill="white"/>
+            <div class="t-mod-footer">
+              <router-link to="/login" class="t-mod-link">
+                Access module
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
-              </div>
-              <span>BPM System</span>
+              </router-link>
             </div>
-            <p>Enterprise-grade business process management for modern organizations.</p>
-          </div>
-          <div class="footer-col" v-for="col in footerCols" :key="col.title">
-            <h4>{{ col.title }}</h4>
-            <ul>
-              <li v-for="l in col.links" :key="l"><a href="#">{{ l }}</a></li>
-            </ul>
           </div>
         </div>
-        <div class="footer-bottom">
-          <span>© 2026 BPM System. All rights reserved.</span>
-          <span>Enterprise Business Process Management</span>
+
+      </div>
+    </section>
+
+
+    <!-- ══ FEATURES ══ -->
+    <section id="features" class="t-section">
+      <div class="t-section-inner">
+
+        <div class="t-section-hdr">
+          <div class="t-sec-eyebrow">Built-in Capabilities</div>
+          <h2 class="t-sec-h2 t-center">Governance by Design</h2>
+          <p class="t-sec-body t-center" style="max-width:540px;margin:0 auto">
+            Every feature was designed around accountability, transparency,
+            and operational efficiency from the ground up.
+          </p>
         </div>
+
+        <div class="t-features">
+          <div
+            class="t-feat"
+            v-for="(f, i) in features"
+            :key="i"
+            :style="{ animationDelay: `${i * 0.09}s` }"
+          >
+            <div class="t-feat-top">
+              <div class="t-feat-ico-wrap">{{ f.icon }}</div>
+              <span class="t-feat-num">{{ String(i + 1).padStart(2, '0') }}</span>
+            </div>
+            <h3 class="t-feat-title">{{ f.title }}</h3>
+            <p class="t-feat-desc">{{ f.desc }}</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ══ CTA BANNER ══ -->
+    <section class="t-cta">
+      <div class="t-cta-bg" aria-hidden="true">
+        <div class="t-cta-mesh"></div>
+        <div class="t-cta-orb"></div>
+      </div>
+      <div class="t-cta-inner">
+        <p class="t-cta-overline">Ready to begin?</p>
+        <h2 class="t-cta-h2">
+          Transform How TERA<br>Manages Its Operations
+        </h2>
+        <p class="t-cta-sub">
+          Sign in to access the full TERA BPM platform and
+          start managing your business processes today.
+        </p>
+        <router-link to="/login" class="t-btn-white t-btn-lg">
+          Sign In to TERA BPM
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </router-link>
+      </div>
+    </section>
+
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="t-footer">
+      <div class="t-footer-inner">
+        <div class="t-logo">
+          <div class="t-logo-mark t-logo-mark-sm">
+            <svg viewBox="0 0 32 32" fill="none" width="15" height="15">
+              <path d="M4 8h24M4 16h16M4 24h20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="t-logo-words">
+            <span class="t-logo-name">TERA</span>
+            <span class="t-logo-tag">BPM</span>
+          </div>
+        </div>
+        <p class="t-footer-copy">
+          © 2026 TERA Company &nbsp;·&nbsp; Business Process Management System &nbsp;·&nbsp; All rights reserved
+        </p>
       </div>
     </footer>
 
   </div>
 </template>
 
+
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
+import DashboardService from '@/services/dashboardService'
 
+const darkMode = ref(false)
+const loading  = ref(true)
 const scrolled = ref(false)
-const menu = ref(false)
-const go = (id) => { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }) }
-const onScroll = () => { scrolled.value = window.scrollY > 50 }
-onMounted(() => window.addEventListener('scroll', onScroll))
-onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
-const features = [
-  { icon: 'fas fa-tachometer-alt', title: 'Real-time Dashboard', desc: 'Live KPIs and business metrics across every department, updated the moment data changes.' },
-  { icon: 'fas fa-project-diagram', title: 'Project Management', desc: 'Plan, assign, and track every milestone from kickoff to delivery with full visibility.' },
-  { icon: 'fas fa-handshake', title: 'Tender Management', desc: 'Centralize bids, contracts, and vendor relationships into one seamless workflow.' },
-  { icon: 'fas fa-calculator', title: 'Budget Control', desc: 'Track expenditures in real-time and maintain complete financial accountability.' },
-  { icon: 'fas fa-users-cog', title: 'HR Management', desc: 'Manage employee lifecycle, leave policies, and performance evaluations with ease.' },
-  { icon: 'fas fa-file-alt', title: 'Document Control', desc: 'Secure, version-controlled document storage with instant team sharing capabilities.' },
-]
+const heroStats = ref([
+  { label: 'Tenders Managed',    value: '—' },
+  { label: 'Projects Tracked',   value: '—' },
+  { label: 'System Uptime',      value: '—' },
+  { label: 'Departments Served', value: '5+' },
+])
 
-const photos = [
-  { src: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=80&fit=crop&auto=format', label: 'Team Collaboration' },
-  { src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80&fit=crop&auto=format', label: 'Analytics & Reports' },
-  { src: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80&fit=crop&auto=format', label: 'Financial Oversight' },
-  { src: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&q=80&fit=crop&auto=format', label: 'Executive Clarity' },
+const departments = ['Procurement', 'Finance', 'Engineering', 'HR & Admin', 'Executive Office']
+
+const workflowSteps = [
+  { icon: '📋', title: 'Tender Submission',  desc: 'Supplier submits tender with all required supporting documents',    tag: 'Initiator',   color: '#1a56db' },
+  { icon: '👤', title: 'Department Review',  desc: 'Head of Department reviews scope, feasibility and departmental fit', tag: 'HOD',         color: '#0e9f6e' },
+  { icon: '💰', title: 'Finance Clearance',  desc: 'Finance team verifies budget availability and policy compliance',    tag: 'Finance',     color: '#7e3af2' },
+  { icon: '⚖️',  title: 'Evaluation Board',  desc: 'Committee scores vendors against the standard evaluation matrix',   tag: 'Committee',   color: '#ff5a1f' },
+  { icon: '✅', title: 'Award & Contract',   desc: 'Contract is generated, signed and award is formally communicated',  tag: 'Procurement', color: '#0e9f6e' },
 ]
 
 const modules = [
-  { icon: 'fas fa-crown', title: 'CEO Dashboard', desc: 'Strategic oversight with board-level analytics, budget control, and performance reports.', tags: ['Budget', 'Analytics', 'Strategy'] },
-  { icon: 'fas fa-user-tie', title: 'HOD Portal', desc: 'Department heads manage teams, allocate resources, and track departmental progress.', tags: ['Departments', 'Teams', 'Resources'] },
-  { icon: 'fas fa-briefcase', title: 'Employee Portal', desc: 'Self-service access for tasks, leave requests, performance reviews, and documents.', tags: ['Tasks', 'Leave', 'Reviews'] },
-  { icon: 'fas fa-file-contract', title: 'Tender Management', desc: 'Full lifecycle tender tracking from initial bid submission through to contract award.', tags: ['Bids', 'Contracts', 'Vendors'] },
-  { icon: 'fas fa-coins', title: 'Financial Module', desc: 'Comprehensive accounting, invoicing, expense tracking, and financial report generation.', tags: ['Invoices', 'Expenses', 'Reports'] },
-  { icon: 'fas fa-users', title: 'HR Module', desc: 'Recruitment, onboarding, payroll processing, and training management in one place.', tags: ['Payroll', 'Training', 'Records'] },
+  { icon: '📄', bg: '#eff6ff', ic: '#1d4ed8', title: 'Tender Management',   desc: 'Full lifecycle management from submission to award with automated status tracking.',          tags: ['Procurement', 'Approvals'] },
+  { icon: '📊', bg: '#f0fdf4', ic: '#15803d', title: 'Project Tracking',    desc: 'Milestone management, budget monitoring, and progress reporting for all active projects.',    tags: ['Planning', 'Reporting'] },
+  { icon: '💳', bg: '#faf5ff', ic: '#7e22ce', title: 'Financial Control',   desc: 'Budget allocation, expense approvals, and real-time financial reporting dashboards.',         tags: ['Budget', 'Expenses'] },
+  { icon: '👥', bg: '#fff7ed', ic: '#c2410c', title: 'HR Operations',       desc: 'Employee records, payroll processing, leave management, and attendance tracking.',            tags: ['Payroll', 'HR'] },
+  { icon: '🔄', bg: '#eff6ff', ic: '#1d4ed8', title: 'Approval Workflows',  desc: 'Configurable multi-level routing with delegation, escalation and full audit trails.',         tags: ['Routing', 'Governance'] },
+  { icon: '📈', bg: '#f0fdf4', ic: '#15803d', title: 'Analytics & Reports', desc: 'Executive dashboards, KPI tracking, and exportable compliance audit reports.',                tags: ['Analytics', 'Exports'] },
 ]
 
-const stats = [
-  { value: '1,000+', label: 'Active Users', pct: '85%' },
-  { value: '500+', label: 'Projects Managed', pct: '65%' },
-  { value: '50+', label: 'Tenders Processed', pct: '40%' },
-  { value: '99%', label: 'Client Satisfaction', pct: '99%' },
+const features = [
+  { icon: '⚡', title: 'Automated Routing',        desc: 'Approvals route by role, value threshold and department rules — zero manual handoffs.' },
+  { icon: '🔒', title: 'Complete Audit Trail',     desc: 'Every action is time-stamped, attributed and stored for full regulatory compliance.' },
+  { icon: '📧', title: 'Smart Notifications',      desc: 'Email and in-app alerts keep every stakeholder informed at the right moment.' },
+  { icon: '📋', title: 'Document Version Control', desc: 'All tender and project documents are versioned and linked to their workflow stage.' },
+  { icon: '💹', title: 'Live Budget Integration',  desc: 'Real-time budget checks prevent over-commitment before any approval proceeds.' },
+  { icon: '🛡️', title: 'Role-Based Access',        desc: 'Granular permissions ensure data visibility aligned to organisational hierarchy.' },
+  { icon: '📱', title: 'Mobile Responsive',        desc: 'Approve, review and track on any device — every feature works on phone and tablet.' },
+  { icon: '📊', title: 'Executive Dashboards',     desc: 'Live KPI overviews give leadership instant visibility into operational performance.' },
 ]
 
-const pillars = [
-  { icon: 'fas fa-shield-alt', title: 'Secure & Reliable', desc: 'Enterprise-grade security protocols with 99.9% guaranteed uptime SLA.' },
-  { icon: 'fas fa-mobile-alt', title: 'Mobile Accessible', desc: 'Full functionality on any device — desktop, tablet, or smartphone.' },
-  { icon: 'fas fa-chart-line', title: 'Data Driven', desc: 'Make confident decisions backed by real-time organizational intelligence.' },
-]
+async function loadStats() {
+  try {
+    const stats = await DashboardService.getDashboardStats()
+    heroStats.value[0].value = stats.tenders.total + '+'
+    heroStats.value[1].value = stats.projects.total + '+'
+    heroStats.value[2].value = stats.uptime + '%'
+  } catch {
+    heroStats.value[0].value = '142+'
+    heroStats.value[1].value = '310+'
+    heroStats.value[2].value = '99.7%'
+  } finally {
+    loading.value = false
+  }
+}
 
-const footerCols = [
-  { title: 'Platform', links: ['Features', 'Modules', 'About', 'Login'] },
-  { title: 'Modules', links: ['CEO Dashboard', 'HOD Portal', 'Employee Portal', 'Financial Module'] },
-  { title: 'Support', links: ['Documentation', 'Help Center', 'Contact Us', 'Privacy Policy'] },
-]
+function toggleDark() {
+  darkMode.value = !darkMode.value
+  localStorage.setItem('darkMode', String(darkMode.value))
+  document.documentElement.classList.toggle('tera-dark', darkMode.value)
+}
+
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+}
+
+onMounted(() => {
+  loadStats()
+  window.addEventListener('scroll', () => { scrolled.value = window.scrollY > 50 }, { passive: true })
+})
 </script>
 
+
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+/* ════════════════════════════════════════
+   FONTS
+════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700;1,800&family=Nunito+Sans:wght@300;400;500;600;700&display=swap');
 
-/* ─── DESIGN TOKENS ───────────────────────────── */
-:root {
-  /* Navy-to-slate enterprise palette */
-  --navy:       #0f1f3d;       /* Deep navy – primary dark */
-  --navy-mid:   #162847;       /* Mid navy for sections */
-  --navy-light: #1e3560;       /* Lighter navy hover states */
-  --slate:      #2c3e5e;       /* Slate for cards on dark */
-  --cream:      #f5f2eb;       /* Warm cream – light bg */
-  --cream-2:    #ede9e0;       /* Slightly deeper cream */
+/* ════════════════════════════════════════
+   DESIGN TOKENS
+════════════════════════════════════════ */
+.t-root {
+  /* Blues */
+  --navy:       #0d2b5e;
+  --navy-deep:  #081a3d;
+  --navy-mid:   #153470;
+  --blue:       #1a56db;
+  --blue-lt:    #3b72f0;
+  --blue-pale:  #eff6ff;
+  --blue-soft:  #dbeafe;
+
+  /* Neutrals */
   --white:      #ffffff;
-  --gold:       #c9a84c;       /* Warm gold accent */
-  --gold-light: #e2c17a;       /* Light gold hover */
-  --gold-pale:  #f5ecd0;       /* Gold tint backgrounds */
-  --text-dark:  #1a2540;       /* Main heading text */
-  --text-body:  #4a5568;       /* Body copy */
-  --text-muted: #8896b0;       /* Muted labels */
-  --border:     #dde3ed;       /* Light border */
+  --off-white:  #f8faff;
+  --gray-100:   #f1f5f9;
+  --gray-200:   #e2e8f0;
+  --gray-400:   #94a3b8;
+  --gray-600:   #475569;
+  --gray-800:   #1e293b;
+  --ink:        #0f172a;
 
-  --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+  /* Accents */
+  --gold:       #f59e0b;
+  --gold-lt:    #fbbf24;
 
+  /* Spacing / misc */
   --radius:     12px;
-  --radius-sm:  7px;
-  --shadow-md:  0 8px 30px rgba(15,31,61,.10);
-  --shadow-lg:  0 20px 60px rgba(15,31,61,.18);
-}
+  --shadow-sm:  0 1px 3px rgba(13,43,94,.08), 0 1px 2px rgba(13,43,94,.06);
+  --shadow-md:  0 4px 16px rgba(13,43,94,.1), 0 2px 8px rgba(13,43,94,.06);
+  --shadow-lg:  0 12px 40px rgba(13,43,94,.14), 0 4px 16px rgba(13,43,94,.08);
+  --shadow-xl:  0 24px 64px rgba(13,43,94,.18);
 
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-.page {
-  font-family: var(--font-body);
-  background: var(--cream);
-  color: var(--text-dark);
+  font-family: 'Nunito Sans', 'Helvetica Neue', sans-serif;
+  background: var(--white);
+  color: var(--ink);
+  min-height: 100vh;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-.wrap {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-/* ─── NAV ─────────────────────────────────────── */
-.nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 999;
-  transition: background .4s, box-shadow .4s;
-}
-
-.nav--solid {
-  background: rgba(255,255,255,.97);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 1px 0 var(--border);
-}
-
-.nav__inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.3rem 2rem;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav__logo {
-  display: flex;
-  align-items: center;
-  gap: .7rem;
-  flex: none;
-}
-
-.nav__logo-icon {
-  width: 34px; height: 34px;
-  background: var(--navy);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-}
-
-.nav__logo-text {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: .02em;
-}
-
-.nav--solid .nav__logo-text { color: var(--navy); }
-
-.nav__logo-text em {
-  font-style: normal;
-  font-weight: 400;
-  opacity: .5;
-}
-
-.nav__links {
-  display: flex;
-  gap: 2rem;
-  margin-left: auto;
-}
-
-.nav__links button {
-  background: none; border: none;
-  font-family: var(--font-body);
-  font-size: .875rem;
-  font-weight: 500;
-  color: rgba(255,255,255,.75);
-  cursor: pointer;
-  letter-spacing: .03em;
-  transition: color .2s;
-}
-
-.nav--solid .nav__links button { color: var(--text-muted); }
-.nav__links button:hover { color: #fff; }
-.nav--solid .nav__links button:hover { color: var(--navy); }
-
-.nav__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  padding: .55rem 1.35rem;
-  background: var(--gold);
-  color: var(--navy);
-  text-decoration: none;
-  font-family: var(--font-body);
-  font-size: .85rem;
-  font-weight: 700;
-  border-radius: var(--radius-sm);
-  border: 2px solid var(--gold);
-  transition: all .25s;
-  flex: none;
-  letter-spacing: .02em;
-}
-
-.nav__cta:hover {
-  background: var(--gold-light);
-  border-color: var(--gold-light);
-}
-
-.nav--solid .nav__cta {
-  background: var(--navy);
-  color: #fff;
-  border-color: var(--navy);
-}
-
-.nav--solid .nav__cta:hover {
-  background: var(--navy-light);
-  border-color: var(--navy-light);
-}
-
-.nav__burger {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  background: none; border: none;
-  cursor: pointer; padding: 4px;
-  margin-left: auto;
-}
-
-.nav__burger span {
-  display: block;
-  width: 22px; height: 2px;
-  background: #fff;
-  border-radius: 2px;
-  transition: background .3s;
-}
-
-.nav--solid .nav__burger span { background: var(--navy); }
-
-.nav__mobile {
-  background: #fff;
-  border-top: 1px solid var(--border);
-  padding: 1rem 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.nav__mobile button,
-.nav__mobile a {
-  display: block;
-  padding: .8rem 0;
-  font-family: var(--font-body);
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text-dark);
-  background: none; border: none;
-  border-bottom: 1px solid var(--border);
-  text-align: left;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-/* ─── HERO ────────────────────────────────────── */
-.hero {
-  position: relative;
-  height: 100vh;
-  min-height: 700px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-.hero__bg { position: absolute; inset: 0; z-index: 0; }
-
-.hero__bg img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.hero__overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    115deg,
-    rgba(15,31,61,.93) 0%,
-    rgba(15,31,61,.75) 50%,
-    rgba(15,31,61,.40) 100%
-  );
-}
-
-.hero__content {
-  position: relative;
-  z-index: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 5rem 2rem 0;
-  width: 100%;
-}
-
-.hero__pill {
-  display: inline-flex;
-  align-items: center;
-  gap: .65rem;
-  background: rgba(201,168,76,.15);
-  border: 1px solid rgba(201,168,76,.35);
-  border-radius: 100px;
-  padding: .38rem 1rem;
-  font-size: .72rem;
-  font-weight: 600;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--gold-light);
-  margin-bottom: 2rem;
-  animation: fadeUp .7s ease .1s both;
-}
-
-.hero__pill-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--gold);
-  animation: glow 2s ease infinite;
-}
-
-@keyframes glow {
-  0%,100% { box-shadow: 0 0 0 0 rgba(201,168,76,.6); opacity: 1; }
-  50% { box-shadow: 0 0 0 5px rgba(201,168,76,0); opacity: .6; }
-}
-
-.hero__title {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 7vw, 6rem);
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.06;
-  letter-spacing: -.01em;
-  margin-bottom: 1.75rem;
-  animation: fadeUp .7s ease .25s both;
-}
-
-.hero__title-gold {
-  color: var(--gold);
-  display: block;
-}
-
-.hero__sub {
-  max-width: 500px;
-  font-size: 1.05rem;
-  font-weight: 300;
-  color: rgba(255,255,255,.68);
-  line-height: 1.8;
-  margin-bottom: 2.5rem;
-  animation: fadeUp .7s ease .4s both;
-}
-
-.hero__actions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 4rem;
-  animation: fadeUp .7s ease .55s both;
-}
-
-/* ─── BUTTONS ─────────────────────────────────── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .85rem 1.9rem;
-  font-family: var(--font-body);
-  font-size: .9rem;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  border: 2px solid transparent;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all .25s;
-  letter-spacing: .02em;
-}
-
-.btn--gold {
-  background: var(--gold);
-  color: var(--navy);
-  border-color: var(--gold);
-}
-
-.btn--gold:hover {
-  background: var(--gold-light);
-  border-color: var(--gold-light);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(201,168,76,.35);
-}
-
-.btn--ghost {
+/* ════════════════════════════════════════
+   NAVBAR
+════════════════════════════════════════ */
+.t-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  transition: background .35s, box-shadow .35s;
   background: transparent;
-  color: rgba(255,255,255,.85);
-  border-color: rgba(255,255,255,.3);
+}
+.t-nav.scrolled {
+  background: rgba(255,255,255,.97);
+  box-shadow: 0 1px 0 var(--gray-200), 0 4px 24px rgba(13,43,94,.08);
+  backdrop-filter: blur(12px);
+}
+.t-nav-inner {
+  max-width: 1320px; margin: 0 auto; padding: 0 36px;
+  height: 70px; display: flex; align-items: center; gap: 28px;
 }
 
-.btn--ghost:hover {
-  border-color: rgba(255,255,255,.75);
-  color: #fff;
-  transform: translateY(-2px);
+/* Logo */
+.t-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; cursor: default; }
+.t-logo-mark {
+  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  background: var(--white); color: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(13,43,94,.2);
 }
+.t-logo-mark-sm {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--navy); color: var(--white);
+  box-shadow: none;
+}
+.t-logo-words { display: flex; flex-direction: column; gap: 1px; line-height: 1; }
+.t-logo-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 800; font-size: 17px;
+  color: var(--white); letter-spacing: .06em;
+}
+.t-nav.scrolled .t-logo-name { color: var(--navy); }
+.t-logo-tag {
+  font-size: 8px; font-weight: 700; letter-spacing: .2em;
+  text-transform: uppercase; color: rgba(255,255,255,.65);
+}
+.t-nav.scrolled .t-logo-tag { color: var(--blue); }
 
-.btn--navy {
+/* Nav links */
+.t-nav-links { display: flex; gap: 2px; flex: 1; }
+.t-link {
+  padding: 7px 14px; border-radius: 7px; font-size: 13.5px; font-weight: 600;
+  color: rgba(255,255,255,.8); background: none; border: none; cursor: pointer;
+  text-decoration: none; transition: color .2s, background .2s; letter-spacing: .01em;
+}
+.t-nav.scrolled .t-link { color: var(--gray-600); }
+.t-link:hover { color: var(--white); background: rgba(255,255,255,.1); }
+.t-nav.scrolled .t-link:hover { color: var(--blue); background: var(--blue-pale); }
+
+/* Nav right */
+.t-nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: auto; }
+.t-icon-btn {
+  width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.1); color: rgba(255,255,255,.85);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.t-nav.scrolled .t-icon-btn { border-color: var(--gray-200); background: var(--white); color: var(--gray-600); }
+.t-icon-btn:hover { background: rgba(255,255,255,.2); color: var(--white); }
+.t-nav.scrolled .t-icon-btn:hover { background: var(--blue-pale); color: var(--blue); border-color: var(--blue-soft); }
+
+/* ════════════════════════════════════════
+   BUTTONS
+════════════════════════════════════════ */
+.t-btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 26px; border-radius: 9px; border: none;
+  background: var(--blue); color: var(--white);
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 700; font-size: 14px; letter-spacing: .02em;
+  text-decoration: none; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(26,86,219,.35);
+  transition: background .2s, transform .15s, box-shadow .2s;
+}
+.t-btn-primary:hover { background: var(--blue-lt); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,86,219,.45); }
+.t-btn-primary:active { transform: scale(.97); }
+
+.t-btn-white {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 26px; border-radius: 9px; border: none;
+  background: var(--white); color: var(--navy);
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 700; font-size: 14px; letter-spacing: .02em;
+  text-decoration: none; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0,0,0,.18);
+  transition: transform .15s, box-shadow .2s, background .2s;
+}
+.t-btn-white:hover { background: var(--blue-pale); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.22); }
+
+.t-btn-ghost-light {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 26px; border-radius: 9px;
+  border: 1.5px solid rgba(255,255,255,.4);
+  background: rgba(255,255,255,.08); color: var(--white);
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 600; font-size: 14px;
+  text-decoration: none; cursor: pointer;
+  transition: background .2s, border-color .2s, transform .15s;
+}
+.t-btn-ghost-light:hover { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.7); transform: translateY(-1px); }
+
+.t-btn-sm { padding: 9px 20px; font-size: 13px; }
+.t-btn-lg { padding: 15px 32px; font-size: 15px; }
+
+/* ════════════════════════════════════════
+   HERO
+════════════════════════════════════════ */
+.t-hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; position: relative; overflow: hidden;
   background: var(--navy);
-  color: #fff;
-  border-color: var(--navy);
 }
 
-.btn--navy:hover {
-  background: var(--navy-light);
-  border-color: var(--navy-light);
-  transform: translateY(-2px);
+.t-hero-bg { position: absolute; inset: 0; pointer-events: none; }
+
+/* Rich navy gradient mesh */
+.t-hero-mesh {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 80% at 75% 30%, rgba(26,86,219,.35) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 60% at 15% 70%, rgba(13,43,94,.8) 0%, transparent 55%),
+    linear-gradient(165deg, #0d2b5e 0%, #081a3d 55%, #0a2050 100%);
+}
+
+/* Dot grid */
+.t-hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.12) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* Glow blobs */
+.t-hero-glow-tl {
+  position: absolute; top: -15%; left: -10%;
+  width: 55vw; height: 55vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,86,219,.22) 0%, transparent 65%);
+  filter: blur(60px);
+}
+.t-hero-glow-br {
+  position: absolute; bottom: -20%; right: -5%;
+  width: 40vw; height: 40vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,.12) 0%, transparent 65%);
+  filter: blur(70px);
+}
+
+/* Diagonal decorative hairline */
+.t-diagonal-rule {
+  position: absolute; top: 0; right: 22%; bottom: 0; width: 1px;
+  background: linear-gradient(to bottom, transparent 5%, rgba(255,255,255,.1) 35%, rgba(255,255,255,.1) 65%, transparent 95%);
+  transform: skewX(-3deg);
+  pointer-events: none;
+}
+
+.t-hero-inner {
+  max-width: 920px; margin: 0 auto; padding: 150px 36px 110px;
+  position: relative; z-index: 1; text-align: center;
+}
+
+/* Eyebrow */
+.t-eyebrow {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  font-size: 10px; font-weight: 700; letter-spacing: .26em;
+  text-transform: uppercase; color: rgba(255,255,255,.6);
+  margin-bottom: 36px; animation: fadeUp .7s ease both .1s;
+}
+.t-eyebrow-bar { flex: 1; max-width: 52px; height: 1px; background: rgba(255,255,255,.25); }
+
+/* Headline */
+.t-hero-h1 { margin: 0 0 30px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.t-hl {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 800; line-height: 1.08;
+  letter-spacing: -.02em; display: block;
+  color: var(--white);
+  font-size: clamp(3.2rem, 7.5vw, 5.8rem);
+}
+.t-hl-1 { animation: fadeUp .75s ease both .2s; }
+.t-hl-2 { animation: fadeUp .75s ease both .34s; }
+.t-accent { font-style: italic; color: var(--gold-lt); }
+
+.t-hero-sub {
+  font-size: 17px; line-height: 1.85; color: rgba(255,255,255,.65);
+  font-weight: 300; max-width: 640px; margin: 0 auto 44px;
+  animation: fadeUp .75s ease both .46s; letter-spacing: .01em;
+}
+
+.t-hero-cta {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  margin-bottom: 80px; animation: fadeUp .75s ease both .56s;
+}
+
+/* Stats band */
+.t-stat-band {
+  display: inline-flex; align-items: stretch; border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.15); overflow: hidden;
+  background: rgba(255,255,255,.06); backdrop-filter: blur(12px);
+  animation: fadeUp .75s ease both .68s;
+}
+.t-stat-item {
+  display: flex; flex-direction: column; gap: 6px; align-items: center;
+  padding: 22px 44px; border-right: 1px solid rgba(255,255,255,.12);
+  transition: background .2s;
+}
+.t-stat-item:last-child { border-right: none; }
+.t-stat-item:hover { background: rgba(255,255,255,.07); }
+.t-stat-num {
+  font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700;
+  color: var(--gold-lt); line-height: 1;
+}
+.t-stat-lbl {
+  font-size: 10px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: rgba(255,255,255,.5);
+}
+.t-shimmer { opacity: .35; animation: blink 1.4s ease-in-out infinite; }
+
+/* Scroll hint */
+.t-scroll-hint {
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .2em;
+  text-transform: uppercase; color: rgba(255,255,255,.35);
+  cursor: pointer; z-index: 1; transition: color .2s;
+  animation: fadeUp .75s ease both .9s;
+}
+.t-scroll-hint:hover { color: rgba(255,255,255,.65); }
+.t-scroll-line {
+  width: 1px; height: 38px;
+  background: linear-gradient(to bottom, rgba(255,255,255,.4), transparent);
+  animation: scrollPulse 2.2s ease-in-out infinite;
+}
+
+/* ════════════════════════════════════════
+   TRUSTED STRIP
+════════════════════════════════════════ */
+.t-strip {
+  background: var(--off-white); border-bottom: 1px solid var(--gray-200);
+  padding: 22px 36px; display: flex; align-items: center; gap: 28px;
+  max-width: 100%; flex-wrap: wrap;
+}
+.t-strip-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--gray-400); white-space: nowrap;
+}
+.t-strip-divider { width: 1px; height: 20px; background: var(--gray-200); flex-shrink: 0; }
+.t-strip-items { display: flex; gap: 32px; flex-wrap: wrap; }
+.t-strip-items span {
+  font-size: 13px; font-weight: 600; color: var(--gray-600);
+  transition: color .2s; cursor: default;
+}
+.t-strip-items span:hover { color: var(--blue); }
+
+/* ════════════════════════════════════════
+   SECTIONS
+════════════════════════════════════════ */
+.t-section { padding: 112px 0; }
+.t-section-bg { background: var(--off-white); }
+
+.t-section-wrap {
+  max-width: 1320px; margin: 0 auto; padding: 0 36px;
+  display: grid; grid-template-columns: 1fr 1.1fr; gap: 100px; align-items: start;
+}
+.t-section-inner { max-width: 1320px; margin: 0 auto; padding: 0 36px; }
+.t-section-hdr { text-align: center; margin-bottom: 72px; }
+.t-center { text-align: center; }
+
+.t-sec-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--blue); margin-bottom: 14px;
+  display: block;
+}
+.t-sec-h2 {
+  font-family: 'Playfair Display', Georgia, serif; font-weight: 800;
+  font-size: clamp(2.1rem, 3.5vw, 3rem); letter-spacing: -.02em;
+  color: var(--navy); margin: 0 0 18px; line-height: 1.18;
+}
+.t-sec-body {
+  font-size: 15.5px; line-height: 1.85; color: var(--gray-600);
+  font-weight: 400; margin: 0;
+}
+
+/* Checklist */
+.t-list { list-style: none; padding: 0; margin: 28px 0 0; display: flex; flex-direction: column; gap: 14px; }
+.t-list li {
+  padding-left: 24px; position: relative; font-size: 14.5px;
+  line-height: 1.6; color: var(--gray-600); font-weight: 400;
+}
+.t-list li::before {
+  content: '';
+  position: absolute; left: 0; top: 7px;
+  width: 10px; height: 10px; border-radius: 3px;
+  background: var(--blue);
+}
+
+/* ── Workflow diagram ── */
+.t-flow-diagram { display: flex; flex-direction: column; }
+.t-flow-step {
+  display: flex; align-items: flex-start; gap: 18px;
+  padding: 22px 20px; border-radius: 12px; position: relative;
+  animation: fadeUp .5s ease both; transition: background .2s, box-shadow .2s;
+}
+.t-flow-step:hover { background: var(--blue-pale); box-shadow: var(--shadow-sm); }
+
+/* Connecting vertical line */
+.t-flow-connector {
+  position: absolute; left: 38px; top: 72px; bottom: -22px; width: 2px;
+  background: linear-gradient(to bottom, var(--blue-soft), transparent);
+  pointer-events: none;
+}
+
+.t-flow-node {
+  width: 48px; height: 48px; border-radius: 13px; flex-shrink: 0;
+  background: var(--white); border: 2px solid;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; box-shadow: var(--shadow-sm); transition: transform .2s;
+}
+.t-flow-step:hover .t-flow-node { transform: scale(1.07); }
+
+.t-flow-emoji { line-height: 1; }
+.t-flow-body { flex: 1; min-width: 0; padding-top: 2px; }
+.t-flow-title { font-weight: 700; font-size: 14.5px; color: var(--navy); margin-bottom: 4px; }
+.t-flow-desc  { font-size: 13px; color: var(--gray-600); line-height: 1.65; font-weight: 400; }
+.t-flow-role  {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 999px; border: 1px solid;
+  flex-shrink: 0; align-self: flex-start; margin-top: 4px;
+}
+
+/* ── Modules ── */
+.t-modules { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 20px; }
+.t-module-card {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: 16px; padding: 28px 26px;
+  display: flex; flex-direction: column; gap: 12px;
+  animation: fadeUp .5s ease both;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .25s, border-color .25s, transform .2s;
+  position: relative; overflow: hidden;
+}
+.t-module-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--blue-lt));
+  opacity: 0; transition: opacity .25s;
+}
+.t-module-card:hover { box-shadow: var(--shadow-lg); border-color: var(--blue-soft); transform: translateY(-4px); }
+.t-module-card:hover::after { opacity: 1; }
+
+.t-mod-icon-wrap {
+  width: 52px; height: 52px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+}
+.t-mod-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--navy); }
+.t-mod-desc  { font-size: 13.5px; line-height: 1.7; color: var(--gray-600); flex: 1; }
+.t-mod-tags  { display: flex; gap: 6px; flex-wrap: wrap; }
+.t-mod-tag   { font-size: 10px; font-weight: 700; letter-spacing: .07em; padding: 3px 9px; border-radius: 999px; background: var(--blue-pale); color: var(--blue); border: 1px solid var(--blue-soft); }
+.t-mod-footer { margin-top: 4px; }
+.t-mod-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12.5px; font-weight: 700; color: var(--blue); text-decoration: none;
+  letter-spacing: .02em; transition: gap .2s;
+}
+.t-mod-link:hover { gap: 8px; }
+
+/* ── Features ── */
+.t-features {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+  gap: 0; border: 1px solid var(--gray-200); border-radius: 18px; overflow: hidden;
   box-shadow: var(--shadow-md);
 }
+.t-feat {
+  padding: 34px 30px; background: var(--white);
+  border-right: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200);
+  animation: fadeUp .5s ease both; transition: background .2s;
+}
+.t-feat:hover { background: var(--blue-pale); }
+.t-feat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.t-feat-ico-wrap { font-size: 26px; line-height: 1; }
+.t-feat-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--gray-200); line-height: 1; }
+.t-feat-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.t-feat-desc  { font-size: 13.5px; line-height: 1.75; color: var(--gray-600); }
 
-/* ─── HERO STATS ──────────────────────────────── */
-.hero__stats {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
-  animation: fadeUp .7s ease .7s both;
+/* ════════════════════════════════════════
+   CTA
+════════════════════════════════════════ */
+.t-cta {
+  padding: 120px 36px; position: relative; overflow: hidden;
+  background: var(--navy);
+}
+.t-cta-bg { position: absolute; inset: 0; pointer-events: none; }
+.t-cta-mesh {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 65% 70% at 50% 50%, rgba(26,86,219,.4) 0%, transparent 70%),
+    linear-gradient(165deg, #0d2b5e 0%, #081a3d 100%);
+}
+.t-cta-orb {
+  position: absolute; top: -30%; right: -10%;
+  width: 50vw; height: 50vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,.12) 0%, transparent 65%);
+  filter: blur(60px);
+}
+.t-cta-inner {
+  max-width: 720px; margin: 0 auto; position: relative; z-index: 1;
+  text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.t-cta-overline {
+  font-size: 10px; font-weight: 700; letter-spacing: .26em;
+  text-transform: uppercase; color: var(--gold-lt);
+  margin-bottom: 20px;
+}
+.t-cta-h2 {
+  font-family: 'Playfair Display', serif; font-weight: 800;
+  font-size: clamp(2.1rem, 4vw, 3.2rem); color: var(--white);
+  line-height: 1.15; letter-spacing: -.02em; margin-bottom: 20px;
+}
+.t-cta-sub {
+  font-size: 15.5px; line-height: 1.8; color: rgba(255,255,255,.6);
+  max-width: 520px; margin: 0 auto 44px; font-weight: 300;
 }
 
-.hstat strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1;
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+.t-footer {
+  padding: 36px 36px; border-top: 1px solid var(--gray-200);
+  background: var(--white);
 }
-
-.hstat span {
-  display: block;
-  font-size: .7rem;
-  font-weight: 500;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.4);
-  margin-top: .25rem;
+.t-footer-inner {
+  max-width: 1320px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
 }
+.t-footer .t-logo-name { color: var(--navy); }
+.t-footer .t-logo-tag  { color: var(--blue); }
+.t-footer-copy { font-size: 12px; color: var(--gray-400); letter-spacing: .01em; }
 
-.hstat-line {
-  width: 1px; height: 38px;
-  background: rgba(255,255,255,.15);
-  flex-shrink: 0;
-}
+/* ════════════════════════════════════════
+   TRANSITIONS
+════════════════════════════════════════ */
+.t-fade-enter-active, .t-fade-leave-active { transition: opacity .2s, transform .2s; }
+.t-fade-enter-from, .t-fade-leave-to { opacity: 0; transform: translateY(-6px); }
 
-.hero__scroll-hint {
-  position: absolute;
-  bottom: 2.5rem; right: 2.5rem;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .6rem;
-  color: rgba(255,255,255,.3);
-  font-size: .62rem;
-  font-weight: 600;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-}
-
-.hero__scroll-bar {
-  width: 1px; height: 50px;
-  background: linear-gradient(to bottom, rgba(201,168,76,.6), transparent);
-  animation: pulse 2s ease infinite;
-}
-
-@keyframes pulse { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+/* ════════════════════════════════════════
+   KEYFRAMES
+════════════════════════════════════════ */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(26px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-/* ─── TICKER ──────────────────────────────────── */
-.ticker {
-  background: var(--navy);
-  overflow: hidden;
-  padding: .82rem 0;
-  border-top: 1px solid rgba(255,255,255,.06);
-  border-bottom: 3px solid var(--gold);
-}
-
-.ticker__track {
-  display: inline-flex;
-  white-space: nowrap;
-  animation: ticker 28s linear infinite;
-}
-
-.ticker__track span {
-  font-size: .72rem;
-  font-weight: 600;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.55);
-  padding: 0 1.6rem;
-}
-
-.tdot {
-  color: var(--gold) !important;
-  opacity: .5 !important;
-  font-size: .45rem !important;
-  padding: 0 !important;
-  align-self: center;
-}
-
-@keyframes ticker {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-33.333%); }
-}
-
-/* ─── SECTIONS ────────────────────────────────── */
-.sec { padding: 7rem 0; }
-.sec--cream { background: #f5f2eb !important; }
-.sec--white { background: #ffffff !important; }
-.sec--navy  { background: #0f1f3d !important; }
-
-.sec__head {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: end;
-  margin-bottom: 4rem;
-}
-
-.eyebrow {
-  display: block;
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .24em;
-  text-transform: uppercase;
-  color: #c9a84c !important;
-  margin-bottom: 1rem;
-}
-
-.eyebrow--inv { color: #c9a84c !important; }
-
-.h2 {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 3.8vw, 3.2rem);
-  font-weight: 700;
-  color: #1a2540 !important;
-  line-height: 1.15;
-  letter-spacing: -.01em;
-}
-
-.h2--inv { color: #fff; }
-
-.sec__desc {
-  font-size: 1rem;
-  font-weight: 300;
-  color: #4a5568 !important;
-  line-height: 1.85;
-  align-self: end;
-}
-
-.sec__desc--inv { color: rgba(255,255,255,.7) !important; }
-
-/* ─── FEATURES GRID ───────────────────────────── */
-.feat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.feat-card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 2rem 2rem 1.5rem;
-  transition: box-shadow .3s, transform .3s;
-  position: relative;
-  overflow: hidden;
-  min-height: 260px;
-  display: flex;
-  flex-direction: column;
-}
-
-.feat-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold), var(--gold-light));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .35s ease;
-}
-
-.feat-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-5px);
-}
-
-.feat-card:hover::before { transform: scaleX(1); }
-
-.feat-card__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-}
-
-.feat-card__icon {
-  width: 48px; height: 48px;
-  background: var(--gold-pale);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gold);
-  font-size: 1rem;
-  transition: background .3s;
-}
-
-.feat-card:hover .feat-card__icon {
-  background: var(--gold);
-  color: var(--navy);
-}
-
-.feat-card__num {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--cream-2);
-}
-
-.feat-card__title {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: .65rem;
-  line-height: 1.3;
-}
-
-.feat-card__desc {
-  font-size: .875rem;
-  font-weight: 300;
-  color: var(--text-body);
-  line-height: 1.75;
-  margin-bottom: 1.25rem;
-  flex-grow: 1;
-}
-
-.feat-card__line {
-  height: 1px;
-  background: var(--border);
-}
-
-/* ─── PHOTO STRIP ─────────────────────────────── */
-.strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  height: 360px;
-  overflow: hidden;
-}
-
-.strip__item {
-  position: relative;
-  overflow: hidden;
-}
-
-.strip__item img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform .6s ease;
-  display: block;
-}
-
-.strip__item:hover img { transform: scale(1.06); }
-
-.strip__item::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(15,31,61,.7) 0%, transparent 55%);
-}
-
-.strip__label {
-  position: absolute;
-  bottom: 1.2rem; left: 1.2rem;
-  background: var(--gold);
-  color: var(--navy);
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  padding: .32rem .85rem;
-  border-radius: 4px;
-  z-index: 1;
-}
-
-/* ─── MODULES GRID ────────────────────────────── */
-.mod-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.mod-card {
-  background: rgba(255,255,255,.08) !important;
-  border: 1px solid rgba(201,168,76,.2) !important;
-  border-radius: var(--radius);
-  padding: 2rem;
-  transition: background .3s, border-color .3s, transform .3s;
-  cursor: default;
-}
-
-.mod-card:hover {
-  background: rgba(255,255,255,.12) !important;
-  border-color: rgba(201,168,76,.6) !important;
-  transform: translateY(-4px);
-}
-
-.mod-card__icon {
-  width: 48px; height: 48px;
-  background: rgba(201,168,76,.25) !important;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #c9a84c !important;
-  font-size: 1rem;
-  margin-bottom: 1.25rem;
-  transition: background .3s;
-}
-
-.mod-card:hover .mod-card__icon {
-  background: #c9a84c !important;
-  color: #0f1f3d !important;
-}
-
-.mod-card__title {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: .5rem;
-}
-
-.mod-card__desc {
-  font-size: .875rem;
-  font-weight: 300;
-  color: rgba(255,255,255,.7) !important;
-  line-height: 1.7;
-  margin-bottom: 1.25rem;
-}
-
-.mod-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .4rem;
-}
-
-.mod-card__tags span {
-  font-size: .65rem;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  padding: .28rem .75rem;
-  border: 1px solid rgba(201,168,76,.4) !important;
-  border-radius: 100px;
-  color: rgba(201,168,76,.8) !important;
-}
-
-/* ─── STATS ───────────────────────────────────── */
-.stats-sec {
-  position: relative;
-  padding: 7rem 0;
-  overflow: hidden;
-}
-
-.stats-sec__bg { position: absolute; inset: 0; }
-
-.stats-sec__bg img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-
-.stats-sec__overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(15,31,61,.95) 0%, rgba(15,31,61,.85) 100%);
-}
-
-.stats-sec__inner { position: relative; z-index: 1; }
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-}
-
-.stat-box {
-  text-align: center;
-  padding: 2.5rem 1.5rem;
-  border: 1px solid rgba(201,168,76,.2);
-  border-radius: var(--radius);
-  background: rgba(201,168,76,.04);
-  transition: border-color .3s, background .3s;
-}
-
-.stat-box:hover {
-  border-color: rgba(201,168,76,.45);
-  background: rgba(201,168,76,.08);
-}
-
-.stat-box__num {
-  font-family: var(--font-display);
-  font-size: 2.8rem;
-  font-weight: 700;
-  color: var(--gold);
-  margin-bottom: .4rem;
-  line-height: 1;
-}
-
-.stat-box__label {
-  font-size: .7rem;
-  font-weight: 600;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.35);
-  margin-bottom: 1.5rem;
-}
-
-.stat-box__bar {
-  height: 3px;
-  background: rgba(255,255,255,.08);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.stat-box__fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--gold-light));
-  border-radius: 2px;
-}
-
-/* ─── ABOUT ───────────────────────────────────── */
-.about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6rem;
-  align-items: center;
-}
-
-.about-imgs__main {
-  position: relative;
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.about-imgs__main img {
-  width: 100%; height: 460px;
-  object-fit: cover;
-  display: block;
-  transition: transform .6s ease;
-}
-
-.about-imgs__main:hover img { transform: scale(1.03); }
-
-.about-imgs__badge {
-  position: absolute;
-  bottom: 1.75rem; right: -1.75rem;
-  background: var(--navy);
-  color: #fff;
-  padding: 1.25rem 1.75rem;
-  border-radius: var(--radius);
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-  border: 2px solid rgba(201,168,76,.3);
-}
-
-.about-imgs__badge span {
-  display: block;
-  font-size: .62rem;
-  font-weight: 600;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: .2rem;
-}
-
-.about-imgs__badge strong {
-  font-family: var(--font-display);
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.about-imgs__sub {
-  margin-top: 1.25rem;
-  margin-left: 2.5rem;
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.about-imgs__sub img {
-  width: 100%; height: 175px;
-  object-fit: cover;
-  display: block;
-  transition: transform .6s ease;
-}
-
-.about-imgs__sub:hover img { transform: scale(1.04); }
-
-.about-text .eyebrow { margin-bottom: 1rem; }
-.about-text .h2 { margin-bottom: 1.5rem; }
-
-.about-text__para {
-  font-size: .975rem;
-  font-weight: 300;
-  color: var(--text-body);
-  line-height: 1.9;
-  margin-bottom: 2.5rem;
-}
-
-.pillars {
-  display: flex;
-  flex-direction: column;
-  gap: 1.35rem;
-  margin-bottom: 2.5rem;
-}
-
-.pillar {
-  display: flex;
-  gap: 1.1rem;
-  align-items: flex-start;
-}
-
-.pillar__icon {
-  width: 40px; height: 40px;
-  background: var(--gold-pale);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gold);
-  font-size: .88rem;
-  flex-shrink: 0;
-  margin-top: .1rem;
-  transition: background .3s;
-}
-
-.pillar:hover .pillar__icon {
-  background: var(--gold);
-  color: var(--navy);
-}
-
-.pillar h4 {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: .2rem;
-}
-
-.pillar p {
-  font-size: .875rem;
-  font-weight: 300;
-  color: var(--text-body);
-  line-height: 1.65;
-}
-
-/* ─── CTA ─────────────────────────────────────── */
-.cta-sec {
-  position: relative;
-  padding: 9rem 0;
-  text-align: center;
-  overflow: hidden;
-}
-
-.cta-sec__bg { position: absolute; inset: 0; }
-
-.cta-sec__bg img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-
-.cta-sec__overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(15,31,61,.95) 0%, rgba(15,31,61,.88) 100%);
-}
-
-.cta-sec__inner { position: relative; z-index: 1; }
-
-.cta-sec__title {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 5.5vw, 4.2rem);
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.12;
-  letter-spacing: -.01em;
-  margin-bottom: 1.25rem;
-}
-
-.cta-sec__sub {
-  font-size: 1.05rem;
-  font-weight: 300;
-  color: rgba(255,255,255,.5);
-  margin-bottom: 3rem;
-}
-
-.cta-sec__btns {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-/* ─── FOOTER ──────────────────────────────────── */
-footer.footer {
-  background: #0f1f3d !important;
-  background: var(--navy) !important;
-  background-color: #0f1f3d !important;
-  color: #fff;
-  padding: 5rem 0 2rem;
-  border-top: 3px solid var(--gold);
-  position: relative;
-  z-index: 10;
-  margin-top: 0;
-  box-shadow: 0 -10px 30px rgba(15,31,61,0.3);
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 4rem;
-  padding-bottom: 4rem;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  margin-bottom: 2rem;
-}
-
-.footer-brand__logo {
-  display: flex;
-  align-items: center;
-  gap: .7rem;
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.footer-brand__icon {
-  width: 32px; height: 32px;
-  background: rgba(255,255,255,.1);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-}
-
-.footer-brand p {
-  font-size: .875rem;
-  font-weight: 300;
-  color: rgba(255,255,255,.6);
-  line-height: 1.7;
-  max-width: 240px;
-}
-
-.footer-col h4 {
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  color: var(--gold);
-  opacity: 1;
-  margin-bottom: 1.5rem;
-}
-
-.footer-col ul { list-style: none; }
-.footer-col li { margin-bottom: .7rem; }
-
-.footer-col a {
-  font-size: .875rem;
-  font-weight: 400;
-  color: rgba(255,255,255,.7);
-  text-decoration: none;
-  transition: color .2s;
-}
-
-.footer-col a:hover { color: var(--gold-light); }
-
-.footer-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: .78rem;
-  color: rgba(255,255,255,.5);
-}
-
-/* ─── RESPONSIVE ──────────────────────────────── */
-@media (max-width: 1024px) {
-  .feat-grid, .mod-grid { grid-template-columns: repeat(2, 1fr); }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .footer-grid { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
-  .strip { height: 280px; }
-  .feat-card { min-height: 240px; }
-}
-
-@media (max-width: 768px) {
-  .nav__links, .nav__cta { display: none; }
-  .nav__burger { display: flex; }
-  .sec__head { grid-template-columns: 1fr; gap: 1.5rem; }
-  .feat-grid, .mod-grid { grid-template-columns: 1fr; }
-  .strip { grid-template-columns: repeat(2, 1fr); height: 250px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-  .stat-box { padding: 1.75rem 1rem; }
-  .about-grid { grid-template-columns: 1fr; gap: 3rem; }
-  .about-imgs__badge { right: 0; }
-  .about-imgs__sub { margin-left: 0; }
-  .hero__stats { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .hstat-line { width: 36px; height: 1px; }
-  .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
-  .footer-bottom { flex-direction: column; gap: .5rem; text-align: center; }
-  .hero__scroll-hint { display: none; }
-  .feat-card { min-height: auto; }
+@keyframes blink {
+  0%, 100% { opacity: .3; }
+  50%       { opacity: .7; }
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: .4; transform: scaleY(1); transform-origin: top; }
+  50%       { opacity: 1;  transform: scaleY(.6); }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+@media (max-width: 1060px) {
+  .t-section-wrap { grid-template-columns: 1fr; gap: 60px; }
+}
+@media (max-width: 800px) {
+  .t-nav-links { display: none; }
+  .t-hero-inner { padding: 120px 20px 90px; }
+  .t-stat-band { flex-direction: column; width: 100%; max-width: 320px; border-radius: 14px; }
+  .t-stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.12); }
+  .t-stat-item:last-child { border-bottom: none; }
+  .t-section { padding: 72px 0; }
+  .t-section-wrap, .t-section-inner { padding: 0 20px; }
+  .t-strip { padding: 18px 20px; }
+}
+@media (max-width: 500px) {
+  .t-hl { font-size: 2.6rem; }
+  .t-hero-cta { flex-direction: column; align-items: stretch; }
+  .t-hero-cta a, .t-hero-cta button { justify-content: center; }
 }
 </style>

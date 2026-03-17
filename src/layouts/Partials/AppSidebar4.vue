@@ -21,8 +21,15 @@
 </template>
 
 <script>
+import MobileSidebar4 from './MobileSidebar4.vue'
+import AccoutantSideBar from './AccoutantSideBar.vue'
+
 export default {
-    name: 'AppSidebar4'
+    name: 'AppSidebar4',
+    components: {
+        MobileSidebar4,
+        AccoutantSideBar
+    }
 }
 </script>
 

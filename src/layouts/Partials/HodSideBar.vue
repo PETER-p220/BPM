@@ -172,6 +172,12 @@ const navigations = ref([
   },
   { type: 'separator' },
   {
+    icon: 'fas fa-shield-alt text-purple-400',
+    label: 'Compliance',   
+    name: 'HodComplianceSubmission',
+  },
+  { type: 'separator' },
+  {
     icon: 'fas fa-upload text-blue-400',
     label: 'Updates',
     active: false,
@@ -594,4 +600,5 @@ const leave = (el) => {
 .text-gray-400  { color: #9ca3af !important; }
 .text-indigo-400{ color: #818cf8 !important; }
 .text-indigo-300{ color: #a5b4fc !important; }
+.text-purple-400{ color: #a78bfa !important; }
 </style>

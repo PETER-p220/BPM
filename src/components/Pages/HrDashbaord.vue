@@ -192,7 +192,7 @@ const fetchers = [
   ['api/count/all/on-progress/projects',    r => totalOnProgressProjects.value   = r.data.total_on_progress_projects || 0],
   ['api/count/all/deadline-reached-tenders',r => totalDeadlineReachedTenders.value = r.data.expired_tenders || 0],
   ['api/count/all-expired/tenders',         r => totalExpiredTenders.value       = r.data.expired_tenders || 0],
-  ['api/count/all-analyses/passed',                r => totalAnalyses.value             = r.data.total_count || 0],
+  ['api/count/all-analyses/passed',         r => totalAnalyses.value             = r.data.passed_count || 0],
   ['api/user/price-schedules/count',        r => totalSchedules.value            = r.data.total_count || 0],
   ['api/count/requests',                    r => totalRequests.value             = r.data.totalRequests || 0],
   ['api/count/user/requests/approved',     r => approvedRequests.value          = r.data.approvedRequests || 0],

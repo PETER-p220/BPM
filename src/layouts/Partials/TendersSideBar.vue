@@ -241,6 +241,13 @@ const navigations = ref([
     
   },
   {
+    icon: "fas fa-shield-alt",
+    label: "Compliance Submission",
+    name: "TenderUserComplianceSubmission",
+    path: "TenderUserComplianceSubmission",
+    active: false
+  },
+  {
     icon: "fas fa-user",
     label: "Profile",
     name: "UserProfile2",

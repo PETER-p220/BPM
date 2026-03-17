@@ -271,6 +271,14 @@ const navigations = ref([
     path: "AccLeaveManagement",
     active: false
   },
+  {},
+  {
+    icon: 'mdi-shield-check',
+    label: 'Compliance Submission',
+    name: 'AccountantComplianceSubmission',
+    path: 'AccountantComplianceSubmission',
+    active: false
+  },
   {
     icon: "fas fa-user",
     label: "Profile",

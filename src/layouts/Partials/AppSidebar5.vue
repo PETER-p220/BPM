@@ -21,8 +21,15 @@
 </template>
 
 <script>
+import MobileSidebar6 from './MobileSidebar6.vue'
+import HrSideBar from './HrSideBar.vue'
+
 export default {
-    name: 'AppSidebar4'
+    name: 'AppSidebar5',
+    components: {
+        MobileSidebar6,
+        HrSideBar
+    }
 }
 </script>
 

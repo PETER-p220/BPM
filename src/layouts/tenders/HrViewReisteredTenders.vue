@@ -431,7 +431,7 @@ function changePage(page) {
 }
 
 function editTender(tenderId) {
-  router.push({ name: 'EditTender', params: { tender_id: tenderId } })
+  router.push({ name: 'ViewTender', params: { tender_id: tenderId } })
 }
 
 async function exportToPDF() {

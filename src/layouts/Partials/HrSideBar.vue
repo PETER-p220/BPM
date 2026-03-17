@@ -139,6 +139,14 @@ const navigations = ref([
   },
   {},
   {
+    icon: "fas fa-users",
+    label: "Employee Management",
+    name: "EmployeeManagement",
+    path: "EmployeeManagement",
+    active: false,
+  },
+  {},
+  {
     icon: "fas fa-file-contract",
     label: "Tenders",
     name: "TendersManagement",
@@ -262,6 +270,21 @@ const navigations = ref([
         active: false
       }
     ]
+  },
+  {},
+  {
+    icon: "fas fa-shield-alt",
+    label: "Compliance Management",
+    name: "ComplianceManagement",
+    path: "ComplianceManagement",
+    active: false
+  },
+  {
+    icon: 'mdi-shield-check',
+    label: 'Compliance Submission',
+    name: 'HrComplianceSubmission',
+    path: 'HrComplianceSubmission',
+    active: false
   },
   {
     icon: "fas fa-user",
