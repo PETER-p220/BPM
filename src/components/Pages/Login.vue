@@ -400,7 +400,7 @@ const LoginMethod = async () => {
 
   try {
 
-    const response = await axios.post('/api/login', {
+    const response = await axios.post('/api/auth/login', {
 
       email: email.value.trim(),
 
