@@ -66,6 +66,39 @@
               />
             </div>
 
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Procurement Method
+              </label>
+              <select
+                v-model="form.procurement_method"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+              >
+                <option value="" disabled>Select procurement method</option>
+                <option value="Open Tendering">Open Tendering</option>
+                <option value="Restricted Tendering">Restricted Tendering</option>
+                <option value="Request for Quotations">Request for Quotations</option>
+                <option value="Single Source">Single Source</option>
+                <option value="Consultancy Selection">Consultancy Selection</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Submission Mode
+              </label>
+              <select
+                v-model="form.submission_mode"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+              >
+                <option value="" disabled>Select submission mode</option>
+                <option value="TANePS">TANePS</option>
+                <option value="Manual">Manual</option>
+                <option value="Email">Email</option>
+                <option value="Courier">Courier</option>
+              </select>
+            </div>
+
             <!-- Number & Type -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
@@ -97,6 +130,80 @@
               </select>
             </div>
 
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Currency
+              </label>
+              <select
+                v-model="form.bid_currency"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+              >
+                <option value="TZS">TZS</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Estimated Tender Value
+              </label>
+              <input
+                v-model="form.estimated_value"
+                type="number"
+                min="0"
+                step="0.01"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+                placeholder="e.g. 150000000"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Tender Fee
+              </label>
+              <input
+                v-model="form.tender_fee"
+                type="number"
+                min="0"
+                step="0.01"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+                placeholder="e.g. 100000"
+              />
+            </div>
+
+            <div class="space-y-3 rounded-2xl border border-gray-200 dark:border-neutral-800 p-4">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Bid Security Required
+                  </label>
+                  <p class="text-xs text-gray-500 dark:text-neutral-400 mt-1">
+                    Enable if this tender requires a bid security or tender security.
+                  </p>
+                </div>
+                <input
+                  v-model="form.bid_security_required"
+                  type="checkbox"
+                  class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div v-if="form.bid_security_required">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Bid Security Amount
+                </label>
+                <input
+                  v-model="form.bid_security_amount"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+                  placeholder="e.g. 3000000"
+                />
+              </div>
+            </div>
+
             <!-- Dates -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
@@ -122,6 +229,28 @@
               />
             </div>
 
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Clarification Deadline
+              </label>
+              <input
+                v-model="form.clarification_deadline"
+                type="date"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Site Visit / Pre-bid Meeting
+              </label>
+              <input
+                v-model="form.site_visit_date"
+                type="date"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+              />
+            </div>
+
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Bid Submission Deadline <span class="text-red-500">*</span>
@@ -132,6 +261,42 @@
                 required
                 class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
               />
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Contract Duration
+              </label>
+              <input
+                v-model="form.contract_duration"
+                type="text"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+                placeholder="e.g. 12 months from contract signature"
+              />
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Scope Summary
+              </label>
+              <textarea
+                v-model="form.scope_summary"
+                rows="4"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+                placeholder="Summarize the works, goods, or services required for this tender."
+              ></textarea>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Eligibility / Mandatory Requirements
+              </label>
+              <textarea
+                v-model="form.eligibility_criteria"
+                rows="4"
+                class="block w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm transition-all"
+                placeholder="e.g. BRELA, TIN, VAT, business licence, similar experience, audited accounts, manufacturer authorization."
+              ></textarea>
             </div>
           </div>
 
@@ -233,7 +398,19 @@ const form = ref({
   tender_source: '',
   procurement_entity: '',
   tender_number: '',
+  procurement_method: '',
+  submission_mode: '',
   tender_type: '',
+  bid_currency: 'TZS',
+  estimated_value: '',
+  tender_fee: '',
+  bid_security_required: false,
+  bid_security_amount: '',
+  site_visit_date: '',
+  clarification_deadline: '',
+  contract_duration: '',
+  scope_summary: '',
+  eligibility_criteria: '',
   date_of_Publication: '',
   expired_at: '',
   bid_submission: '',

@@ -855,8 +855,8 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: [3] }
                 },
                 {
-                    path: 'userprofile',
-                    name: 'UserProfile1',
+                    path: 'engineerProfile',
+                    name: 'engineerProfile',
                     component: UserProfile4Vue,
                     meta: { requiresAuth: true, allowedRoles: [3] }
                 },

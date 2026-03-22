@@ -80,6 +80,56 @@
                 <input id="tender_type" type="text" v-model="tenderData.tender_type" class="field-input" placeholder="e.g. Open, Restricted" />
               </div>
 
+              <div class="field">
+                <label class="field-lbl" for="procurement_method">Procurement Method</label>
+                <input id="procurement_method" type="text" v-model="tenderData.procurement_method" class="field-input" placeholder="e.g. Open Tendering" />
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="submission_mode">Submission Mode</label>
+                <input id="submission_mode" type="text" v-model="tenderData.submission_mode" class="field-input" placeholder="e.g. TANePS" />
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="bid_currency">Currency</label>
+                <input id="bid_currency" type="text" v-model="tenderData.bid_currency" class="field-input field-mono" placeholder="TZS" />
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="estimated_value">Estimated Value</label>
+                <input id="estimated_value" type="number" min="0" step="0.01" v-model="tenderData.estimated_value" class="field-input field-mono" placeholder="0.00" />
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="tender_fee">Tender Fee</label>
+                <input id="tender_fee" type="number" min="0" step="0.01" v-model="tenderData.tender_fee" class="field-input field-mono" placeholder="0.00" />
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="contract_duration">Contract Duration</label>
+                <input id="contract_duration" type="text" v-model="tenderData.contract_duration" class="field-input" placeholder="e.g. 12 months" />
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="bid_security_amount">Bid Security Amount</label>
+                <input id="bid_security_amount" type="number" min="0" step="0.01" v-model="tenderData.bid_security_amount" class="field-input field-mono" placeholder="0.00" />
+              </div>
+
+              <div class="field field--toggle">
+                <label class="field-lbl" for="bid_security_required">Bid Security Required</label>
+                <input id="bid_security_required" type="checkbox" v-model="tenderData.bid_security_required" class="field-check" />
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="scope_summary">Scope Summary</label>
+                <textarea id="scope_summary" v-model="tenderData.scope_summary" class="field-input field-textarea" rows="4" placeholder="Summarize the scope"></textarea>
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="eligibility_criteria">Eligibility Requirements</label>
+                <textarea id="eligibility_criteria" v-model="tenderData.eligibility_criteria" class="field-input field-textarea" rows="4" placeholder="List mandatory eligibility requirements"></textarea>
+              </div>
+
             </div>
           </div>
 
@@ -109,6 +159,16 @@
                   <span v-if="tenderData.expired_at" class="expiry-chip" :class="expiryClass">{{ expiryLabel }}</span>
                 </label>
                 <input id="expired_at" type="date" v-model="tenderData.expired_at" class="field-input field-mono" />
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="clarification_deadline">Clarification Deadline</label>
+                <input id="clarification_deadline" type="date" v-model="tenderData.clarification_deadline" class="field-input field-mono" />
+              </div>
+
+              <div class="field">
+                <label class="field-lbl" for="site_visit_date">Site Visit / Pre-bid Meeting</label>
+                <input id="site_visit_date" type="date" v-model="tenderData.site_visit_date" class="field-input field-mono" />
               </div>
 
             </div>
@@ -214,8 +274,12 @@ const router = useRouter()
 
 const tenderData = ref({
   title: '', procurement_entity: '', tender_number: '',
-  tender_type: '', date_of_Publication: '', expired_at: '',
-  bid_submission: '', attachment: null,
+  tender_type: '', procurement_method: '', submission_mode: '',
+  bid_currency: 'TZS', estimated_value: '', tender_fee: '',
+  bid_security_required: false, bid_security_amount: '',
+  contract_duration: '', scope_summary: '', eligibility_criteria: '',
+  date_of_Publication: '', expired_at: '', bid_submission: '',
+  clarification_deadline: '', site_visit_date: '', attachment: null,
 })
 
 const isLoading     = ref(false)
@@ -234,6 +298,9 @@ async function fetchTenderData() {
     d.date_of_Publication = toYMD(d.date_of_Publication)
     d.bid_submission      = toYMD(d.bid_submission)
     d.expired_at          = toYMD(d.expired_at)
+    d.clarification_deadline = toYMD(d.clarification_deadline)
+    d.site_visit_date = toYMD(d.site_visit_date)
+    d.bid_security_required = Boolean(Number(d.bid_security_required ?? 0)) || d.bid_security_required === true
     if (typeof d.attachment === 'string' && d.attachment) {
       existingAttachment.value = d.attachment
       d.attachment = null
@@ -503,6 +570,7 @@ function handleError(e) {
 
 /* Fields */
 .field { display: flex; flex-direction: column; gap: 6px; }
+.field--toggle { justify-content: end; }
 
 .field-lbl {
   display: flex;
@@ -534,6 +602,17 @@ function handleError(e) {
   box-shadow: 0 0 0 3px var(--blue-bg);
 }
 .field-mono { font-family: var(--mono); font-size: 13px; }
+.field-textarea {
+  min-height: 112px;
+  height: auto;
+  padding: 12px 13px;
+  resize: vertical;
+}
+.field-check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
+}
 
 /* Expiry chip */
 .expiry-chip {

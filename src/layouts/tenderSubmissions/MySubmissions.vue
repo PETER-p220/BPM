@@ -74,6 +74,7 @@
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">No</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tender Title</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tender Number</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Notes</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Submitted Document</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Submitted At</th>
             </tr>
@@ -92,6 +93,11 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
                 {{ tender.tender?.tender_number || '—' }}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 max-w-xs">
+                <div class="truncate" :title="tender.qualifications || ''">
+                  {{ tender.qualifications || '—' }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
                 <button

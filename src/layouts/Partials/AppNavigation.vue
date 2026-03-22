@@ -222,8 +222,8 @@ const navigations = ref([
   {
     icon: "fas fa-user-circle text-gray-500",
     label: "Profile",
-    name: "Profile",
-    path: "UniversalProfile",
+    name: "engineerProfile",
+    path: "engineerProfile",
     active: false,
   },
   {

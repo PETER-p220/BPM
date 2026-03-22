@@ -1,270 +1,173 @@
 <template>
-  <div class="min-h-screen bg-gray-50" style="font-family: 'cygre', sans-serif">
-    <!-- Header Section -->
-    <div class="bg-white border-b border-gray-200 shadow-sm">
-      <div class="container mx-auto px-4 py-6">
-        <div class="flex items-center gap-3">
-          <button 
-            @click="goBack" 
-            class="p-2 text-gray-600 transition-colors rounded-lg hover:bg-gray-200"
-            title="Go back"
-          >
-            <i class="fa fa-arrow-left"></i>
-          </button>
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">Create Tender Update</h1>
-            <p class="text-sm text-gray-600 mt-1">Submit updates for tender activities and projects</p>
-          </div>
-        </div>
+  <div class="page" style="font-family: 'cygre', sans-serif; background: var(--bg-page, #f5f6f7); min-height: 100vh;">
+    <!-- Header -->
+    <div style="background: #fff; border-bottom: 1px solid #e8e8e8; padding: 0.875rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; position: sticky; top: 0; z-index: 10;">
+      <button @click="goBack" style="width:32px;height:32px;border-radius:8px;border:1px solid #e0e0e0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#666;flex-shrink:0;">
+        <i class="fa fa-arrow-left" style="font-size:12px;"></i>
+      </button>
+      <div>
+        <h1 style="font-size:15px;font-weight:600;color:#1a1a1a;margin:0;">Create Tender Update</h1>
+        <p style="font-size:12px;color:#888;margin:2px 0 0;">Submit updates for tender activities</p>
       </div>
     </div>
 
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-      <!-- Main Form Card -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <form @submit.prevent="submitUpdate">
-          <div class="p-8">
-            <!-- Update Titles Section -->
-            <div class="mb-8">
-              <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span class="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-lg text-sm font-bold">1</span>
-                Update Information
-              </h2>
-              
-              <div class="space-y-4">
-                <!-- Title -->
-                <div>
-                  <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-                    Update Title <span class="text-red-500">*</span>
-                  </label>
+    <!-- Form -->
+    <div style="max-width: 600px; margin: 1.5rem auto; padding: 0 1.25rem 2rem;">
+      <form @submit.prevent="submitUpdate">
+        <div style="background:#fff;border:1px solid #e8e8e8;border-radius:12px;overflow:hidden;">
+          <div style="padding:1.25rem;display:flex;flex-direction:column;gap:1rem;">
+
+            <!-- Title -->
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">
+                Title <span style="color:#e53e3e;">*</span>
+              </label>
+              <input
+                type="text"
+                v-model="form.titles[0]"
+                placeholder="Enter a clear, descriptive title"
+                :style="inputStyle(showErrors && !form.titles[0])"
+              />
+              <p v-if="showErrors && !form.titles[0]" style="font-size:11px;color:#e53e3e;margin:3px 0 0;">Title is required</p>
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">
+                Description <span style="color:#e53e3e;">*</span>
+              </label>
+              <textarea
+                v-model="form.description"
+                rows="4"
+                placeholder="Provide detailed information about this update..."
+                :style="inputStyle(showErrors && !form.description) + 'resize:none;line-height:1.6;'"
+              ></textarea>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px;">
+                <p v-if="showErrors && !form.description" style="font-size:11px;color:#e53e3e;margin:0;">Description is required</p>
+                <span style="font-size:11px;color:#aaa;margin-left:auto;">{{ form.description.length }} chars</span>
+              </div>
+            </div>
+
+            <!-- Priority -->
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">Priority</label>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;">
+                <div
+                  v-for="p in priorities"
+                  :key="p.value"
+                  @click="form.priority = p.value"
+                  :style="priorityStyle(p.value)"
+                >
+                  <span :style="'width:7px;height:7px;border-radius:50%;background:'+p.color+';display:inline-block;margin-right:5px;'"></span>
+                  <span style="font-size:13px;font-weight:500;">{{ p.label }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="height:1px;background:#f0f0f0;margin:0 -1.25rem;"></div>
+
+            <!-- Attachments -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;">
+              <!-- Photo -->
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">Photo</label>
+                <div
+                  :style="uploadZoneStyle(!!photoPreview)"
+                  style="position:relative;overflow:hidden;"
+                >
                   <input
-                    type="text"
-                    id="title"
-                    v-model="form.titles[0]"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    :class="{'border-red-300 focus:ring-red-500': showErrors && !form.titles[0]}"
-                    placeholder="Enter a clear and descriptive title"
-                    required
+                    type="file"
+                    @change="handlePhotoChange"
+                    accept="image/*"
+                    style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;"
                   />
-                  <p v-if="showErrors && !form.titles[0]" class="mt-1 text-sm text-red-600">
-                    Title is required
-                  </p>
-                </div>
-
-                <!-- Description -->
-                <div>
-                  <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                    Description <span class="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    id="description"
-                    v-model="form.description"
-                    rows="6"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                    :class="{'border-red-300 focus:ring-red-500': showErrors && !form.description}"
-                    placeholder="Provide detailed information about this update..."
-                    required
-                  ></textarea>
-                  <div class="flex items-center justify-between mt-2">
-                    <p v-if="showErrors && !form.description" class="text-sm text-red-600">
-                      Description is required
-                    </p>
-                    <p class="text-xs text-gray-400 ml-auto">
-                      {{ form.description.length }} characters
-                    </p>
+                  <div v-if="!photoPreview" style="text-align:center;padding:0.75rem 0;">
+                    <i class="fas fa-image" style="font-size:18px;color:#ccc;display:block;margin-bottom:4px;"></i>
+                    <span style="font-size:11px;color:#aaa;">JPG, PNG · max 10MB</span>
+                  </div>
+                  <div v-else style="text-align:center;padding:0.5rem;">
+                    <img :src="photoPreview" style="max-height:56px;border-radius:6px;display:block;margin:0 auto 4px;" />
+                    <span style="font-size:10px;color:#3b7a57;display:block;word-break:break-all;">{{ form.update_photo?.name }}</span>
+                    <button type="button" @click.stop="removePhoto"
+                      style="position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:#fee2e2;border:none;cursor:pointer;font-size:9px;color:#c53030;display:flex;align-items:center;justify-content:center;">
+                      ✕
+                    </button>
                   </div>
                 </div>
+              </div>
 
-                <!-- Priority -->
-                <div>
-                  <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">
-                    Priority Level <span class="text-red-500">*</span>
-                  </label>
-                  <div class="relative">
-                    <select
-                      id="priority"
-                      v-model="form.priority"
-                      class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                      required
-                    >
-                      <option value="" disabled>Select priority level</option>
-                      <option value="low">🟢 Low - Regular updates</option>
-                      <option value="medium">🟡 Medium - Important updates</option>
-                      <option value="high">🔴 High - Urgent updates</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                      <i class="fa fa-chevron-down text-gray-400"></i>
-                    </div>
+              <!-- File -->
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">Document</label>
+                <div
+                  :style="uploadZoneStyle(!!form.update_file)"
+                  style="position:relative;overflow:hidden;"
+                >
+                  <input
+                    type="file"
+                    id="update_file"
+                    @change="handleFileChange"
+                    accept=".pdf,.xlsx,.csv,.docx,.doc,.xls,.ppt,.pptx"
+                    style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;"
+                  />
+                  <div v-if="!form.update_file" style="text-align:center;padding:0.75rem 0;">
+                    <i class="fas fa-file-alt" style="font-size:18px;color:#ccc;display:block;margin-bottom:4px;"></i>
+                    <span style="font-size:11px;color:#aaa;">PDF, Word, Excel · 10MB</span>
+                  </div>
+                  <div v-else style="text-align:center;padding:0.75rem 0.5rem;">
+                    <i class="fas fa-check-circle" style="font-size:18px;color:#3b7a57;display:block;margin-bottom:4px;"></i>
+                    <span style="font-size:10px;color:#3b7a57;word-break:break-all;display:block;">{{ form.update_file.name }}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="border-t border-gray-200 my-8"></div>
-
-            <!-- Media Upload Section -->
-            <div class="mb-8">
-              <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span class="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-lg text-sm font-bold">2</span>
-                Attachments
-              </h2>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Photo Upload -->
-                <div>
-                  <label for="update_photo" class="block text-sm font-medium text-gray-700 mb-2">
-                    Update Photo
-                    <span class="text-gray-500 font-normal ml-1">(Optional)</span>
-                  </label>
-                  <div 
-                    class="relative border-2 border-dashed rounded-lg p-6 transition-all"
-                    :class="[
-                      photoPreview ? 'border-green-300 bg-green-50' : 'border-gray-300 bg-gray-50 hover:border-gray-400'
-                    ]"
-                  >
-                    <input 
-                      type="file" 
-                      id="update_photo" 
-                      class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      @change="handlePhotoChange"
-                      accept="image/*"
-                    />
-                    <div class="text-center" v-if="!photoPreview">
-                      <div class="mb-3">
-                        <i class="fas fa-image text-4xl text-gray-400"></i>
-                      </div>
-                      <p class="text-sm font-medium text-gray-700 mb-1">Upload Image</p>
-                      <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 10MB</p>
-                    </div>
-                    <div v-else class="text-center">
-                      <div class="relative inline-block">
-                        <img :src="photoPreview" class="max-h-32 rounded-lg shadow-md border border-gray-200 mx-auto" alt="Preview" />
-                        <button
-                          type="button"
-                          @click="removePhoto"
-                          class="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all shadow-lg"
-                        >
-                          <i class="fas fa-times text-xs"></i>
-                        </button>
-                      </div>
-                      <p class="text-xs text-green-600 mt-2">
-                        {{ form.update_photo.name }} • {{ formatFileSize(form.update_photo.size) }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- File Upload -->
-                <div>
-                  <label for="update_file" class="block text-sm font-medium text-gray-700 mb-2">
-                    Update File
-                    <span class="text-gray-500 font-normal ml-1">(Optional)</span>
-                  </label>
-                  <div 
-                    class="relative border-2 border-dashed rounded-lg p-6 transition-all"
-                    :class="[
-                      form.update_file ? 'border-green-300 bg-green-50' : 'border-gray-300 bg-gray-50 hover:border-gray-400'
-                    ]"
-                  >
-                    <input 
-                      type="file" 
-                      id="update_file" 
-                      class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      @change="handleFileChange"
-                      accept=".pdf,.xlsx,.csv,.docx,.doc,.xls,.ppt,.pptx"
-                    />
-                    <div class="text-center">
-                      <div class="mb-3">
-                        <i 
-                          class="text-4xl"
-                          :class="form.update_file ? 'fas fa-check-circle text-green-500' : 'fas fa-file text-gray-400'"
-                        ></i>
-                      </div>
-                      <div v-if="!form.update_file">
-                        <p class="text-sm font-medium text-gray-700 mb-1">Upload Document</p>
-                        <p class="text-xs text-gray-500">PDF, Excel, Word up to 10MB</p>
-                      </div>
-                      <div v-else>
-                        <p class="text-sm font-medium text-green-700 mb-1">
-                          <i class="fa fa-file-alt mr-1"></i> {{ form.update_file.name }}
-                        </p>
-                        <p class="text-xs text-green-600">
-                          {{ formatFileSize(form.update_file.size) }} • Click to replace
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            
           </div>
 
-          <!-- Action Buttons -->
-          <div class="flex items-center justify-between px-8 py-6 bg-gray-50 border-t border-gray-200">
-            <button 
+          <!-- Footer -->
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.875rem 1.25rem;background:#fafafa;border-top:1px solid #f0f0f0;">
+            <button
               type="button"
               @click="goBack"
-              class="inline-flex items-center gap-2 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-medium"
               :disabled="isSubmitting"
+              style="font-size:13px;font-weight:500;color:#666;background:transparent;border:1px solid #e0e0e0;border-radius:8px;padding:0.5rem 1rem;cursor:pointer;"
             >
-              <i class="fa fa-times"></i>
-              <span>Cancel</span>
+              Cancel
             </button>
-
-            <button 
+            <button
               type="submit"
               :disabled="isSubmitting"
-              class="inline-flex items-center gap-2 px-8 py-3 text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-              style="background-color: #2e4053"
+              style="font-size:13px;font-weight:600;color:#fff;background:#2e4053;border:none;border-radius:8px;padding:0.5rem 1.25rem;cursor:pointer;display:flex;align-items:center;gap:0.5rem;opacity:1;"
+              :style="isSubmitting ? 'opacity:0.6;cursor:not-allowed;' : ''"
             >
-              <i :class="isSubmitting ? 'fas fa-spinner fa-spin' : 'fas fa-paper-plane'"></i>
-              <span>{{ isSubmitting ? 'Submitting...' : 'Submit Update' }}</span>
+              <i :class="isSubmitting ? 'fas fa-spinner fa-spin' : 'fas fa-paper-plane'" style="font-size:12px;"></i>
+              {{ isSubmitting ? 'Submitting...' : 'Submit Update' }}
             </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
 
     <!-- Success Modal -->
     <Transition name="modal">
       <div
         v-if="showSuccessModal"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm"
+        style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,0.45);"
         @click.self="closeSuccessModal"
       >
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md transform transition-all">
-          <div class="p-6 text-center">
-            <!-- Success Icon -->
-            <div class="mx-auto flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-              <i class="fas fa-check text-3xl text-green-600"></i>
-            </div>
-
-            <!-- Success Message -->
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Update Submitted Successfully!</h3>
-            <p class="text-gray-600 mb-6">
-              Your update has been successfully submitted and will be visible to all team members.
-            </p>
-
-            <!-- Action Buttons -->
-            <div class="flex gap-3">
-              <button
-                @click="createAnother"
-                class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-medium text-gray-700"
-              >
-                <i class="fas fa-plus"></i>
-                <span>Create Another</span>
-              </button>
-              <button
-                @click="viewUpdates"
-                class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-white rounded-lg transition-all font-medium"
-                style="background-color: #2e4053"
-              >
-                <i class="fas fa-list"></i>
-                <span>View Updates</span>
-              </button>
-            </div>
+        <div style="background:#fff;border-radius:14px;width:100%;max-width:340px;padding:1.75rem;text-align:center;">
+          <div style="width:48px;height:48px;border-radius:50%;background:#d1fae5;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+            <i class="fas fa-check" style="font-size:20px;color:#059669;"></i>
+          </div>
+          <h3 style="font-size:16px;font-weight:600;color:#1a1a1a;margin:0 0 0.375rem;">Update Submitted!</h3>
+          <p style="font-size:13px;color:#888;line-height:1.5;margin:0 0 1.25rem;">Visible to all team members now.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+            <button @click="createAnother" style="font-size:13px;font-weight:500;color:#555;background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:0.625rem;cursor:pointer;">
+              + Create Another
+            </button>
+            <button @click="viewUpdates" style="font-size:13px;font-weight:600;color:#fff;background:#2e4053;border:none;border-radius:8px;padding:0.625rem;cursor:pointer;">
+              View Updates
+            </button>
           </div>
         </div>
       </div>
@@ -281,242 +184,114 @@ import { useToast } from 'vue-toastification';
 const router = useRouter();
 const toast = useToast();
 
+const priorities = [
+  { value: 'low',    label: 'Low',    color: '#38a169' },
+  { value: 'medium', label: 'Medium', color: '#d69e2e' },
+  { value: 'high',   label: 'High',   color: '#e53e3e' },
+];
+
 const form = ref({
   titles: [''],
   description: '',
-  priority: 'medium',
+  priority: 'low',
   update_photo: null,
-  update_file: null
+  update_file: null,
 });
 
-const isSubmitting = ref(false);
-const showErrors = ref(false);
-const photoPreview = ref(null);
+const isSubmitting  = ref(false);
+const showErrors    = ref(false);
+const photoPreview  = ref(null);
 const showSuccessModal = ref(false);
+
+const inputStyle = (hasError) =>
+  `width:100%;padding:0.6rem 0.75rem;font-size:14px;border:1px solid ${hasError ? '#e53e3e' : '#e0e0e0'};border-radius:8px;outline:none;color:#1a1a1a;background:#fff;transition:border-color .15s;box-sizing:border-box;`;
+
+const uploadZoneStyle = (active) =>
+  `border:1.5px dashed ${active ? '#68d391' : '#d4d4d4'};border-radius:8px;background:${active ? '#f0fff4' : '#fafafa'};min-height:88px;cursor:pointer;transition:all .15s;`;
+
+const priorityStyle = (val) =>
+  `display:flex;align-items:center;padding:0.5rem 0.75rem;border-radius:8px;border:1px solid ${form.value.priority === val ? '#2e4053' : '#e0e0e0'};background:${form.value.priority === val ? '#f0f4f8' : '#fff'};cursor:pointer;transition:all .15s;user-select:none;`;
 
 const submitUpdate = async () => {
   showErrors.value = true;
-
-  // Validation
   if (!form.value.titles[0]?.trim() || !form.value.description?.trim()) {
     toast.error('Please fill in all required fields');
     return;
   }
-
   isSubmitting.value = true;
-  
   try {
-    const formData = new FormData();
-    
-    // Send titles as array
-    form.value.titles.forEach((title, index) => {
-      if (title?.trim()) {
-        formData.append(`titles[${index}]`, title.trim());
-      }
-    });
-    
-    formData.append('description', form.value.description.trim());
-    formData.append('priority', form.value.priority);
-    
-    if (form.value.update_photo) {
-      formData.append('update_photo', form.value.update_photo);
-    }
-    
-    if (form.value.update_file) {
-      formData.append('update_file', form.value.update_file);
-    }
+    const fd = new FormData();
+    form.value.titles.forEach((t, i) => { if (t?.trim()) fd.append(`titles[${i}]`, t.trim()); });
+    fd.append('description', form.value.description.trim());
+    fd.append('priority', form.value.priority);
+    if (form.value.update_photo) fd.append('update_photo', form.value.update_photo);
+    if (form.value.update_file)  fd.append('update_file',  form.value.update_file);
 
-    const response = await axios.post('/api/updates', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-    
-    if (response.data.status === 'success' || response.status === 200 || response.status === 201) {
+    const res = await axios.post('/api/updates', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+    if (res.data.status === 'success' || res.status === 200 || res.status === 201) {
       showSuccessModal.value = true;
     } else {
-      toast.error(response.data.message || 'Failed to submit update');
+      toast.error(res.data.message || 'Failed to submit update');
     }
-  } catch (error) {
-    console.error('Error submitting update:', error);
-    
-    let errorMessage = 'An error occurred while submitting the update';
-    if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else if (error.request) {
-      errorMessage = 'No response from server. Please check your connection.';
-    }
-    
-    toast.error(errorMessage);
+  } catch (err) {
+    const msg = err.response?.data?.message || (err.request ? 'No response from server.' : 'An error occurred');
+    toast.error(msg);
   } finally {
     isSubmitting.value = false;
   }
 };
 
-const handlePhotoChange = (event) => {
-  const file = event.target.files[0];
-  
-  if (!file) {
-    form.value.update_photo = null;
-    photoPreview.value = null;
-    return;
+const handlePhotoChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!['image/jpeg','image/jpg','image/png','image/gif','image/webp'].includes(file.type)) {
+    toast.error('Please upload a valid image file'); e.target.value = ''; return;
   }
-
-  // Validate file type
-  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-  if (!validTypes.includes(file.type)) {
-    toast.error('Please upload a valid image file (JPG, PNG, GIF, WEBP)');
-    event.target.value = '';
-    return;
-  }
-
-  // Validate file size (10MB max)
-  const maxSize = 10 * 1024 * 1024;
-  if (file.size > maxSize) {
-    toast.error('Image size must be less than 10MB');
-    event.target.value = '';
-    return;
-  }
-
+  if (file.size > 10 * 1024 * 1024) { toast.error('Image must be under 10MB'); e.target.value = ''; return; }
   form.value.update_photo = file;
-  
-  // Create preview
   const reader = new FileReader();
-  reader.onload = (e) => {
-    photoPreview.value = e.target.result;
-  };
+  reader.onload = (ev) => { photoPreview.value = ev.target.result; };
   reader.readAsDataURL(file);
 };
 
-const handleFileChange = (event) => {
-  const file = event.target.files[0];
-  
-  if (!file) {
-    form.value.update_file = null;
-    return;
-  }
-
-  // Validate file type
-  const validTypes = [
-    'application/pdf',
-    'application/msword',
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const valid = [
+    'application/pdf','application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-powerpoint',
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'text/csv'
+    'text/csv',
   ];
-  
-  if (!validTypes.includes(file.type)) {
-    toast.error('Please upload a valid document file (PDF, Word, Excel, PowerPoint, CSV)');
-    event.target.value = '';
-    return;
-  }
-
-  // Validate file size (10MB max)
-  const maxSize = 10 * 1024 * 1024;
-  if (file.size > maxSize) {
-    toast.error('File size must be less than 10MB');
-    event.target.value = '';
-    return;
-  }
-
+  if (!valid.includes(file.type)) { toast.error('Please upload a valid document file'); e.target.value = ''; return; }
+  if (file.size > 10 * 1024 * 1024) { toast.error('File must be under 10MB'); e.target.value = ''; return; }
   form.value.update_file = file;
 };
 
 const removePhoto = () => {
   form.value.update_photo = null;
   photoPreview.value = null;
-  const fileInput = document.getElementById('update_photo');
-  if (fileInput) fileInput.value = '';
+  const el = document.getElementById('update_photo');
+  if (el) el.value = '';
 };
 
 const resetForm = () => {
-  form.value = {
-    titles: [''],
-    description: '',
-    priority: 'medium',
-    update_photo: null,
-    update_file: null
-  };
+  form.value = { titles: [''], description: '', priority: 'low', update_photo: null, update_file: null };
   photoPreview.value = null;
   showErrors.value = false;
-  
-  // Clear file inputs
-  const photoInput = document.getElementById('update_photo');
-  const fileInput = document.getElementById('update_file');
-  if (photoInput) photoInput.value = '';
-  if (fileInput) fileInput.value = '';
+  ['update_photo','update_file'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 };
 
-const closeSuccessModal = () => {
-  showSuccessModal.value = false;
-  resetForm();
-};
-
-const createAnother = () => {
-  showSuccessModal.value = false;
-  resetForm();
-  toast.success('Form cleared. Ready for new update!');
-};
-
-const viewUpdates = () => {
-  showSuccessModal.value = false;
-  router.push('/tenderuser-viewupdate');
-};
-
-const goBack = () => {
-  router.push('/tenderuser-viewupdate');
-};
-
-const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-};
+const closeSuccessModal = () => { showSuccessModal.value = false; resetForm(); };
+const createAnother    = () => { showSuccessModal.value = false; resetForm(); toast.success('Ready for new update!'); };
+const viewUpdates      = () => { showSuccessModal.value = false; router.push('/tenderuser-viewupdate'); };
+const goBack           = () => router.push('/tenderuser-viewupdate');
 </script>
 
 <style scoped>
-/* Modal transition */
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-active .bg-white,
-.modal-leave-active .bg-white {
-  transition: transform 0.3s ease;
-}
-
-.modal-enter-from .bg-white,
-.modal-leave-to .bg-white {
-  transform: scale(0.95);
-}
-
-/* Smooth transitions */
-* {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-/* Focus styles */
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-}
-
-/* File input hover effect */
-input[type="file"] + div {
-  cursor: pointer;
-}
+.modal-enter-active, .modal-leave-active { transition: opacity 0.2s ease; }
+.modal-enter-from, .modal-leave-to { opacity: 0; }
 </style>

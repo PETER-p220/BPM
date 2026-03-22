@@ -281,7 +281,10 @@ const filteredTenders = computed(() => {
       t.tender_type,
       t.tender_number,
       t.procurement_entity,
-      t.tender_source
+      t.tender_source,
+      t.procurement_method,
+      t.submission_mode,
+      t.bid_currency
     ].some(v => v?.toString().toLowerCase().includes(term))
   )
 })

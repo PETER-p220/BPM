@@ -100,6 +100,21 @@
                     <label class="text-sm font-semibold text-gray-700">Tender Source</label>
                     <p class="mt-1 text-gray-900">{{ tender.tender_source || 'N/A' }}</p>
                   </div>
+
+                  <div>
+                    <label class="text-sm font-semibold text-gray-700">Procurement Method</label>
+                    <p class="mt-1 text-gray-900">{{ tender.procurement_method || 'N/A' }}</p>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-semibold text-gray-700">Submission Mode</label>
+                    <p class="mt-1 text-gray-900">{{ tender.submission_mode || 'N/A' }}</p>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-semibold text-gray-700">Contract Duration</label>
+                    <p class="mt-1 text-gray-900">{{ tender.contract_duration || 'N/A' }}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -121,28 +136,34 @@
 
                   <div>
                     <label class="text-sm font-semibold text-gray-700">Published Date</label>
-                    <p class="mt-1 text-gray-900">{{ formatDate(tender.created_at) }}</p>
+                    <p class="mt-1 text-gray-900">{{ formatDate(tender.date_of_Publication) }}</p>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-semibold text-gray-700">Clarification Deadline</label>
+                    <p class="mt-1 text-gray-900">{{ formatDate(tender.clarification_deadline) }}</p>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-semibold text-gray-700">Site Visit / Pre-bid Meeting</label>
+                    <p class="mt-1 text-gray-900">{{ formatDate(tender.site_visit_date) }}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Description Section -->
-          <div v-if="tender.description" class="mt-8 pt-6 border-t border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Description</h3>
+          <div v-if="tender.scope_summary" class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Scope Summary</h3>
             <div class="prose max-w-none text-gray-700">
-              <p v-if="typeof tender.description === 'string'">{{ tender.description }}</p>
-              <div v-else v-html="tender.description"></div>
+              <p class="whitespace-pre-wrap">{{ tender.scope_summary }}</p>
             </div>
           </div>
 
-          <!-- Requirements Section -->
-          <div v-if="tender.requirements" class="mt-8 pt-6 border-t border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Requirements</h3>
+          <div v-if="tender.eligibility_criteria" class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Eligibility Requirements</h3>
             <div class="prose max-w-none text-gray-700">
-              <p v-if="typeof tender.requirements === 'string'">{{ tender.requirements }}</p>
-              <div v-else v-html="tender.requirements"></div>
+              <p class="whitespace-pre-wrap">{{ tender.eligibility_criteria }}</p>
             </div>
           </div>
 
@@ -196,11 +217,21 @@
               <label class="text-sm font-semibold text-gray-700">Budget Amount</label>
               <p class="mt-1 text-gray-900 font-semibold">{{ formatCurrency(tender.budget_amount) }}</p>
             </div>
-            <div v-if="tender.bid_security">
-              <label class="text-sm font-semibold text-gray-700">Bid Security</label>
-              <p class="mt-1 text-gray-900">{{ formatCurrency(tender.bid_security) }}</p>
+            <div v-if="tender.estimated_value">
+              <label class="text-sm font-semibold text-gray-700">Estimated Value</label>
+              <p class="mt-1 text-gray-900 font-semibold">{{ formatCurrency(tender.estimated_value, tender.bid_currency) }}</p>
             </div>
-            <div v-if="!tender.budget_amount && !tender.bid_security">
+            <div v-if="tender.tender_fee">
+              <label class="text-sm font-semibold text-gray-700">Tender Fee</label>
+              <p class="mt-1 text-gray-900">{{ formatCurrency(tender.tender_fee, tender.bid_currency) }}</p>
+            </div>
+            <div v-if="tender.bid_security_required">
+              <label class="text-sm font-semibold text-gray-700">Bid Security</label>
+              <p class="mt-1 text-gray-900">
+                {{ tender.bid_security_amount ? formatCurrency(tender.bid_security_amount, tender.bid_currency) : 'Required' }}
+              </p>
+            </div>
+            <div v-if="!tender.budget_amount && !tender.estimated_value && !tender.tender_fee && !tender.bid_security_required">
               <p class="text-gray-500 italic">No financial information available</p>
             </div>
           </div>
@@ -272,11 +303,11 @@ function getExpirationBadgeStyle(expiredAt) {
   return { backgroundColor: '#d1fae5', color: '#065f46' }
 }
 
-function formatCurrency(amount) {
+function formatCurrency(amount, currency = 'TZS') {
   if (!amount) return 'N/A'
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-TZ', {
     style: 'currency',
-    currency: 'USD'
+    currency
   }).format(amount)
 }
 
