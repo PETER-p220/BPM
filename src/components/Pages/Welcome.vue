@@ -1,286 +1,311 @@
 <template>
-  <div class="t-root">
+  <div class="root" :class="{ dark: darkMode }">
 
     <!-- ══ NAVBAR ══ -->
-    <header class="t-nav" :class="{ scrolled: scrolled }">
-      <div class="t-nav-inner">
-
-        <div class="t-logo">
-          <div class="t-logo-mark">
-            <svg viewBox="0 0 32 32" fill="none" width="18" height="18">
-              <path d="M4 8h24M4 16h16M4 24h20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <header class="nav" :class="{ scrolled }">
+      <div class="nav-inner">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 36 36" fill="none" width="18" height="18">
+              <rect x="2" y="4" width="14" height="10" rx="2" fill="currentColor" opacity=".9"/>
+              <rect x="20" y="4" width="14" height="10" rx="2" fill="currentColor" opacity=".5"/>
+              <rect x="2" y="22" width="14" height="10" rx="2" fill="currentColor" opacity=".5"/>
+              <rect x="20" y="22" width="14" height="10" rx="2" fill="currentColor" opacity=".9"/>
+              <path d="M16 9h4M16 27h4M9 14v8M27 14v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
             </svg>
           </div>
-          <div class="t-logo-words">
-            <span class="t-logo-name">TERA</span>
-            <span class="t-logo-tag">Business Process Management</span>
+          <div class="logo-text">
+            <span class="logo-name">TERA</span>
+            <span class="logo-tag">Process Intelligence</span>
           </div>
         </div>
 
-        <nav class="t-nav-links">
-          <button @click="scrollTo('modules')"  class="t-link">Modules</button>
-          <button @click="scrollTo('workflow')" class="t-link">Workflow</button>
-          <button @click="scrollTo('features')" class="t-link">Platform</button>
+        <nav class="nav-links">
+          <button @click="scrollTo('solutions')" class="nav-link">Solutions</button>
+          <button @click="scrollTo('workflow')"  class="nav-link">Workflow</button>
+          <button @click="scrollTo('modules')"   class="nav-link">Modules</button>
+          <button @click="scrollTo('platform')"  class="nav-link">Platform</button>
         </nav>
 
-        <div class="t-nav-right">
-          <button @click="toggleDark" class="t-icon-btn" :title="darkMode ? 'Light mode' : 'Dark mode'">
-            <svg v-if="darkMode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <circle cx="12" cy="12" r="5"/>
-              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        <div class="nav-actions">
+          <button @click="toggleDark" class="icon-btn">
+            <svg v-if="darkMode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15">
+              <circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
             </svg>
-            <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15">
               <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
             </svg>
           </button>
-          <router-link to="/login" class="t-btn-primary t-btn-sm">Sign In</router-link>
+          <router-link to="/login" class="btn-ghost">Sign In</router-link>
+          <router-link to="/login" class="btn-primary">
+            Request Access
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </router-link>
         </div>
-
       </div>
     </header>
 
 
     <!-- ══ HERO ══ -->
-    <section class="t-hero">
-      <!-- Layered background -->
-      <div class="t-hero-bg" aria-hidden="true">
-        <div class="t-hero-mesh"></div>
-        <div class="t-hero-grid"></div>
-        <div class="t-hero-glow-tl"></div>
-        <div class="t-hero-glow-br"></div>
+    <section class="hero">
+      <div class="hero-bg">
+        <div class="hero-grid"></div>
+        <div class="hero-radial"></div>
+        <div class="hero-lines">
+          <div class="h-line" v-for="i in 6" :key="i" :style="{ left: (i * 14) + '%', animationDelay: (i * 0.3) + 's' }"></div>
+        </div>
       </div>
-      <!-- Diagonal accent line -->
-      <div class="t-diagonal-rule" aria-hidden="true"></div>
 
-      <div class="t-hero-inner">
-
-        <div class="t-eyebrow">
-          <span class="t-eyebrow-bar"></span>
-          TERA Company &nbsp;·&nbsp; Enterprise BPM Platform
-          <span class="t-eyebrow-bar"></span>
+      <div class="hero-inner">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Enterprise-Grade &nbsp;·&nbsp; Audit-Ready &nbsp;·&nbsp; Multi-Department
         </div>
 
-        <h1 class="t-hero-h1">
-          <span class="t-hl t-hl-1">Govern. Automate.</span>
-          <span class="t-hl t-hl-2"><em class="t-accent">Deliver.</em></span>
+        <h1 class="hero-title">
+          <span class="title-line">Streamline Every</span>
+          <span class="title-line title-accent">Business Process.</span>
+          <span class="title-line">At Scale.</span>
         </h1>
 
-        <p class="t-hero-sub">
-          A unified platform for tender management, project governance,
-          financial oversight, and HR operations — engineered for
-          accountability at every level of TERA Company.
+        <p class="hero-body">
+          TERA BPM unifies tender management, project governance, financial control,
+          and HR operations into a single traceable system — giving leadership
+          complete visibility over every process, every approval, every outcome.
         </p>
 
-        <div class="t-hero-cta">
-          <router-link to="/login" class="t-btn-white t-btn-lg">
-            Get Started
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
+        <div class="hero-actions">
+          <router-link to="/login" class="btn-cta">
+            Start Managing Processes
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </router-link>
-          <button @click="scrollTo('modules')" class="t-btn-ghost-light t-btn-lg">
-            Explore Modules
+          <button @click="scrollTo('workflow')" class="btn-learn">
+            See How It Works
           </button>
         </div>
 
-        <!-- Stats band -->
-        <div class="t-stat-band">
-          <div class="t-stat-item" v-for="(stat, i) in heroStats" :key="i">
-            <span class="t-stat-num">
-              <span v-if="loading" class="t-shimmer">—</span>
-              <span v-else>{{ stat.value }}</span>
-            </span>
-            <span class="t-stat-lbl">{{ stat.label }}</span>
+        <div class="hero-kpis">
+          <div class="kpi" v-for="(s, i) in heroStats" :key="i">
+            <div class="kpi-val">
+              <span v-if="loading" class="shimmer">—</span>
+              <span v-else>{{ s.value }}</span>
+            </div>
+            <div class="kpi-label">{{ s.label }}</div>
           </div>
         </div>
-
       </div>
 
-      <div class="t-scroll-hint" @click="scrollTo('modules')">
-        <span>Discover</span>
-        <div class="t-scroll-line"></div>
+      <!-- Right diagram -->
+      <div class="hero-diagram" aria-hidden="true">
+        <div class="diagram-card" v-for="(step, i) in diagramSteps" :key="i"
+          :style="{ animationDelay: (i * 0.18 + 0.6) + 's', top: (i * 88) + 'px' }">
+          <div class="dc-bar" :style="{ background: step.color }"></div>
+          <div class="dc-content">
+            <div class="dc-stage">{{ step.stage }}</div>
+            <div class="dc-title">{{ step.title }}</div>
+          </div>
+          <div class="dc-status" :style="{ color: step.color }">{{ step.status }}</div>
+        </div>
+        <div class="diagram-line" v-for="i in 3" :key="'l'+i"
+          :style="{ top: (i * 88 - 8) + 'px' }"></div>
       </div>
     </section>
 
 
-    <!-- ══ TRUSTED STRIP ══ -->
-    <div class="t-strip">
-      <span class="t-strip-label">Serving departments across TERA Company</span>
-      <div class="t-strip-divider"></div>
-      <div class="t-strip-items">
-        <span v-for="dept in departments" :key="dept">{{ dept }}</span>
+    <!-- ══ DEPT STRIP ══ -->
+    <div class="dept-strip">
+      <span class="ds-label">Deployed across</span>
+      <div class="ds-divider"></div>
+      <div class="ds-items">
+        <span v-for="d in departments" :key="d">{{ d }}</span>
       </div>
     </div>
 
 
-    <!-- ══ WORKFLOW ══ -->
-    <section id="workflow" class="t-section">
-      <div class="t-section-wrap">
-
-        <div class="t-side-copy">
-          <div class="t-sec-eyebrow">Tender Lifecycle</div>
-          <h2 class="t-sec-h2">From Submission<br>to Contract Award</h2>
-          <p class="t-sec-body">
-            Every tender moves through a structured, traceable workflow —
-            automated routing, multi-level approvals, vendor scoring, and
-            audit-ready documentation at every stage.
+    <!-- ══ VALUE PROPS ══ -->
+    <section id="solutions" class="section bg-light">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Why TERA BPM</div>
+          <h2 class="section-title">One System. Every Process.<br>Zero Accountability Gaps.</h2>
+          <p class="section-sub">
+            Purpose-built for organisations that cannot afford process failures —
+            where every decision must be traceable and every workflow must be governed.
           </p>
-          <ul class="t-list">
-            <li>Tender submission &amp; document management</li>
-            <li>Configurable multi-level approval chains</li>
-            <li>Vendor evaluation &amp; scoring matrix</li>
-            <li>Contract generation &amp; award notification</li>
-          </ul>
-          <router-link to="/login" class="t-btn-primary" style="margin-top:36px;display:inline-flex">
-            Sign In to Submit
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </router-link>
         </div>
-
-        <!-- Vertical workflow -->
-        <div class="t-flow-diagram">
-          <div
-            class="t-flow-step"
-            v-for="(step, i) in workflowSteps"
-            :key="i"
-            :style="{ animationDelay: `${i * 0.13}s` }"
-          >
-            <div class="t-flow-connector" v-if="i < workflowSteps.length - 1"></div>
-            <div class="t-flow-node" :style="{ borderColor: step.color }">
-              <span class="t-flow-emoji">{{ step.icon }}</span>
-            </div>
-            <div class="t-flow-body">
-              <div class="t-flow-title">{{ step.title }}</div>
-              <div class="t-flow-desc">{{ step.desc }}</div>
-            </div>
-            <span class="t-flow-role" :style="{ color: step.color, background: step.color + '12', borderColor: step.color + '35' }">{{ step.tag }}</span>
+        <div class="value-grid">
+          <div class="value-card" v-for="(v, i) in valueProps" :key="i"
+            :style="{ animationDelay: (i * 0.1) + 's' }">
+            <div class="vc-icon" :style="{ color: v.color, background: v.color + '15' }">{{ v.icon }}</div>
+            <h3 class="vc-title">{{ v.title }}</h3>
+            <p class="vc-body">{{ v.body }}</p>
           </div>
         </div>
+      </div>
+    </section>
 
+
+    <!-- ══ WORKFLOW ══ -->
+    <section id="workflow" class="section bg-dark">
+      <div class="container">
+        <div class="workflow-layout">
+          <div class="wf-copy">
+            <div class="eyebrow eyebrow-lt">Tender Lifecycle</div>
+            <h2 class="section-title on-dark">Structured Workflows.<br>Governed Approvals.</h2>
+            <p class="section-sub on-dark">
+              Every tender progresses through a controlled, multi-stage process —
+              from submission through departmental review, financial clearance,
+              competitive evaluation, to formal contract award.
+            </p>
+            <ul class="check-list">
+              <li>Structured tender submission with document checklists</li>
+              <li>Configurable multi-level approval routing by role and value</li>
+              <li>Vendor scoring matrix with weighted evaluation criteria</li>
+              <li>Automated contract generation and award notifications</li>
+              <li>Full audit trail — every action timestamped and attributed</li>
+            </ul>
+            <router-link to="/login" class="btn-primary mt-lg">
+              Submit a Tender
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </router-link>
+          </div>
+
+          <div class="wf-steps">
+            <div class="wf-step" v-for="(step, i) in workflowSteps" :key="i"
+              :style="{ animationDelay: (i * 0.12) + 's' }">
+              <div class="wf-connector" v-if="i < workflowSteps.length - 1"
+                :style="{ borderColor: step.color + '40' }"></div>
+              <div class="wf-num" :style="{ borderColor: step.color, color: step.color }">
+                {{ String(i + 1).padStart(2, '0') }}
+              </div>
+              <div class="wf-body">
+                <div class="wf-title">{{ step.title }}</div>
+                <div class="wf-desc">{{ step.desc }}</div>
+              </div>
+              <span class="wf-badge"
+                :style="{ color: step.color, background: step.color + '18', border: '1px solid ' + step.color + '35' }">
+                {{ step.tag }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
 
     <!-- ══ MODULES ══ -->
-    <section id="modules" class="t-section t-section-bg">
-      <div class="t-section-inner">
-
-        <div class="t-section-hdr">
-          <div class="t-sec-eyebrow">Core Platform</div>
-          <h2 class="t-sec-h2 t-center">Integrated BPM Modules</h2>
-          <p class="t-sec-body t-center" style="max-width:580px;margin:0 auto">
-            Six integrated modules covering every operational dimension —
-            built to work independently or as a unified suite.
+    <section id="modules" class="section bg-light">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Core Platform</div>
+          <h2 class="section-title">Six Integrated Modules.<br>One Unified Platform.</h2>
+          <p class="section-sub">
+            Each module operates independently or as part of the full suite —
+            covering every dimension of business process management.
           </p>
         </div>
-
-        <div class="t-modules">
-          <div
-            class="t-module-card"
-            v-for="(mod, i) in modules"
-            :key="i"
-            :style="{ animationDelay: `${i * 0.08}s` }"
-          >
-            <div class="t-mod-icon-wrap" :style="{ background: mod.bg, color: mod.ic }">
-              <span>{{ mod.icon }}</span>
+        <div class="modules-grid">
+          <div class="mod-card" v-for="(m, i) in modules" :key="i"
+            :style="{ animationDelay: (i * 0.09) + 's' }">
+            <div class="mod-top">
+              <div class="mod-icon" :style="{ background: m.bg, color: m.ic }">{{ m.icon }}</div>
+              <div class="mod-tags">
+                <span class="mod-tag" v-for="t in m.tags" :key="t">{{ t }}</span>
+              </div>
             </div>
-            <div class="t-mod-title">{{ mod.title }}</div>
-            <div class="t-mod-desc">{{ mod.desc }}</div>
-            <div class="t-mod-tags">
-              <span class="t-mod-tag" v-for="tag in mod.tags" :key="tag">{{ tag }}</span>
-            </div>
-            <div class="t-mod-footer">
-              <router-link to="/login" class="t-mod-link">
-                Access module
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </router-link>
-            </div>
+            <h3 class="mod-title">{{ m.title }}</h3>
+            <p class="mod-desc">{{ m.desc }}</p>
+            <router-link to="/login" class="mod-link">
+              Access module
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </router-link>
           </div>
         </div>
-
       </div>
     </section>
 
 
-    <!-- ══ FEATURES ══ -->
-    <section id="features" class="t-section">
-      <div class="t-section-inner">
-
-        <div class="t-section-hdr">
-          <div class="t-sec-eyebrow">Built-in Capabilities</div>
-          <h2 class="t-sec-h2 t-center">Governance by Design</h2>
-          <p class="t-sec-body t-center" style="max-width:540px;margin:0 auto">
-            Every feature was designed around accountability, transparency,
-            and operational efficiency from the ground up.
+    <!-- ══ PLATFORM FEATURES ══ -->
+    <section id="platform" class="section bg-mid">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Platform Capabilities</div>
+          <h2 class="section-title">Governance Built Into<br>Every Layer</h2>
+          <p class="section-sub" style="max-width:520px;margin:0 auto">
+            Compliance, traceability and security are not add-ons —
+            they are the foundation every feature is built on.
           </p>
         </div>
-
-        <div class="t-features">
-          <div
-            class="t-feat"
-            v-for="(f, i) in features"
-            :key="i"
-            :style="{ animationDelay: `${i * 0.09}s` }"
-          >
-            <div class="t-feat-top">
-              <div class="t-feat-ico-wrap">{{ f.icon }}</div>
-              <span class="t-feat-num">{{ String(i + 1).padStart(2, '0') }}</span>
+        <div class="feat-grid">
+          <div class="feat-item" v-for="(f, i) in features" :key="i"
+            :style="{ animationDelay: (i * 0.07) + 's' }">
+            <div class="feat-ico">{{ f.icon }}</div>
+            <div class="feat-body">
+              <h3 class="feat-title">{{ f.title }}</h3>
+              <p class="feat-desc">{{ f.desc }}</p>
             </div>
-            <h3 class="t-feat-title">{{ f.title }}</h3>
-            <p class="t-feat-desc">{{ f.desc }}</p>
           </div>
         </div>
-
       </div>
     </section>
 
 
-    <!-- ══ CTA BANNER ══ -->
-    <section class="t-cta">
-      <div class="t-cta-bg" aria-hidden="true">
-        <div class="t-cta-mesh"></div>
-        <div class="t-cta-orb"></div>
-      </div>
-      <div class="t-cta-inner">
-        <p class="t-cta-overline">Ready to begin?</p>
-        <h2 class="t-cta-h2">
-          Transform How TERA<br>Manages Its Operations
-        </h2>
-        <p class="t-cta-sub">
-          Sign in to access the full TERA BPM platform and
-          start managing your business processes today.
+    <!-- ══ CTA ══ -->
+    <section class="cta-wrap">
+      <div class="cta-grid-bg"></div>
+      <div class="cta-inner">
+        <div class="cta-label">Ready to transform operations?</div>
+        <h2 class="cta-title">Every Business Process.<br>Governed. Traceable. Efficient.</h2>
+        <p class="cta-sub">
+          Join TERA Company departments already using the BPM platform
+          to eliminate bottlenecks and ensure full accountability.
         </p>
-        <router-link to="/login" class="t-btn-white t-btn-lg">
-          Sign In to TERA BPM
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </router-link>
+        <div class="cta-actions">
+          <router-link to="/login" class="btn-cta">
+            Access the Platform
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </router-link>
+          <button @click="scrollTo('modules')" class="btn-learn btn-learn-inv">Explore Modules</button>
+        </div>
       </div>
     </section>
 
 
     <!-- ══ FOOTER ══ -->
-    <footer class="t-footer">
-      <div class="t-footer-inner">
-        <div class="t-logo">
-          <div class="t-logo-mark t-logo-mark-sm">
-            <svg viewBox="0 0 32 32" fill="none" width="15" height="15">
-              <path d="M4 8h24M4 16h16M4 24h20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="logo" style="margin-bottom:14px">
+            <div class="logo-icon logo-icon-sm">
+              <svg viewBox="0 0 36 36" fill="none" width="15" height="15">
+                <rect x="2" y="4" width="14" height="10" rx="2" fill="currentColor" opacity=".9"/>
+                <rect x="20" y="4" width="14" height="10" rx="2" fill="currentColor" opacity=".5"/>
+                <rect x="2" y="22" width="14" height="10" rx="2" fill="currentColor" opacity=".5"/>
+                <rect x="20" y="22" width="14" height="10" rx="2" fill="currentColor" opacity=".9"/>
+                <path d="M16 9h4M16 27h4M9 14v8M27 14v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="logo-text">
+              <span class="logo-name ftr-name">TERA</span>
+              <span class="logo-tag ftr-tag">BPM Platform</span>
+            </div>
           </div>
-          <div class="t-logo-words">
-            <span class="t-logo-name">TERA</span>
-            <span class="t-logo-tag">BPM</span>
+          <p class="footer-desc">
+            Enterprise Business Process Management for TERA Company —
+            unifying tender, project, finance and HR operations.
+          </p>
+        </div>
+        <div class="footer-cols">
+          <div class="footer-col" v-for="col in footerLinks" :key="col.label">
+            <div class="fc-label">{{ col.label }}</div>
+            <div class="fc-links">
+              <router-link to="/login" class="fc-link" v-for="l in col.links" :key="l">{{ l }}</router-link>
+            </div>
           </div>
         </div>
-        <p class="t-footer-copy">
-          © 2026 TERA Company &nbsp;·&nbsp; Business Process Management System &nbsp;·&nbsp; All rights reserved
-        </p>
+      </div>
+      <div class="footer-bar">
+        © 2026 TERA Company &nbsp;·&nbsp; Business Process Management System &nbsp;·&nbsp; All rights reserved
       </div>
     </footer>
 
@@ -297,68 +322,87 @@ const loading  = ref(true)
 const scrolled = ref(false)
 
 const heroStats = ref([
-  { label: 'Tenders Managed',    value: '—' },
-  { label: 'Projects Tracked',   value: '—' },
+  { label: 'Tenders Processed',  value: '—' },
+  { label: 'Active Projects',    value: '—' },
   { label: 'System Uptime',      value: '—' },
   { label: 'Departments Served', value: '5+' },
 ])
 
-const departments = ['Procurement', 'Finance', 'Engineering', 'HR & Admin', 'Executive Office']
+const diagramSteps = [
+  { stage: 'Stage 01', title: 'Tender Submission Received',  status: 'Submitted', color: '#2563eb' },
+  { stage: 'Stage 02', title: 'Department Head Review',      status: 'In Review', color: '#d97706' },
+  { stage: 'Stage 03', title: 'Finance Clearance Check',     status: 'Pending',   color: '#7c3aed' },
+  { stage: 'Stage 04', title: 'Contract Award & Issuance',   status: 'Approved',  color: '#059669' },
+]
+
+const departments = ['Procurement', 'Finance', 'Engineering', 'HR & Administration', 'Executive Office']
+
+const valueProps = [
+  { icon: '📋', color: '#2563eb', title: 'Process Standardisation',      body: 'Define and enforce standard operating procedures across all departments — eliminating ad-hoc workflows and inconsistent approvals.' },
+  { icon: '🔍', color: '#059669', title: 'End-to-End Traceability',      body: 'Every action, approval and document change is logged with user identity, timestamp and rationale — providing a complete audit trail.' },
+  { icon: '⏱',  color: '#d97706', title: 'Cycle Time Reduction',         body: 'Automated routing and smart escalations cut approval cycle times by removing manual handoffs and chasing between departments.' },
+  { icon: '📊', color: '#7c3aed', title: 'Executive Visibility',         body: 'Real-time dashboards give leadership a live view of process health — bottlenecks, overdue approvals and budget utilisation.' },
+  { icon: '🛡️', color: '#dc2626', title: 'Compliance Assurance',         body: 'Built-in policy controls and approval thresholds ensure every transaction complies with procurement and financial regulations.' },
+  { icon: '🔗', color: '#0891b2', title: 'Cross-Department Integration', body: 'Tender, finance, HR and project modules share a unified data layer — eliminating silos and ensuring consistent information.' },
+]
 
 const workflowSteps = [
-  { icon: '📋', title: 'Tender Submission',  desc: 'Supplier submits tender with all required supporting documents',    tag: 'Initiator',   color: '#1a56db' },
-  { icon: '👤', title: 'Department Review',  desc: 'Head of Department reviews scope, feasibility and departmental fit', tag: 'HOD',         color: '#0e9f6e' },
-  { icon: '💰', title: 'Finance Clearance',  desc: 'Finance team verifies budget availability and policy compliance',    tag: 'Finance',     color: '#7e3af2' },
-  { icon: '⚖️',  title: 'Evaluation Board',  desc: 'Committee scores vendors against the standard evaluation matrix',   tag: 'Committee',   color: '#ff5a1f' },
-  { icon: '✅', title: 'Award & Contract',   desc: 'Contract is generated, signed and award is formally communicated',  tag: 'Procurement', color: '#0e9f6e' },
+  { title: 'Tender Submission',    desc: 'Vendor or internal department submits a tender with all mandatory documentation and compliance declarations.',   tag: 'Initiator',   color: '#3b82f6' },
+  { title: 'Head of Department',   desc: 'The relevant HOD reviews the submission for scope alignment, departmental feasibility and budget fit.',           tag: 'HOD Review',  color: '#06b6d4' },
+  { title: 'Finance Clearance',    desc: 'Finance verifies budget availability, checks expenditure policy and confirms funding source before proceeding.', tag: 'Finance',     color: '#8b5cf6' },
+  { title: 'Evaluation Committee', desc: 'A cross-functional committee applies the standard vendor scoring matrix and documents evaluation outcomes.',     tag: 'Committee',   color: '#f59e0b' },
+  { title: 'Award & Contract',     desc: 'Procurement issues the formal award letter, generates the contract and notifies all stakeholders.',              tag: 'Procurement', color: '#10b981' },
 ]
 
 const modules = [
-  { icon: '📄', bg: '#eff6ff', ic: '#1d4ed8', title: 'Tender Management',   desc: 'Full lifecycle management from submission to award with automated status tracking.',          tags: ['Procurement', 'Approvals'] },
-  { icon: '📊', bg: '#f0fdf4', ic: '#15803d', title: 'Project Tracking',    desc: 'Milestone management, budget monitoring, and progress reporting for all active projects.',    tags: ['Planning', 'Reporting'] },
-  { icon: '💳', bg: '#faf5ff', ic: '#7e22ce', title: 'Financial Control',   desc: 'Budget allocation, expense approvals, and real-time financial reporting dashboards.',         tags: ['Budget', 'Expenses'] },
-  { icon: '👥', bg: '#fff7ed', ic: '#c2410c', title: 'HR Operations',       desc: 'Employee records, payroll processing, leave management, and attendance tracking.',            tags: ['Payroll', 'HR'] },
-  { icon: '🔄', bg: '#eff6ff', ic: '#1d4ed8', title: 'Approval Workflows',  desc: 'Configurable multi-level routing with delegation, escalation and full audit trails.',         tags: ['Routing', 'Governance'] },
-  { icon: '📈', bg: '#f0fdf4', ic: '#15803d', title: 'Analytics & Reports', desc: 'Executive dashboards, KPI tracking, and exportable compliance audit reports.',                tags: ['Analytics', 'Exports'] },
+  { icon: '📄', bg: '#eff6ff', ic: '#1d4ed8', title: 'Tender Management',      desc: 'Manage the full tender lifecycle from receipt to award with structured stages, document control and automated status tracking.',   tags: ['Procurement', 'Approval'] },
+  { icon: '📊', bg: '#f0fdf4', ic: '#15803d', title: 'Project Tracking',       desc: 'Track milestones, budgets and deliverables across all active projects with real-time progress reporting and escalation alerts.',     tags: ['Planning', 'Reporting'] },
+  { icon: '💳', bg: '#faf5ff', ic: '#6d28d9', title: 'Financial Control',      desc: 'Enforce budget allocation policies, manage expense approvals and produce financial dashboards for executive decision-making.',        tags: ['Budget', 'Compliance'] },
+  { icon: '👥', bg: '#fff7ed', ic: '#b45309', title: 'HR & People Ops',        desc: 'Centralise employee records, manage payroll workflows, administer leave and track attendance within a governed system.',             tags: ['Payroll', 'HR'] },
+  { icon: '🔄', bg: '#ecfdf5', ic: '#065f46', title: 'Approval Workflows',     desc: 'Design and deploy configurable multi-level approval chains with delegation rules, escalation timers and a full audit trail.',        tags: ['Routing', 'Governance'] },
+  { icon: '📈', bg: '#fefce8', ic: '#854d0e', title: 'Analytics & Compliance', desc: 'Generate executive KPI dashboards, process performance reports and exportable compliance documentation for audits.',                tags: ['Analytics', 'Audit'] },
 ]
 
 const features = [
-  { icon: '⚡', title: 'Automated Routing',        desc: 'Approvals route by role, value threshold and department rules — zero manual handoffs.' },
-  { icon: '🔒', title: 'Complete Audit Trail',     desc: 'Every action is time-stamped, attributed and stored for full regulatory compliance.' },
-  { icon: '📧', title: 'Smart Notifications',      desc: 'Email and in-app alerts keep every stakeholder informed at the right moment.' },
-  { icon: '📋', title: 'Document Version Control', desc: 'All tender and project documents are versioned and linked to their workflow stage.' },
-  { icon: '💹', title: 'Live Budget Integration',  desc: 'Real-time budget checks prevent over-commitment before any approval proceeds.' },
-  { icon: '🛡️', title: 'Role-Based Access',        desc: 'Granular permissions ensure data visibility aligned to organisational hierarchy.' },
-  { icon: '📱', title: 'Mobile Responsive',        desc: 'Approve, review and track on any device — every feature works on phone and tablet.' },
-  { icon: '📊', title: 'Executive Dashboards',     desc: 'Live KPI overviews give leadership instant visibility into operational performance.' },
+  { icon: '⚡', title: 'Role-Based Routing',            desc: 'Approvals automatically route to the correct approver based on role, department and transaction value — no manual forwarding.' },
+  { icon: '🔒', title: 'Immutable Audit Log',           desc: 'Every state change, approval, rejection and comment is permanently recorded with user identity and timestamp for regulatory compliance.' },
+  { icon: '📧', title: 'Contextual Notifications',      desc: 'System-generated alerts inform the right stakeholders at the right time — pending actions, approaching deadlines and decisions.' },
+  { icon: '📁', title: 'Document Version Control',      desc: 'All submitted documents are versioned, linked to their workflow stage and preserved for the full retention period.' },
+  { icon: '💹', title: 'Pre-Commitment Budget Checks',  desc: 'Real-time budget availability checks run before any approval proceeds — preventing financial over-commitment at source.' },
+  { icon: '🛡️', title: 'Least-Privilege Access',        desc: 'Granular role-based permission controls ensure each user sees only the data and actions their position authorises.' },
+  { icon: '📱', title: 'Any Device, Any Location',      desc: 'Approve, review and submit from desktop, tablet or mobile — the full platform is optimised for every screen size.' },
+  { icon: '📊', title: 'Live Process Dashboards',       desc: 'Executive dashboards provide live insight into bottlenecks, cycle times and process compliance across all departments.' },
+]
+
+const footerLinks = [
+  { label: 'Modules',  links: ['Tender Management', 'Project Tracking', 'Financial Control', 'HR Operations'] },
+  { label: 'Platform', links: ['Approval Workflows', 'Audit & Compliance', 'Analytics', 'Document Control'] },
+  { label: 'Company',  links: ['About TERA', 'Departments', 'Support', 'System Status'] },
 ]
 
 async function loadStats() {
   try {
-    const stats = await DashboardService.getDashboardStats()
-    heroStats.value[0].value = stats.tenders.total + '+'
-    heroStats.value[1].value = stats.projects.total + '+'
-    heroStats.value[2].value = stats.uptime + '%'
+    const s = await DashboardService.getDashboardStats()
+    heroStats.value[0].value = s.tenders.total + '+'
+    heroStats.value[1].value = s.projects.total + '+'
+    heroStats.value[2].value = s.uptime + '%'
   } catch {
     heroStats.value[0].value = '142+'
-    heroStats.value[1].value = '310+'
-    heroStats.value[2].value = '99.7%'
-  } finally {
-    loading.value = false
-  }
+    heroStats.value[1].value = '37'
+    heroStats.value[2].value = '99.8%'
+  } finally { loading.value = false }
 }
 
 function toggleDark() {
   darkMode.value = !darkMode.value
-  localStorage.setItem('darkMode', String(darkMode.value))
-  document.documentElement.classList.toggle('tera-dark', darkMode.value)
+  localStorage.setItem('tera-dark', String(darkMode.value))
 }
-
 function scrollTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
-
 onMounted(() => {
+  const saved = localStorage.getItem('tera-dark')
+  if (saved === 'true') darkMode.value = true
   loadStats()
   window.addEventListener('scroll', () => { scrolled.value = window.scrollY > 50 }, { passive: true })
 })
@@ -366,537 +410,553 @@ onMounted(() => {
 
 
 <style scoped>
-/* ════════════════════════════════════════
-   FONTS
-════════════════════════════════════════ */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700;1,800&family=Nunito+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-/* ════════════════════════════════════════
-   DESIGN TOKENS
-════════════════════════════════════════ */
-.t-root {
-  /* Blues */
-  --navy:       #0d2b5e;
-  --navy-deep:  #081a3d;
-  --navy-mid:   #153470;
-  --blue:       #1a56db;
-  --blue-lt:    #3b72f0;
-  --blue-pale:  #eff6ff;
-  --blue-soft:  #dbeafe;
+/* ══ TOKENS ══ */
+.root {
+  --primary:      #1a3faa;
+  --primary-dk:   #0e2570;
+  --primary-lt:   #2f5be0;
+  --primary-pale: #eef2ff;
+  --primary-soft: #c7d2fe;
 
-  /* Neutrals */
-  --white:      #ffffff;
-  --off-white:  #f8faff;
-  --gray-100:   #f1f5f9;
-  --gray-200:   #e2e8f0;
-  --gray-400:   #94a3b8;
-  --gray-600:   #475569;
-  --gray-800:   #1e293b;
-  --ink:        #0f172a;
+  --teal:   #0891b2;
+  --green:  #059669;
+  --amber:  #d97706;
+  --red:    #dc2626;
+  --violet: #7c3aed;
 
-  /* Accents */
-  --gold:       #f59e0b;
-  --gold-lt:    #fbbf24;
+  --ink:       #0e1b2e;
+  --ink-alt:   #1c2d42;
+  --gray-700:  #3d4f63;
+  --gray-500:  #6b7e95;
+  --gray-300:  #c4cdd8;
+  --gray-100:  #edf1f5;
+  --gray-50:   #f5f7fa;
+  --white:     #ffffff;
 
-  /* Spacing / misc */
-  --radius:     12px;
-  --shadow-sm:  0 1px 3px rgba(13,43,94,.08), 0 1px 2px rgba(13,43,94,.06);
-  --shadow-md:  0 4px 16px rgba(13,43,94,.1), 0 2px 8px rgba(13,43,94,.06);
-  --shadow-lg:  0 12px 40px rgba(13,43,94,.14), 0 4px 16px rgba(13,43,94,.08);
-  --shadow-xl:  0 24px 64px rgba(13,43,94,.18);
+  --surface:     #ffffff;
+  --surface-alt: #f5f7fa;
+  --border:      #dde3eb;
+  --text:        var(--ink);
+  --muted:       var(--gray-500);
 
-  font-family: 'Nunito Sans', 'Helvetica Neue', sans-serif;
-  background: var(--white);
-  color: var(--ink);
+  --ff-h:    'DM Serif Display', Georgia, serif;
+  --ff-body: 'IBM Plex Sans', 'Helvetica Neue', sans-serif;
+  --ff-mono: 'IBM Plex Mono', monospace;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+
+  font-family: var(--ff-body);
+  background: var(--surface);
+  color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ════════════════════════════════════════
-   NAVBAR
-════════════════════════════════════════ */
-.t-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  transition: background .35s, box-shadow .35s;
-  background: transparent;
+.root.dark {
+  --surface:     #0c1422;
+  --surface-alt: #101d30;
+  --border:      rgba(255,255,255,.08);
+  --text:        #d4e0ed;
+  --muted:       #617a96;
+  --ink:         #d4e0ed;
+  --ink-alt:     #b8ccdf;
+  --gray-50:     #101d30;
+  --gray-100:    #162032;
+  --gray-300:    rgba(255,255,255,.1);
+  --gray-700:    #8fa5bc;
+  --primary-pale:#0d1d45;
+  --primary-soft:rgba(47,91,224,.3);
+  --white:       #141f32;
 }
-.t-nav.scrolled {
+
+/* ══ NAV ══ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  transition: background .3s, border-color .3s;
+  border-bottom: 1px solid transparent;
+}
+.nav.scrolled {
   background: rgba(255,255,255,.97);
-  box-shadow: 0 1px 0 var(--gray-200), 0 4px 24px rgba(13,43,94,.08);
-  backdrop-filter: blur(12px);
+  border-color: var(--border);
+  backdrop-filter: blur(20px);
 }
-.t-nav-inner {
-  max-width: 1320px; margin: 0 auto; padding: 0 36px;
-  height: 70px; display: flex; align-items: center; gap: 28px;
+.dark .nav.scrolled {
+  background: rgba(12,20,34,.97);
+  border-color: var(--border);
 }
-
-/* Logo */
-.t-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; cursor: default; }
-.t-logo-mark {
-  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
-  background: var(--white); color: var(--navy);
+.nav-inner {
+  max-width: 1340px; margin: 0 auto; padding: 0 48px;
+  height: 66px; display: flex; align-items: center; gap: 36px;
+}
+.logo { display: flex; align-items: center; gap: 13px; flex-shrink: 0; }
+.logo-icon {
+  width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 8px rgba(13,43,94,.2);
+  background: rgba(255,255,255,.15); color: #fff;
+  border: 1px solid rgba(255,255,255,.2); transition: all .2s;
 }
-.t-logo-mark-sm {
-  width: 34px; height: 34px; border-radius: 8px;
-  background: var(--navy); color: var(--white);
-  box-shadow: none;
+.logo-icon-sm {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--primary-pale); color: var(--primary);
+  border: 1px solid var(--primary-soft);
 }
-.t-logo-words { display: flex; flex-direction: column; gap: 1px; line-height: 1; }
-.t-logo-name {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 800; font-size: 17px;
-  color: var(--white); letter-spacing: .06em;
+.nav.scrolled .logo-icon {
+  background: var(--primary-pale); color: var(--primary);
+  border-color: var(--primary-soft);
 }
-.t-nav.scrolled .t-logo-name { color: var(--navy); }
-.t-logo-tag {
-  font-size: 8px; font-weight: 700; letter-spacing: .2em;
-  text-transform: uppercase; color: rgba(255,255,255,.65);
+.logo-text { display: flex; flex-direction: column; gap: 2px; }
+.logo-name {
+  font-family: var(--ff-h); font-size: 18px; color: #fff;
+  letter-spacing: .02em; line-height: 1;
 }
-.t-nav.scrolled .t-logo-tag { color: var(--blue); }
+.ftr-name { color: var(--ink) !important; }
+.dark .ftr-name { color: var(--text) !important; }
+.nav.scrolled .logo-name { color: var(--ink); }
+.dark .nav.scrolled .logo-name { color: var(--text); }
+.logo-tag {
+  font-family: var(--ff-mono); font-size: 8px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,.5); line-height: 1;
+}
+.ftr-tag { color: var(--primary) !important; }
+.nav.scrolled .logo-tag { color: var(--primary); }
+.dark .nav.scrolled .logo-tag { color: var(--primary-soft); }
 
-/* Nav links */
-.t-nav-links { display: flex; gap: 2px; flex: 1; }
-.t-link {
-  padding: 7px 14px; border-radius: 7px; font-size: 13.5px; font-weight: 600;
-  color: rgba(255,255,255,.8); background: none; border: none; cursor: pointer;
-  text-decoration: none; transition: color .2s, background .2s; letter-spacing: .01em;
+.nav-links { display: flex; gap: 2px; flex: 1; }
+.nav-link {
+  padding: 7px 14px; border-radius: var(--r-sm);
+  font-family: var(--ff-body); font-size: 13.5px; font-weight: 500;
+  color: rgba(255,255,255,.7); background: none; border: none; cursor: pointer;
+  text-decoration: none; transition: color .2s, background .2s;
 }
-.t-nav.scrolled .t-link { color: var(--gray-600); }
-.t-link:hover { color: var(--white); background: rgba(255,255,255,.1); }
-.t-nav.scrolled .t-link:hover { color: var(--blue); background: var(--blue-pale); }
+.nav.scrolled .nav-link { color: var(--gray-700); }
+.dark .nav.scrolled .nav-link { color: var(--muted); }
+.nav-link:hover { color: #fff; background: rgba(255,255,255,.1); }
+.nav.scrolled .nav-link:hover { color: var(--primary); background: var(--primary-pale); }
+.dark .nav.scrolled .nav-link:hover { color: var(--text); background: rgba(255,255,255,.05); }
 
-/* Nav right */
-.t-nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: auto; }
-.t-icon-btn {
-  width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+.nav-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0; }
+.icon-btn {
+  width: 34px; height: 34px; border-radius: var(--r-sm);
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.08); color: rgba(255,255,255,.75);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s;
+}
+.nav.scrolled .icon-btn { border-color: var(--border); background: var(--surface); color: var(--gray-700); }
+.dark .nav.scrolled .icon-btn { background: var(--surface-alt); color: var(--muted); }
+.icon-btn:hover { background: rgba(255,255,255,.18); color: #fff; }
+.nav.scrolled .icon-btn:hover { background: var(--primary-pale); color: var(--primary); border-color: var(--primary-soft); }
+
+/* ══ BUTTONS ══ */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: var(--r-md);
+  background: var(--primary); color: #fff; border: none;
+  font-family: var(--ff-body); font-size: 13.5px; font-weight: 600;
+  letter-spacing: .01em; text-decoration: none; cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+.btn-primary:hover { background: var(--primary-lt); transform: translateY(-1px); }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--r-md);
+  background: transparent; color: rgba(255,255,255,.75);
   border: 1px solid rgba(255,255,255,.25);
-  background: rgba(255,255,255,.1); color: rgba(255,255,255,.85);
-  display: flex; align-items: center; justify-content: center;
-  transition: all .2s;
+  font-family: var(--ff-body); font-size: 13.5px; font-weight: 500;
+  text-decoration: none; cursor: pointer; transition: all .2s;
 }
-.t-nav.scrolled .t-icon-btn { border-color: var(--gray-200); background: var(--white); color: var(--gray-600); }
-.t-icon-btn:hover { background: rgba(255,255,255,.2); color: var(--white); }
-.t-nav.scrolled .t-icon-btn:hover { background: var(--blue-pale); color: var(--blue); border-color: var(--blue-soft); }
-
-/* ════════════════════════════════════════
-   BUTTONS
-════════════════════════════════════════ */
-.t-btn-primary {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 12px 26px; border-radius: 9px; border: none;
-  background: var(--blue); color: var(--white);
-  font-family: 'Nunito Sans', sans-serif;
-  font-weight: 700; font-size: 14px; letter-spacing: .02em;
-  text-decoration: none; cursor: pointer;
-  box-shadow: 0 4px 18px rgba(26,86,219,.35);
-  transition: background .2s, transform .15s, box-shadow .2s;
+.nav.scrolled .btn-ghost { color: var(--gray-700); border-color: var(--border); }
+.btn-ghost:hover { background: rgba(255,255,255,.1); color: #fff; border-color: rgba(255,255,255,.5); }
+.nav.scrolled .btn-ghost:hover { background: var(--gray-100); color: var(--ink); }
+.btn-cta {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 14px 30px; border-radius: var(--r-md);
+  background: var(--primary); color: #fff; border: none;
+  font-family: var(--ff-body); font-size: 15px; font-weight: 600;
+  text-decoration: none; cursor: pointer; letter-spacing: .01em;
+  transition: background .2s, transform .15s;
 }
-.t-btn-primary:hover { background: var(--blue-lt); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,86,219,.45); }
-.t-btn-primary:active { transform: scale(.97); }
-
-.t-btn-white {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 12px 26px; border-radius: 9px; border: none;
-  background: var(--white); color: var(--navy);
-  font-family: 'Nunito Sans', sans-serif;
-  font-weight: 700; font-size: 14px; letter-spacing: .02em;
-  text-decoration: none; cursor: pointer;
-  box-shadow: 0 4px 18px rgba(0,0,0,.18);
-  transition: transform .15s, box-shadow .2s, background .2s;
+.btn-cta:hover { background: var(--primary-lt); transform: translateY(-2px); }
+.btn-learn {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 14px 30px; border-radius: var(--r-md);
+  background: rgba(255,255,255,.08); color: #fff;
+  border: 1.5px solid rgba(255,255,255,.3);
+  font-family: var(--ff-body); font-size: 15px; font-weight: 500;
+  cursor: pointer; transition: all .2s;
 }
-.t-btn-white:hover { background: var(--blue-pale); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.22); }
-
-.t-btn-ghost-light {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 12px 26px; border-radius: 9px;
-  border: 1.5px solid rgba(255,255,255,.4);
-  background: rgba(255,255,255,.08); color: var(--white);
-  font-family: 'Nunito Sans', sans-serif;
-  font-weight: 600; font-size: 14px;
-  text-decoration: none; cursor: pointer;
-  transition: background .2s, border-color .2s, transform .15s;
+.btn-learn:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.6); transform: translateY(-1px); }
+.btn-learn-inv {
+  color: var(--text); border-color: var(--border); background: var(--surface-alt);
 }
-.t-btn-ghost-light:hover { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.7); transform: translateY(-1px); }
+.btn-learn-inv:hover { background: var(--gray-100); border-color: var(--gray-300); color: var(--ink); }
+.mt-lg { margin-top: 36px; }
 
-.t-btn-sm { padding: 9px 20px; font-size: 13px; }
-.t-btn-lg { padding: 15px 32px; font-size: 15px; }
-
-/* ════════════════════════════════════════
-   HERO
-════════════════════════════════════════ */
-.t-hero {
-  min-height: 100vh; display: flex; flex-direction: column;
-  justify-content: center; position: relative; overflow: hidden;
-  background: var(--navy);
+/* ══ HERO ══ */
+.hero {
+  min-height: 100vh; position: relative; overflow: hidden;
+  background: var(--primary-dk);
+  display: grid; grid-template-columns: 1fr 400px; align-items: center;
 }
-
-.t-hero-bg { position: absolute; inset: 0; pointer-events: none; }
-
-/* Rich navy gradient mesh */
-.t-hero-mesh {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 70% 80% at 75% 30%, rgba(26,86,219,.35) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 60% at 15% 70%, rgba(13,43,94,.8) 0%, transparent 55%),
-    linear-gradient(165deg, #0d2b5e 0%, #081a3d 55%, #0a2050 100%);
-}
-
-/* Dot grid */
-.t-hero-grid {
+.hero-bg { position: absolute; inset: 0; pointer-events: none; }
+.hero-grid {
   position: absolute; inset: 0;
   background-image:
-    radial-gradient(circle, rgba(255,255,255,.12) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 100%);
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
 }
+.hero-radial {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 55% 80% at 25% 50%, rgba(47,91,224,.28) 0%, transparent 65%);
+}
+.hero-lines { position: absolute; inset: 0; overflow: hidden; }
+.h-line {
+  position: absolute; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(to bottom,
+    transparent 0%, rgba(255,255,255,.05) 25%,
+    rgba(255,255,255,.05) 75%, transparent 100%);
+  animation: lineFade 5s ease-in-out infinite alternate;
+}
+@keyframes lineFade { from { opacity: .3; } to { opacity: .8; } }
 
-/* Glow blobs */
-.t-hero-glow-tl {
-  position: absolute; top: -15%; left: -10%;
-  width: 55vw; height: 55vw; border-radius: 50%;
-  background: radial-gradient(circle, rgba(26,86,219,.22) 0%, transparent 65%);
-  filter: blur(60px);
+.hero-inner {
+  padding: 160px 48px 120px 80px; position: relative; z-index: 2;
 }
-.t-hero-glow-br {
-  position: absolute; bottom: -20%; right: -5%;
-  width: 40vw; height: 40vw; border-radius: 50%;
-  background: radial-gradient(circle, rgba(245,158,11,.12) 0%, transparent 65%);
-  filter: blur(70px);
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,.45); margin-bottom: 36px;
+  animation: fadeUp .7s ease both .1s;
 }
-
-/* Diagonal decorative hairline */
-.t-diagonal-rule {
-  position: absolute; top: 0; right: 22%; bottom: 0; width: 1px;
-  background: linear-gradient(to bottom, transparent 5%, rgba(255,255,255,.1) 35%, rgba(255,255,255,.1) 65%, transparent 95%);
-  transform: skewX(-3deg);
-  pointer-events: none;
+.badge-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #34d399; flex-shrink: 0;
 }
-
-.t-hero-inner {
-  max-width: 920px; margin: 0 auto; padding: 150px 36px 110px;
-  position: relative; z-index: 1; text-align: center;
+.hero-title { margin: 0 0 26px; }
+.title-line {
+  display: block; font-family: var(--ff-h);
+  font-size: clamp(2.6rem, 5vw, 4.6rem);
+  line-height: 1.1; letter-spacing: -.02em; color: #fff;
 }
-
-/* Eyebrow */
-.t-eyebrow {
-  display: flex; align-items: center; justify-content: center; gap: 16px;
-  font-size: 10px; font-weight: 700; letter-spacing: .26em;
-  text-transform: uppercase; color: rgba(255,255,255,.6);
-  margin-bottom: 36px; animation: fadeUp .7s ease both .1s;
+.title-line:nth-child(1) { animation: fadeUp .75s ease both .15s; }
+.title-line:nth-child(2) { animation: fadeUp .75s ease both .28s; }
+.title-line:nth-child(3) { animation: fadeUp .75s ease both .41s; }
+.title-accent { color: #93c5fd; font-style: italic; }
+.hero-body {
+  font-size: 16px; line-height: 1.85; color: rgba(255,255,255,.52);
+  font-weight: 300; max-width: 540px; margin: 0 0 40px;
+  animation: fadeUp .75s ease both .5s;
 }
-.t-eyebrow-bar { flex: 1; max-width: 52px; height: 1px; background: rgba(255,255,255,.25); }
-
-/* Headline */
-.t-hero-h1 { margin: 0 0 30px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.t-hl {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 800; line-height: 1.08;
-  letter-spacing: -.02em; display: block;
-  color: var(--white);
-  font-size: clamp(3.2rem, 7.5vw, 5.8rem);
+.hero-actions {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 68px; animation: fadeUp .75s ease both .6s;
 }
-.t-hl-1 { animation: fadeUp .75s ease both .2s; }
-.t-hl-2 { animation: fadeUp .75s ease both .34s; }
-.t-accent { font-style: italic; color: var(--gold-lt); }
-
-.t-hero-sub {
-  font-size: 17px; line-height: 1.85; color: rgba(255,255,255,.65);
-  font-weight: 300; max-width: 640px; margin: 0 auto 44px;
-  animation: fadeUp .75s ease both .46s; letter-spacing: .01em;
+.hero-kpis {
+  display: flex; border: 1px solid rgba(255,255,255,.1);
+  border-radius: var(--r-lg); overflow: hidden;
+  background: rgba(255,255,255,.04); backdrop-filter: blur(8px);
+  width: fit-content; animation: fadeUp .75s ease both .7s;
 }
-
-.t-hero-cta {
-  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
-  margin-bottom: 80px; animation: fadeUp .75s ease both .56s;
-}
-
-/* Stats band */
-.t-stat-band {
-  display: inline-flex; align-items: stretch; border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.15); overflow: hidden;
-  background: rgba(255,255,255,.06); backdrop-filter: blur(12px);
-  animation: fadeUp .75s ease both .68s;
-}
-.t-stat-item {
-  display: flex; flex-direction: column; gap: 6px; align-items: center;
-  padding: 22px 44px; border-right: 1px solid rgba(255,255,255,.12);
+.kpi {
+  padding: 20px 34px; border-right: 1px solid rgba(255,255,255,.08);
   transition: background .2s;
 }
-.t-stat-item:last-child { border-right: none; }
-.t-stat-item:hover { background: rgba(255,255,255,.07); }
-.t-stat-num {
-  font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700;
-  color: var(--gold-lt); line-height: 1;
+.kpi:last-child { border-right: none; }
+.kpi:hover { background: rgba(255,255,255,.05); }
+.kpi-val {
+  font-family: var(--ff-h); font-size: 2rem;
+  color: #93c5fd; line-height: 1; margin-bottom: 6px;
 }
-.t-stat-lbl {
-  font-size: 10px; font-weight: 700; letter-spacing: .14em;
-  text-transform: uppercase; color: rgba(255,255,255,.5);
+.kpi-label {
+  font-family: var(--ff-mono); font-size: 9px; font-weight: 500;
+  letter-spacing: .15em; text-transform: uppercase; color: rgba(255,255,255,.3);
 }
-.t-shimmer { opacity: .35; animation: blink 1.4s ease-in-out infinite; }
+.shimmer { opacity: .3; animation: blink 1.4s ease-in-out infinite; }
 
-/* Scroll hint */
-.t-scroll-hint {
-  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  font-size: 9.5px; font-weight: 700; letter-spacing: .2em;
-  text-transform: uppercase; color: rgba(255,255,255,.35);
-  cursor: pointer; z-index: 1; transition: color .2s;
-  animation: fadeUp .75s ease both .9s;
+/* Right diagram panel */
+.hero-diagram {
+  position: relative; z-index: 2;
+  padding: 40px 48px 40px 0; height: 460px;
 }
-.t-scroll-hint:hover { color: rgba(255,255,255,.65); }
-.t-scroll-line {
-  width: 1px; height: 38px;
-  background: linear-gradient(to bottom, rgba(255,255,255,.4), transparent);
-  animation: scrollPulse 2.2s ease-in-out infinite;
+.diagram-card {
+  position: absolute; left: 0; right: 48px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: var(--r-lg); padding: 14px 16px;
+  display: flex; align-items: center; gap: 13px;
+  backdrop-filter: blur(14px);
+  animation: slideIn .5s ease both;
 }
-
-/* ════════════════════════════════════════
-   TRUSTED STRIP
-════════════════════════════════════════ */
-.t-strip {
-  background: var(--off-white); border-bottom: 1px solid var(--gray-200);
-  padding: 22px 36px; display: flex; align-items: center; gap: 28px;
-  max-width: 100%; flex-wrap: wrap;
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-.t-strip-label {
-  font-size: 10px; font-weight: 700; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--gray-400); white-space: nowrap;
+.dc-bar { width: 4px; height: 34px; border-radius: 2px; flex-shrink: 0; }
+.dc-content { flex: 1; min-width: 0; }
+.dc-stage {
+  font-family: var(--ff-mono); font-size: 9px; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,.33); margin-bottom: 3px;
 }
-.t-strip-divider { width: 1px; height: 20px; background: var(--gray-200); flex-shrink: 0; }
-.t-strip-items { display: flex; gap: 32px; flex-wrap: wrap; }
-.t-strip-items span {
-  font-size: 13px; font-weight: 600; color: var(--gray-600);
-  transition: color .2s; cursor: default;
-}
-.t-strip-items span:hover { color: var(--blue); }
-
-/* ════════════════════════════════════════
-   SECTIONS
-════════════════════════════════════════ */
-.t-section { padding: 112px 0; }
-.t-section-bg { background: var(--off-white); }
-
-.t-section-wrap {
-  max-width: 1320px; margin: 0 auto; padding: 0 36px;
-  display: grid; grid-template-columns: 1fr 1.1fr; gap: 100px; align-items: start;
-}
-.t-section-inner { max-width: 1320px; margin: 0 auto; padding: 0 36px; }
-.t-section-hdr { text-align: center; margin-bottom: 72px; }
-.t-center { text-align: center; }
-
-.t-sec-eyebrow {
-  font-size: 10px; font-weight: 700; letter-spacing: .24em;
-  text-transform: uppercase; color: var(--blue); margin-bottom: 14px;
-  display: block;
-}
-.t-sec-h2 {
-  font-family: 'Playfair Display', Georgia, serif; font-weight: 800;
-  font-size: clamp(2.1rem, 3.5vw, 3rem); letter-spacing: -.02em;
-  color: var(--navy); margin: 0 0 18px; line-height: 1.18;
-}
-.t-sec-body {
-  font-size: 15.5px; line-height: 1.85; color: var(--gray-600);
-  font-weight: 400; margin: 0;
+.dc-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.82); }
+.dc-status { font-family: var(--ff-mono); font-size: 10px; font-weight: 500; flex-shrink: 0; }
+.diagram-line {
+  position: absolute; left: 22px; width: 1px; height: 16px;
+  background: rgba(255,255,255,.12); pointer-events: none;
 }
 
-/* Checklist */
-.t-list { list-style: none; padding: 0; margin: 28px 0 0; display: flex; flex-direction: column; gap: 14px; }
-.t-list li {
-  padding-left: 24px; position: relative; font-size: 14.5px;
-  line-height: 1.6; color: var(--gray-600); font-weight: 400;
+/* ══ DEPT STRIP ══ */
+.dept-strip {
+  background: var(--surface-alt); border-bottom: 1px solid var(--border);
+  padding: 18px 80px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
 }
-.t-list li::before {
-  content: '';
-  position: absolute; left: 0; top: 7px;
-  width: 10px; height: 10px; border-radius: 3px;
-  background: var(--blue);
+.ds-label {
+  font-family: var(--ff-mono); font-size: 9.5px; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
+}
+.ds-divider { width: 1px; height: 16px; background: var(--border); flex-shrink: 0; }
+.ds-items { display: flex; gap: 28px; flex-wrap: wrap; }
+.ds-items span {
+  font-size: 13px; font-weight: 500; color: var(--gray-700); cursor: default; transition: color .2s;
+}
+.dark .ds-items span { color: var(--muted); }
+.ds-items span:hover { color: var(--primary); }
+
+/* ══ SECTIONS ══ */
+.section { padding: 108px 0; }
+.bg-light { background: var(--surface); }
+.bg-mid   { background: var(--surface-alt); }
+.bg-dark  { background: var(--ink-alt); }
+.dark .bg-dark { background: #090f1c; }
+.container { max-width: 1340px; margin: 0 auto; padding: 0 80px; }
+.section-head { text-align: center; margin-bottom: 68px; }
+
+.eyebrow {
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--primary); margin-bottom: 14px; display: block;
+}
+.eyebrow-lt { color: #7dd3fc; }
+.section-title {
+  font-family: var(--ff-h); font-size: clamp(2rem, 3.5vw, 3rem);
+  letter-spacing: -.022em; color: var(--ink); margin: 0 0 18px; line-height: 1.2;
+}
+.section-title.on-dark { color: #fff; }
+.dark .section-title { color: var(--text); }
+.section-sub {
+  font-size: 15.5px; line-height: 1.85; color: var(--muted); font-weight: 300; margin: 0;
+}
+.section-sub.on-dark { color: rgba(255,255,255,.45); }
+.check-list { list-style: none; padding: 0; margin: 26px 0 0; display: flex; flex-direction: column; gap: 12px; }
+.check-list li {
+  padding-left: 22px; position: relative;
+  font-size: 14.5px; line-height: 1.65; color: rgba(255,255,255,.55); font-weight: 300;
+}
+.check-list li::before {
+  content: ''; position: absolute; left: 0; top: 9px;
+  width: 8px; height: 8px; border-radius: 2px; background: #34d399;
 }
 
-/* ── Workflow diagram ── */
-.t-flow-diagram { display: flex; flex-direction: column; }
-.t-flow-step {
+/* Value grid */
+.value-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px;
+}
+.value-card {
+  background: var(--surface-alt); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 28px 26px;
+  display: flex; flex-direction: column; gap: 13px;
+  animation: fadeUp .5s ease both; transition: border-color .25s, transform .2s;
+}
+.value-card:hover { border-color: var(--primary-soft); transform: translateY(-3px); }
+.dark .value-card { background: var(--surface-alt); }
+.dark .value-card:hover { border-color: rgba(47,91,224,.35); }
+.vc-icon {
+  width: 46px; height: 46px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center; font-size: 21px; flex-shrink: 0;
+}
+.vc-title { font-family: var(--ff-h); font-size: 16px; color: var(--ink); margin: 0; }
+.dark .vc-title { color: var(--text); }
+.vc-body { font-size: 13.5px; line-height: 1.75; color: var(--muted); margin: 0; }
+
+/* Workflow */
+.workflow-layout { display: grid; grid-template-columns: 1fr 1.1fr; gap: 96px; align-items: start; }
+.wf-copy { padding-top: 6px; }
+.wf-steps { display: flex; flex-direction: column; }
+.wf-step {
   display: flex; align-items: flex-start; gap: 18px;
-  padding: 22px 20px; border-radius: 12px; position: relative;
-  animation: fadeUp .5s ease both; transition: background .2s, box-shadow .2s;
-}
-.t-flow-step:hover { background: var(--blue-pale); box-shadow: var(--shadow-sm); }
-
-/* Connecting vertical line */
-.t-flow-connector {
-  position: absolute; left: 38px; top: 72px; bottom: -22px; width: 2px;
-  background: linear-gradient(to bottom, var(--blue-soft), transparent);
-  pointer-events: none;
-}
-
-.t-flow-node {
-  width: 48px; height: 48px; border-radius: 13px; flex-shrink: 0;
-  background: var(--white); border: 2px solid;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; box-shadow: var(--shadow-sm); transition: transform .2s;
-}
-.t-flow-step:hover .t-flow-node { transform: scale(1.07); }
-
-.t-flow-emoji { line-height: 1; }
-.t-flow-body { flex: 1; min-width: 0; padding-top: 2px; }
-.t-flow-title { font-weight: 700; font-size: 14.5px; color: var(--navy); margin-bottom: 4px; }
-.t-flow-desc  { font-size: 13px; color: var(--gray-600); line-height: 1.65; font-weight: 400; }
-.t-flow-role  {
-  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  padding: 3px 10px; border-radius: 999px; border: 1px solid;
-  flex-shrink: 0; align-self: flex-start; margin-top: 4px;
-}
-
-/* ── Modules ── */
-.t-modules { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 20px; }
-.t-module-card {
-  background: var(--white); border: 1px solid var(--gray-200);
-  border-radius: 16px; padding: 28px 26px;
-  display: flex; flex-direction: column; gap: 12px;
-  animation: fadeUp .5s ease both;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow .25s, border-color .25s, transform .2s;
-  position: relative; overflow: hidden;
-}
-.t-module-card::after {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--blue), var(--blue-lt));
-  opacity: 0; transition: opacity .25s;
-}
-.t-module-card:hover { box-shadow: var(--shadow-lg); border-color: var(--blue-soft); transform: translateY(-4px); }
-.t-module-card:hover::after { opacity: 1; }
-
-.t-mod-icon-wrap {
-  width: 52px; height: 52px; border-radius: 13px;
-  display: flex; align-items: center; justify-content: center; font-size: 24px;
-}
-.t-mod-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--navy); }
-.t-mod-desc  { font-size: 13.5px; line-height: 1.7; color: var(--gray-600); flex: 1; }
-.t-mod-tags  { display: flex; gap: 6px; flex-wrap: wrap; }
-.t-mod-tag   { font-size: 10px; font-weight: 700; letter-spacing: .07em; padding: 3px 9px; border-radius: 999px; background: var(--blue-pale); color: var(--blue); border: 1px solid var(--blue-soft); }
-.t-mod-footer { margin-top: 4px; }
-.t-mod-link {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 12.5px; font-weight: 700; color: var(--blue); text-decoration: none;
-  letter-spacing: .02em; transition: gap .2s;
-}
-.t-mod-link:hover { gap: 8px; }
-
-/* ── Features ── */
-.t-features {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
-  gap: 0; border: 1px solid var(--gray-200); border-radius: 18px; overflow: hidden;
-  box-shadow: var(--shadow-md);
-}
-.t-feat {
-  padding: 34px 30px; background: var(--white);
-  border-right: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200);
+  padding: 17px 14px; border-radius: var(--r-md); position: relative;
   animation: fadeUp .5s ease both; transition: background .2s;
 }
-.t-feat:hover { background: var(--blue-pale); }
-.t-feat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.t-feat-ico-wrap { font-size: 26px; line-height: 1; }
-.t-feat-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--gray-200); line-height: 1; }
-.t-feat-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
-.t-feat-desc  { font-size: 13.5px; line-height: 1.75; color: var(--gray-600); }
-
-/* ════════════════════════════════════════
-   CTA
-════════════════════════════════════════ */
-.t-cta {
-  padding: 120px 36px; position: relative; overflow: hidden;
-  background: var(--navy);
+.wf-step:hover { background: rgba(255,255,255,.04); }
+.wf-connector {
+  position: absolute; left: 35px; top: 64px; bottom: -17px; width: 1px;
+  border-left: 1.5px dashed; pointer-events: none;
 }
-.t-cta-bg { position: absolute; inset: 0; pointer-events: none; }
-.t-cta-mesh {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 65% 70% at 50% 50%, rgba(26,86,219,.4) 0%, transparent 70%),
-    linear-gradient(165deg, #0d2b5e 0%, #081a3d 100%);
+.wf-num {
+  width: 44px; height: 44px; border-radius: var(--r-md); flex-shrink: 0;
+  border: 1.5px solid; background: rgba(255,255,255,.04);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono); font-size: 13px; font-weight: 500;
+  transition: transform .2s;
 }
-.t-cta-orb {
-  position: absolute; top: -30%; right: -10%;
-  width: 50vw; height: 50vw; border-radius: 50%;
-  background: radial-gradient(circle, rgba(245,158,11,.12) 0%, transparent 65%);
-  filter: blur(60px);
-}
-.t-cta-inner {
-  max-width: 720px; margin: 0 auto; position: relative; z-index: 1;
-  text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0;
-}
-.t-cta-overline {
-  font-size: 10px; font-weight: 700; letter-spacing: .26em;
-  text-transform: uppercase; color: var(--gold-lt);
-  margin-bottom: 20px;
-}
-.t-cta-h2 {
-  font-family: 'Playfair Display', serif; font-weight: 800;
-  font-size: clamp(2.1rem, 4vw, 3.2rem); color: var(--white);
-  line-height: 1.15; letter-spacing: -.02em; margin-bottom: 20px;
-}
-.t-cta-sub {
-  font-size: 15.5px; line-height: 1.8; color: rgba(255,255,255,.6);
-  max-width: 520px; margin: 0 auto 44px; font-weight: 300;
+.wf-step:hover .wf-num { transform: scale(1.06); }
+.wf-body { flex: 1; min-width: 0; padding-top: 2px; }
+.wf-title { font-weight: 600; font-size: 14px; color: rgba(255,255,255,.88); margin-bottom: 4px; }
+.wf-desc  { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.65; font-weight: 300; }
+.wf-badge {
+  font-family: var(--ff-mono); font-size: 9.5px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 999px; flex-shrink: 0;
+  align-self: flex-start; margin-top: 4px;
 }
 
-/* ════════════════════════════════════════
-   FOOTER
-════════════════════════════════════════ */
-.t-footer {
-  padding: 36px 36px; border-top: 1px solid var(--gray-200);
-  background: var(--white);
+/* Modules */
+.modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; }
+.mod-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 26px 24px;
+  display: flex; flex-direction: column; gap: 12px;
+  animation: fadeUp .5s ease both; transition: border-color .25s, transform .2s;
 }
-.t-footer-inner {
-  max-width: 1320px; margin: 0 auto;
-  display: flex; flex-direction: column; align-items: center; gap: 14px;
+.mod-card:hover { border-color: var(--primary-soft); transform: translateY(-3px); }
+.dark .mod-card { background: var(--surface-alt); }
+.dark .mod-card:hover { border-color: rgba(47,91,224,.3); }
+.mod-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mod-icon {
+  width: 46px; height: 46px; border-radius: var(--r-md); font-size: 21px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.t-footer .t-logo-name { color: var(--navy); }
-.t-footer .t-logo-tag  { color: var(--blue); }
-.t-footer-copy { font-size: 12px; color: var(--gray-400); letter-spacing: .01em; }
+.mod-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.mod-tag {
+  font-family: var(--ff-mono); font-size: 9.5px; font-weight: 500; letter-spacing: .06em;
+  padding: 3px 9px; border-radius: 999px;
+  background: var(--primary-pale); color: var(--primary); border: 1px solid var(--primary-soft);
+}
+.dark .mod-tag { background: rgba(26,63,170,.2); color: #93c5fd; border-color: rgba(26,63,170,.3); }
+.mod-title { font-family: var(--ff-h); font-size: 16px; color: var(--ink); margin: 0; }
+.dark .mod-title { color: var(--text); }
+.mod-desc { font-size: 13.5px; line-height: 1.75; color: var(--muted); flex: 1; }
+.mod-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; font-weight: 600; color: var(--primary);
+  text-decoration: none; transition: gap .2s;
+}
+.dark .mod-link { color: #93c5fd; }
+.mod-link:hover { gap: 9px; }
 
-/* ════════════════════════════════════════
-   TRANSITIONS
-════════════════════════════════════════ */
-.t-fade-enter-active, .t-fade-leave-active { transition: opacity .2s, transform .2s; }
-.t-fade-enter-from, .t-fade-leave-to { opacity: 0; transform: translateY(-6px); }
+/* Features */
+.feat-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: var(--r-xl); overflow: hidden;
+}
+.feat-item {
+  display: flex; gap: 18px; align-items: flex-start;
+  padding: 28px 24px; background: var(--surface-alt);
+  animation: fadeUp .5s ease both; transition: background .2s;
+}
+.feat-item:hover { background: var(--surface); }
+.dark .feat-item { background: var(--surface); }
+.dark .feat-item:hover { background: var(--surface-alt); }
+.feat-ico { font-size: 20px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+.feat-title { font-family: var(--ff-h); font-size: 15px; color: var(--ink); margin: 0 0 8px; }
+.dark .feat-title { color: var(--text); }
+.feat-desc { font-size: 13.5px; line-height: 1.75; color: var(--muted); margin: 0; }
 
-/* ════════════════════════════════════════
-   KEYFRAMES
-════════════════════════════════════════ */
+/* ══ CTA ══ */
+.cta-wrap {
+  padding: 116px 80px; position: relative; overflow: hidden;
+  background: var(--primary-dk);
+}
+.cta-grid-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+.cta-inner {
+  max-width: 760px; margin: 0 auto; position: relative; z-index: 1;
+  text-align: center; display: flex; flex-direction: column; align-items: center;
+}
+.cta-label {
+  font-family: var(--ff-mono); font-size: 9.5px; font-weight: 500;
+  letter-spacing: .2em; text-transform: uppercase; color: #7dd3fc; margin-bottom: 22px;
+}
+.cta-title {
+  font-family: var(--ff-h); font-size: clamp(2.1rem, 4vw, 3.3rem);
+  color: #fff; line-height: 1.18; letter-spacing: -.02em; margin: 0 0 20px;
+}
+.cta-sub {
+  font-size: 15.5px; line-height: 1.85; color: rgba(255,255,255,.42);
+  max-width: 500px; margin: 0 auto 44px; font-weight: 300;
+}
+.cta-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+/* ══ FOOTER ══ */
+.footer { background: var(--surface); border-top: 1px solid var(--border); }
+.footer-inner {
+  max-width: 1340px; margin: 0 auto; padding: 64px 80px;
+  display: grid; grid-template-columns: 320px 1fr; gap: 80px;
+}
+.footer-desc { font-size: 13.5px; line-height: 1.8; color: var(--muted); max-width: 270px; margin: 0; }
+.footer-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.footer-col  { display: flex; flex-direction: column; gap: 14px; }
+.fc-label {
+  font-family: var(--ff-mono); font-size: 9.5px; font-weight: 500;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--ink);
+}
+.dark .fc-label { color: var(--muted); }
+.fc-links { display: flex; flex-direction: column; gap: 9px; }
+.fc-link { font-size: 13.5px; color: var(--muted); text-decoration: none; transition: color .2s; }
+.fc-link:hover { color: var(--primary); }
+.footer-bar {
+  border-top: 1px solid var(--border); padding: 20px 80px;
+  font-family: var(--ff-mono); font-size: 10.5px; letter-spacing: .03em;
+  color: var(--muted); max-width: 100%;
+}
+
+/* ══ KEYFRAMES ══ */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes blink {
-  0%, 100% { opacity: .3; }
+  0%, 100% { opacity: .25; }
   50%       { opacity: .7; }
 }
-@keyframes scrollPulse {
-  0%, 100% { opacity: .4; transform: scaleY(1); transform-origin: top; }
-  50%       { opacity: 1;  transform: scaleY(.6); }
-}
 
-/* ════════════════════════════════════════
-   RESPONSIVE
-════════════════════════════════════════ */
-@media (max-width: 1060px) {
-  .t-section-wrap { grid-template-columns: 1fr; gap: 60px; }
+/* ══ RESPONSIVE ══ */
+@media (max-width: 1100px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-diagram { display: none; }
+  .workflow-layout { grid-template-columns: 1fr; gap: 56px; }
+  .footer-inner { grid-template-columns: 1fr; gap: 48px; }
 }
-@media (max-width: 800px) {
-  .t-nav-links { display: none; }
-  .t-hero-inner { padding: 120px 20px 90px; }
-  .t-stat-band { flex-direction: column; width: 100%; max-width: 320px; border-radius: 14px; }
-  .t-stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.12); }
-  .t-stat-item:last-child { border-bottom: none; }
-  .t-section { padding: 72px 0; }
-  .t-section-wrap, .t-section-inner { padding: 0 20px; }
-  .t-strip { padding: 18px 20px; }
+@media (max-width: 860px) {
+  .nav-links { display: none; }
+  .container, .hero-inner, .dept-strip, .cta-wrap, .footer-inner, .footer-bar { padding-left: 24px; padding-right: 24px; }
+  .section { padding: 72px 0; }
+  .hero-inner { padding: 130px 24px 100px; }
+  .hero-kpis { flex-wrap: wrap; max-width: 100%; }
+  .kpi { flex: 1; min-width: 130px; }
+  .footer-cols { grid-template-columns: 1fr 1fr; }
 }
-@media (max-width: 500px) {
-  .t-hl { font-size: 2.6rem; }
-  .t-hero-cta { flex-direction: column; align-items: stretch; }
-  .t-hero-cta a, .t-hero-cta button { justify-content: center; }
+@media (max-width: 540px) {
+  .title-line { font-size: 2.4rem; }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions a, .hero-actions button { justify-content: center; }
+  .footer-cols { grid-template-columns: 1fr; }
+  .cta-actions { flex-direction: column; align-items: stretch; }
+  .cta-actions a, .cta-actions button { justify-content: center; }
 }
 </style>
