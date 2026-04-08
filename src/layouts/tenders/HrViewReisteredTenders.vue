@@ -431,7 +431,17 @@ function changePage(page) {
 }
 
 function editTender(tenderId) {
-  router.push({ name: 'ViewTender', params: { tender_id: tenderId } })
+  const roleId = parseInt(localStorage.getItem('role_id'))
+  
+  // Use appropriate route name based on user role
+  let routeName = 'ViewTender'
+  if (roleId === 7) {
+    routeName = 'CeoViewTender'
+  } else if (roleId === 1) {
+    routeName = 'AdminViewTender'
+  }
+  
+  router.push({ name: routeName, params: { tender_id: tenderId } })
 }
 
 async function exportToPDF() {

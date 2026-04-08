@@ -108,6 +108,63 @@
           <span class="text-sm">{{ child.label }}</span>
         </router-link>
       </div>
+
+      <!-- TERA Systems Module -->
+      <div
+        @click="toggleTERASystems"
+        :class="[
+          'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer',
+          isTERASystemsActive
+            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+        ]"
+      >
+        <div :class="[
+          'w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200',
+          isTERASystemsActive
+            ? 'bg-white/20 shadow-inner'
+            : 'bg-slate-800 group-hover:bg-slate-700'
+        ]">
+          <i :class="['fas fa-network-wired text-blue-500', isTERASystemsActive ? 'text-white' : 'text-slate-400']"></i>
+        </div>
+        <div class="flex-1">
+          <p class="font-medium">TERA Systems</p>
+          <p class="text-xs opacity-70">External system integrations</p>
+        </div>
+        <svg 
+          class="w-4 h-4 transition-transform duration-200" 
+          :class="[
+            teraSystemsOpen ? 'rotate-180' : '',
+            isTERASystemsActive ? 'text-white' : 'text-slate-400'
+          ]" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+
+      <!-- TERA Systems Children -->
+      <div
+        v-if="teraSystemsOpen"
+        class="ml-4 space-y-1"
+      >
+        <router-link
+          v-for="child in teraSystemsChildren"
+          :key="child.name"
+          :to="child.path"
+          :class="[
+            'flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200',
+            isActive(child.name)
+              ? 'bg-slate-700 text-white'
+              : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+          ]"
+        >
+          <i :class="[child.icon, 'w-4 h-4']"></i>
+          <span class="text-sm">{{ child.label }}</span>
+        </router-link>
+      </div>
     </nav>
 
     <!-- User Profile Section -->
@@ -236,7 +293,7 @@ const simpleMenuItems = ref([
     name: 'CEOTenders',
     label: 'Tenders',
     description: 'Manage all tenders',
-    path: '/ceo/tenders',
+    path: '/ceo/view-tenders',
     icon: 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
   },
   {
@@ -262,6 +319,13 @@ const simpleMenuItems = ref([
     icon: 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
   },
   { type: 'separator' },
+  {
+    name: 'TERASystems',
+    label: 'TERA Systems',
+    description: 'External system integrations',
+    path: '/ceo/tera-systems',
+    icon: 'M13 10V3L4 14h7v7l9-11h-7z'
+  },
   {
     name: 'Profile',
     label: 'Profile',
@@ -360,6 +424,39 @@ const printReportsChildren = ref([
   },
 ]);
 
+// TERA Systems Module
+const teraSystemsOpen = ref(false);
+const teraSystemsChildren = ref([
+  {
+    icon: "fas fa-envelope-open-text text-purple-500",
+    label: "Tera Invites",
+    name: "TeraInvites",
+    path: "/ceo/tera-invites",
+    active: false,
+  },
+  {
+    icon: "fas fa-cash-register text-orange-500",
+    label: "Tera POS",
+    name: "TeraPOS",
+    path: "/ceo/tera-pos",
+    active: false,
+  },
+  {
+    icon: "fas fa-truck text-blue-500",
+    label: "Vehicle Tracking (VTS)",
+    name: "VTS",
+    path: "/ceo/vts",
+    active: false,
+  },
+  {
+    icon: "fas fa-warehouse text-green-500",
+    label: "Smart Shelves",
+    name: "SmartShelves",
+    path: "/ceo/smart-shelves",
+    active: false,
+  },
+]);
+
 onMounted(async () => {
   await fetchUser();
   await updateBadges();
@@ -407,6 +504,15 @@ const isPrintReportsActive = computed(() => {
 
 function togglePrintReports() {
   printReportsOpen.value = !printReportsOpen.value;
+}
+
+// TERA Systems functions
+const isTERASystemsActive = computed(() => {
+  return teraSystemsChildren.value.some(child => isActive(child.name));
+});
+
+function toggleTERASystems() {
+  teraSystemsOpen.value = !teraSystemsOpen.value;
 }
 
 function logout() {

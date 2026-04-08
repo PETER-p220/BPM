@@ -62,14 +62,40 @@
 
     <!-- Tender Details -->
     <div v-else-if="tender" class="container mx-auto px-4 py-8">
-      <!-- Status Badge -->
-      <div v-if="tender" class="mb-6">
-        <span
-          class="inline-flex px-4 py-2 rounded-full text-sm font-semibold"
-          :style="getExpirationBadgeStyle(tender.expired_at)"
-        >
-          {{ getExpirationStatus(tender.expired_at) }}
-        </span>
+      <!-- Status Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <!-- Status Badge -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-600 mb-1">Status</p>
+              <span
+                class="inline-flex px-3 py-1 rounded-full text-sm font-semibold"
+                :style="getExpirationBadgeStyle(tender.expired_at)"
+              >
+                {{ getExpirationStatus(tender.expired_at) }}
+              </span>
+            </div>
+            <div class="text-2xl">
+              <i class="fas fa-flag" :style="{ color: getExpirationBadgeStyle(tender.expired_at).color }"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Days Left -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-600 mb-1">Time Remaining</p>
+              <p class="text-xl font-bold text-gray-900">{{ getDaysRemaining(tender.expired_at) }}</p>
+            </div>
+            <div class="text-2xl text-blue-500">
+              <i class="fas fa-clock"></i>
+            </div>
+          </div>
+        </div>
+
+      
       </div>
 
       <!-- Main Information Card -->
@@ -81,39 +107,36 @@
               <div>
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ tender.title }}</h2>
                 <div class="space-y-4">
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Tender Number</label>
-                    <p class="mt-1 text-gray-900 font-mono bg-gray-100 px-3 py-2 rounded">{{ tender.tender_number }}</p>
+                  <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                    <label class="text-sm font-semibold text-blue-700 flex items-center gap-2 mb-2">
+                      <i class="fas fa-file-contract text-blue-500"></i>
+                      Tender Number
+                    </label>
+                    <p class="mt-1 text-gray-900 font-mono text-lg font-semibold">{{ tender.tender_number }}</p>
                   </div>
                   
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Tender Type</label>
-                    <p class="mt-1 text-gray-900">{{ tender.tender_type || 'N/A' }}</p>
+                  <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <label class="text-sm font-semibold text-gray-700 flex items-center gap-2 mb-2">
+                      <i class="fas fa-tag text-gray-500"></i>
+                      Tender Type
+                    </label>
+                    <p class="mt-1 text-gray-900 font-medium">{{ tender.tender_type || 'N/A' }}</p>
                   </div>
 
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Procurement Entity</label>
-                    <p class="mt-1 text-gray-900">{{ tender.procurement_entity || 'N/A' }}</p>
+                  <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <label class="text-sm font-semibold text-gray-700 flex items-center gap-2 mb-2">
+                      <i class="fas fa-building text-gray-500"></i>
+                      Procurement Entity
+                    </label>
+                    <p class="mt-1 text-gray-900 font-medium">{{ tender.procurement_entity || 'N/A' }}</p>
                   </div>
 
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Tender Source</label>
-                    <p class="mt-1 text-gray-900">{{ tender.tender_source || 'N/A' }}</p>
-                  </div>
-
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Procurement Method</label>
-                    <p class="mt-1 text-gray-900">{{ tender.procurement_method || 'N/A' }}</p>
-                  </div>
-
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Submission Mode</label>
-                    <p class="mt-1 text-gray-900">{{ tender.submission_mode || 'N/A' }}</p>
-                  </div>
-
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Contract Duration</label>
-                    <p class="mt-1 text-gray-900">{{ tender.contract_duration || 'N/A' }}</p>
+                  <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <label class="text-sm font-semibold text-gray-700 flex items-center gap-2 mb-2">
+                      <i class="fas fa-globe text-gray-500"></i>
+                      Tender Source
+                    </label>
+                    <p class="mt-1 text-gray-900 font-medium">{{ tender.tender_source || 'N/A' }}</p>
                   </div>
                 </div>
               </div>
@@ -122,31 +145,35 @@
             <!-- Right Column -->
             <div class="space-y-6">
               <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Important Dates</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <i class="fas fa-calendar-alt text-blue-500"></i>
+                  Important Dates
+                </h3>
                 <div class="space-y-4">
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Bid Submission Deadline</label>
-                    <p class="mt-1 text-gray-900">{{ formatDate(tender.bid_submission) }}</p>
+                  <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                    <label class="text-sm font-semibold text-red-700 flex items-center gap-2 mb-2">
+                      <i class="fas fa-exclamation-triangle text-red-500"></i>
+                      Bid Submission Deadline
+                    </label>
+                    <p class="mt-1 text-gray-900 font-semibold">{{ formatDate(tender.bid_submission) }}</p>
+                    <p class="text-xs text-red-600 mt-1">{{ getUrgency(tender.bid_submission) }}</p>
                   </div>
 
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Expiry Date</label>
-                    <p class="mt-1 text-gray-900">{{ formatDate(tender.expired_at) }}</p>
+                  <div class="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                    <label class="text-sm font-semibold text-orange-700 flex items-center gap-2 mb-2">
+                      <i class="fas fa-hourglass-end text-orange-500"></i>
+                      Expiry Date
+                    </label>
+                    <p class="mt-1 text-gray-900 font-semibold">{{ formatDate(tender.expired_at) }}</p>
+                    <p class="text-xs text-orange-600 mt-1">{{ getUrgency(tender.expired_at) }}</p>
                   </div>
 
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Published Date</label>
-                    <p class="mt-1 text-gray-900">{{ formatDate(tender.date_of_Publication) }}</p>
-                  </div>
-
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Clarification Deadline</label>
-                    <p class="mt-1 text-gray-900">{{ formatDate(tender.clarification_deadline) }}</p>
-                  </div>
-
-                  <div>
-                    <label class="text-sm font-semibold text-gray-700">Site Visit / Pre-bid Meeting</label>
-                    <p class="mt-1 text-gray-900">{{ formatDate(tender.site_visit_date) }}</p>
+                  <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <label class="text-sm font-semibold text-green-700 flex items-center gap-2 mb-2">
+                      <i class="fas fa-newspaper text-green-500"></i>
+                      Published Date
+                    </label>
+                    <p class="mt-1 text-gray-900 font-semibold">{{ formatDate(tender.date_of_Publication) }}</p>
                   </div>
                 </div>
               </div>
@@ -154,16 +181,52 @@
           </div>
 
           <div v-if="tender.scope_summary" class="mt-8 pt-6 border-t border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Scope Summary</h3>
-            <div class="prose max-w-none text-gray-700">
-              <p class="whitespace-pre-wrap">{{ tender.scope_summary }}</p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <i class="fas fa-bullseye text-blue-500"></i>
+              Scope Summary
+            </h3>
+            <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
+              <div class="prose max-w-none text-gray-700">
+                <p class="whitespace-pre-wrap leading-relaxed">{{ tender.scope_summary }}</p>
+              </div>
             </div>
           </div>
 
           <div v-if="tender.eligibility_criteria" class="mt-8 pt-6 border-t border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Eligibility Requirements</h3>
-            <div class="prose max-w-none text-gray-700">
-              <p class="whitespace-pre-wrap">{{ tender.eligibility_criteria }}</p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <i class="fas fa-clipboard-check text-green-500"></i>
+              Eligibility Requirements
+            </h3>
+            <div class="bg-green-50 rounded-lg p-6 border border-green-200">
+              <div class="prose max-w-none text-gray-700">
+                <p class="whitespace-pre-wrap leading-relaxed">{{ tender.eligibility_criteria }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Information Section -->
+          <div class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <i class="fas fa-info-circle text-purple-500"></i>
+              Additional Information
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div v-if="tender.bid_currency" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <label class="text-sm font-semibold text-gray-700">Bid Currency</label>
+                <p class="mt-1 text-gray-900 font-semibold">{{ tender.bid_currency }}</p>
+              </div>
+              <div v-if="tender.tender_category" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <label class="text-sm font-semibold text-gray-700">Category</label>
+                <p class="mt-1 text-gray-900 font-semibold">{{ tender.tender_category }}</p>
+              </div>
+              <div v-if="tender.tender_status" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <label class="text-sm font-semibold text-gray-700">Status</label>
+                <p class="mt-1 text-gray-900 font-semibold">{{ tender.tender_status }}</p>
+              </div>
+              <div v-if="tender.evaluation_criteria" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <label class="text-sm font-semibold text-gray-700">Evaluation Criteria</label>
+                <p class="mt-1 text-gray-900 font-semibold">{{ tender.evaluation_criteria }}</p>
+              </div>
             </div>
           </div>
 
@@ -189,50 +252,83 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Contact Information -->
         <div v-if="tender" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-address-book text-blue-500"></i>
+            Contact Information
+          </h3>
           <div class="space-y-3">
-            <div v-if="tender.contact_person">
-              <label class="text-sm font-semibold text-gray-700">Contact Person</label>
-              <p class="mt-1 text-gray-900">{{ tender.contact_person }}</p>
+            <div v-if="tender.contact_person" class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <label class="text-sm font-semibold text-blue-700 flex items-center gap-2 mb-2">
+                <i class="fas fa-user text-blue-500"></i>
+                Contact Person
+              </label>
+              <p class="mt-1 text-gray-900 font-semibold">{{ tender.contact_person }}</p>
             </div>
-            <div v-if="tender.contact_email">
-              <label class="text-sm font-semibold text-gray-700">Email</label>
-              <p class="mt-1 text-gray-900">{{ tender.contact_email }}</p>
+            <div v-if="tender.contact_email" class="bg-green-50 rounded-lg p-4 border border-green-200">
+              <label class="text-sm font-semibold text-green-700 flex items-center gap-2 mb-2">
+                <i class="fas fa-envelope text-green-500"></i>
+                Email
+              </label>
+              <p class="mt-1 text-gray-900 font-semibold">{{ tender.contact_email }}</p>
             </div>
-            <div v-if="tender.contact_phone">
-              <label class="text-sm font-semibold text-gray-700">Phone</label>
-              <p class="mt-1 text-gray-900">{{ tender.contact_phone }}</p>
+            <div v-if="tender.contact_phone" class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+              <label class="text-sm font-semibold text-purple-700 flex items-center gap-2 mb-2">
+                <i class="fas fa-phone text-purple-500"></i>
+                Phone
+              </label>
+              <p class="mt-1 text-gray-900 font-semibold">{{ tender.contact_phone }}</p>
             </div>
             <div v-if="!tender.contact_person && !tender.contact_email && !tender.contact_phone">
-              <p class="text-gray-500 italic">No contact information available</p>
+              <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 text-center">
+                <i class="fas fa-info-circle text-gray-400 text-2xl mb-2"></i>
+                <p class="text-gray-500 italic">No contact information available</p>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Financial Information -->
         <div v-if="tender" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Information</h3>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-money-bill-wave text-green-500"></i>
+            Financial Information
+          </h3>
           <div class="space-y-3">
-            <div v-if="tender.budget_amount">
-              <label class="text-sm font-semibold text-gray-700">Budget Amount</label>
-              <p class="mt-1 text-gray-900 font-semibold">{{ formatCurrency(tender.budget_amount) }}</p>
+            <div v-if="tender.budget_amount" class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+              <label class="text-sm font-semibold text-green-700 flex items-center gap-2 mb-2">
+                <i class="fas fa-piggy-bank text-green-500"></i>
+                Budget Amount
+              </label>
+              <p class="mt-1 text-gray-900 font-bold text-lg">{{ formatCurrency(tender.budget_amount) }}</p>
             </div>
-            <div v-if="tender.estimated_value">
-              <label class="text-sm font-semibold text-gray-700">Estimated Value</label>
-              <p class="mt-1 text-gray-900 font-semibold">{{ formatCurrency(tender.estimated_value, tender.bid_currency) }}</p>
+            <div v-if="tender.estimated_value" class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+              <label class="text-sm font-semibold text-blue-700 flex items-center gap-2 mb-2">
+                <i class="fas fa-chart-line text-blue-500"></i>
+                Estimated Value
+              </label>
+              <p class="mt-1 text-gray-900 font-bold text-lg">{{ formatCurrency(tender.estimated_value, tender.bid_currency) }}</p>
             </div>
-            <div v-if="tender.tender_fee">
-              <label class="text-sm font-semibold text-gray-700">Tender Fee</label>
-              <p class="mt-1 text-gray-900">{{ formatCurrency(tender.tender_fee, tender.bid_currency) }}</p>
+            <div v-if="tender.tender_fee" class="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg p-4 border border-yellow-200">
+              <label class="text-sm font-semibold text-yellow-700 flex items-center gap-2 mb-2">
+                <i class="fas fa-file-invoice-dollar text-yellow-500"></i>
+                Tender Fee
+              </label>
+              <p class="mt-1 text-gray-900 font-semibold">{{ formatCurrency(tender.tender_fee, tender.bid_currency) }}</p>
             </div>
-            <div v-if="tender.bid_security_required">
-              <label class="text-sm font-semibold text-gray-700">Bid Security</label>
-              <p class="mt-1 text-gray-900">
+            <div v-if="tender.bid_security_required" class="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-4 border border-red-200">
+              <label class="text-sm font-semibold text-red-700 flex items-center gap-2 mb-2">
+                <i class="fas fa-shield-alt text-red-500"></i>
+                Bid Security
+              </label>
+              <p class="mt-1 text-gray-900 font-semibold">
                 {{ tender.bid_security_amount ? formatCurrency(tender.bid_security_amount, tender.bid_currency) : 'Required' }}
               </p>
             </div>
             <div v-if="!tender.budget_amount && !tender.estimated_value && !tender.tender_fee && !tender.bid_security_required">
-              <p class="text-gray-500 italic">No financial information available</p>
+              <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 text-center">
+                <i class="fas fa-coins text-gray-400 text-2xl mb-2"></i>
+                <p class="text-gray-500 italic">No financial information available</p>
+              </div>
             </div>
           </div>
         </div>
@@ -301,6 +397,25 @@ function getExpirationBadgeStyle(expiredAt) {
   if (diffDays < 0) return { backgroundColor: '#fee2e2', color: '#991b1b' }
   if (diffDays <= 3) return { backgroundColor: '#fef3c7', color: '#92400e' }
   return { backgroundColor: '#d1fae5', color: '#065f46' }
+}
+
+function getDaysRemaining(expiredAt) {
+  if (!expiredAt) return 'No expiry'
+  const diffDays = Math.ceil((new Date(expiredAt) - new Date()) / 86400000)
+  if (diffDays < 0) return 'Expired'
+  if (diffDays === 0) return 'Today'
+  if (diffDays === 1) return '1 day'
+  return `${diffDays} days`
+}
+
+function getUrgency(dateString) {
+  if (!dateString) return ''
+  const diffDays = Math.ceil((new Date(dateString) - new Date()) / 86400000)
+  if (diffDays < 0) return 'This date has passed'
+  if (diffDays === 0) return 'Due today!'
+  if (diffDays <= 3) return `Only ${diffDays} day${diffDays === 1 ? '' : 's'} left!`
+  if (diffDays <= 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} remaining`
+  return `${diffDays} day${diffDays === 1 ? '' : 's'} remaining`
 }
 
 function formatCurrency(amount, currency = 'TZS') {

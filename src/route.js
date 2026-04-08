@@ -228,6 +228,10 @@ import Followup from "./layouts/assignProjects/Followup.vue";
 import AdminFinancialRecords from "./layouts/hr/AdminFinancialRecords.vue";
 import CEOFinancialRecords from "./layouts/ceo/CEOFinancialRecords.vue";
 import UpdateFollowup from "./layouts/assignProjects/UpdateFollowup.vue";
+import TeraInvites from "./components/Pages/TeraInvites.vue";
+import TeraPOS from "./components/Pages/TeraPOS.vue";
+import VTS from "./components/Pages/VTS.vue";
+import SmartShelves from "./components/Pages/SmartShelves.vue";
 import AccManageRequests from "./layouts/requests/AccManageRequests.vue";
 import AccManageExtendedRequests from "./layouts/extend-request/AccManageExtendedRequests.vue";
 import AccManageInvoices from "./layouts/invoices/AccManageInvoices.vue";
@@ -1943,6 +1947,42 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: [7] }
                 },
                 {
+                    path: 'tera-invites',
+                    name: 'TeraInvites',
+                    component: TeraInvites,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
+                    path: 'tera-pos',
+                    name: 'TeraPOS',
+                    component: TeraPOS,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
+                    path: 'vts',
+                    name: 'VTS',
+                    component: VTS,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
+                    path: 'smart-shelves',
+                    name: 'SmartShelves',
+                    component: SmartShelves,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
+                    path: 'performance-evaluations',
+                    name: 'CEOPerformance',
+                    component: CEOPerformanceVue,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
+                    path: 'leave-management',
+                    name: 'CEOLeaveManagement',
+                    component: HrLeaveManagement,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
                     path: 'profile',
                     name: 'CEOProfile',
                     component: UserProfile4Vue,
@@ -1951,7 +1991,7 @@ const router = createRouter({
             ],
         },
 
-        // ─── GUEST LAYOUT ─────────────────────────────────────────────────────────
+        // GUEST LAYOUT
         {
             path: '/',
             component: GuestLayout,
@@ -2011,7 +2051,7 @@ const router = createRouter({
         // Catch-all — MUST be last
         {
             path: '/:pathMatch(.*)*',
-            redirect: { name: 'Error404' },
+            redirect: () => ({ name: 'Error404' }),
         },
     ],
 });
