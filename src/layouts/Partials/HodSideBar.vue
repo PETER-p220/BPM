@@ -196,6 +196,14 @@
 
     </nav>
 
+    <!-- Logout Section -->
+    <div class="logout-section">
+      <button @click="logout" class="logout-btn">
+        <i class="fas fa-sign-out-alt text-red-400"></i>
+        <span class="logout-text">Logout</span>
+      </button>
+    </div>
+
   </div>
 
 </template>
@@ -207,6 +215,8 @@
 import { ref, watch } from 'vue'
 
 import { useRouter, useRoute } from 'vue-router'
+
+import AuthStorage from '@/utils/authStorage'
 
 
 
@@ -468,6 +478,12 @@ const leave = (el) => {
 
   el.style.opacity = '0'
 
+}
+
+// Logout function
+function logout() {
+  AuthStorage.clearAuth();
+  router.push({ name: 'Login' });
 }
 
 </script>
@@ -1199,5 +1215,38 @@ const leave = (el) => {
 .text-indigo-400{ color: #818cf8 !important; }
 
 .text-indigo-300{ color: #a5b4fc !important; }
+
+/* Logout Section */
+.logout-section {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: auto;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.logout-text {
+  color: #f87171;
+}
 
 </style>

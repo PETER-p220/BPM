@@ -7,7 +7,7 @@
         <i class="fas fa-briefcase"></i>
       </div>
       <div class="tsb-brand-text">
-        <span class="tsb-brand-name">User Portal</span>
+        <span class="tsb-brand-name">PM Portal</span>
         <span class="tsb-brand-role">Dashboard</span>
       </div>
     </div>
@@ -106,6 +106,7 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
+import AuthStorage from '@/utils/authStorage'
 import { ref, onMounted } from 'vue'
 import axios from '@/axios'
 
@@ -124,9 +125,8 @@ onMounted(async () => {
 })
 
 function logout() {
-  localStorage.removeItem('token')
-  localStorage.removeItem('user')
-  router.push('/login')
+  AuthStorage.clearAuth();
+  router.push({ name: 'Login' });
 }
 
 const navigations = ref([

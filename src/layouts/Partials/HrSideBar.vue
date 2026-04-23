@@ -234,6 +234,14 @@
 
         </div>
 
+        <button @click="logout" class="logout-btn">
+
+          <i class="fas fa-sign-out-alt"></i>
+
+          <span>Logout</span>
+
+        </button>
+
       </div>
 
     </div>
@@ -249,6 +257,8 @@
 import { useRouter, useRoute } from 'vue-router';
 
 import { ref, onMounted } from 'vue';
+
+import AuthStorage from '@/utils/authStorage';
 
 
 
@@ -630,6 +640,12 @@ onMounted(() => {
   }
 
 });
+
+// Logout function
+function logout() {
+  AuthStorage.clearAuth();
+  router.push({ name: 'Login' });
+}
 
 </script>
 
@@ -1495,6 +1511,33 @@ onMounted(() => {
 
   max-height: 1000px;
 
+}
+
+/* Logout Button Styles */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 6px;
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.logout-btn i {
+  font-size: 0.875rem;
 }
 
 </style>

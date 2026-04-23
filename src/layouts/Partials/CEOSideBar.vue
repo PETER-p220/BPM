@@ -208,6 +208,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from '@/axios';
+import AuthStorage from '@/utils/authStorage';
 
 const router = useRouter();
 const route = useRoute();
@@ -523,7 +524,7 @@ function toggleTERASystems() {
 function logout() {
   // Clear auth and redirect to login
   AuthStorage.clearAuth();
-  router.push('/login');
+  router.push({ name: 'Login' });
 }
 
 // Profile menu functions

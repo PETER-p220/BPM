@@ -52,9 +52,13 @@
         </div>
         <div class="tsb-footer-info">
           <span class="tsb-footer-name">Tender Officer</span>
-          <span class="tsb-footer-year">© {{ new Date().getFullYear() }} TERA</span>
+          <span class="tsb-footer-year"> {{ new Date().getFullYear() }} TERA</span>
         </div>
       </div>
+      <button @click="logout" class="tsb-logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </button>
     </div>
 
   </div>
@@ -64,6 +68,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import AuthStorage from '@/utils/authStorage'
 
 const router = useRouter()
 const route  = useRoute()
@@ -103,6 +108,12 @@ const navigations = ref([
 
 function isActive(item) {
   return item.path && route.name === item.path
+}
+
+// Logout function
+function logout() {
+  AuthStorage.clearAuth();
+  router.push({ name: 'Login' });
 }
 </script>
 
@@ -266,6 +277,34 @@ function isActive(item) {
 .tsb-footer-info { display: flex; flex-direction: column; gap: 1px; }
 .tsb-footer-name { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.85); }
 .tsb-footer-year { font-size: 10px; color: rgba(255,255,255,.45); }
+
+/* Logout Button Styles */
+.tsb-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.tsb-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.tsb-logout-btn i {
+  font-size: 11px;
+}
 
 @keyframes slideIn {
   from { opacity: 0; transform: translateX(-8px); }

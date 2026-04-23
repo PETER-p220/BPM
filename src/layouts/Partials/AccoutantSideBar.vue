@@ -92,9 +92,13 @@
         </div>
         <div class="acc-footer-info">
           <span class="acc-footer-name">Accountant</span>
-          <span class="acc-footer-year">© {{ new Date().getFullYear() }} TERA</span>
+          <span class="acc-footer-year"> {{ new Date().getFullYear() }} TERA</span>
         </div>
       </div>
+      <button @click="logout" class="acc-logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </button>
     </div>
 
   </div>
@@ -103,6 +107,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import AuthStorage from '@/utils/authStorage'
 
 const router = useRouter()
 const route = useRoute()
@@ -157,6 +162,11 @@ function toggleDropdown(item, index) {
     if (idx !== index && nav.children) nav.active = false
   })
   item.active = !item.active
+}
+
+function logout() {
+  AuthStorage.clearAuth();
+  router.push({ name: 'Login' });
 }
 </script>
 
@@ -361,5 +371,33 @@ function toggleDropdown(item, index) {
 @keyframes accSlideIn {
   from { opacity: 0; transform: translateX(-8px); }
   to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Logout Button Styles */
+.acc-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.acc-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.acc-logout-btn i {
+  font-size: 11px;
 }
 </style>
