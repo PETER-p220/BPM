@@ -2,6 +2,11 @@
   <div class="minutes-page">
     <div class="page-header">
       <div class="header-content">
+        <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-bottom:0.5rem;">
+          <div style="width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-file-alt" style="font-size:18px;color:#fff;"></i>
+          </div>
+        </div>
         <h1 class="page-title">Meeting Minutes</h1>
         <p class="page-subtitle">Create official HR meeting records</p>
       </div>
@@ -215,6 +220,9 @@ onMounted(() => {
   padding: 2rem;
   max-width: 900px;
   margin: 0 auto;
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  background: radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%);
 }
 
 .page-header {
@@ -225,12 +233,12 @@ onMounted(() => {
 .page-title {
   font-size: 2.25rem;
   font-weight: 700;
-  color: #111827;
+  color: #183b63;
   margin: 0 0 0.5rem;
 }
 
 .page-subtitle {
-  color: #6b7280;
+  color: #7a93af;
   font-size: 1.05rem;
 }
 
@@ -280,23 +288,23 @@ onMounted(() => {
 /* Form Card */
 .form-card {
   background: white;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  border: 1px solid #dce7f3;
+  box-shadow: 0 4px 12px rgba(25,79,146,0.06);
   overflow: hidden;
 }
 
 .card-header {
   padding: 1.25rem 1.75rem;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid #edf2fa;
+  background: linear-gradient(135deg,#eef5ff 0%,#ffffff 46%,#f7fbff 100%);
 }
 
 .card-title {
   margin: 0;
   font-size: 1.4rem;
   font-weight: 600;
-  color: #111827;
+  color: #183b63;
 }
 
 /* Form Layout */
@@ -319,7 +327,7 @@ onMounted(() => {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #374151;
+  color: #183b63;
   font-size: 0.95rem;
 }
 
@@ -331,16 +339,17 @@ onMounted(() => {
 .form-control {
   width: 100%;
   padding: 0.8rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  border: 1px solid #d9e6f3;
+  border-radius: 12px;
   font-size: 0.95rem;
+  color: #183b63;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .form-control:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+  border-color: #2f78dd;
+  box-shadow: 0 0 0 3px rgba(47,120,221,0.12);
 }
 
 .textarea {
@@ -355,36 +364,37 @@ onMounted(() => {
   justify-content: flex-end;
   margin-top: 2.25rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid #edf2fa;
 }
 
 .btn {
   padding: 0.8rem 1.6rem;
-  border-radius: 6px;
+  border-radius: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .btn-primary {
-  background: #2563eb;
+  background: linear-gradient(135deg,#194f92 0%,#2f78dd 100%);
   color: white;
   border: none;
+  box-shadow: 0 8px 20px rgba(35,96,182,0.22);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1d4ed8;
+  box-shadow: 0 12px 28px rgba(35,96,182,0.3);
 }
 
 .btn-outline {
   background: white;
-  border: 1px solid #d1d5db;
-  color: #374151;
+  border: 1px solid #d9e6f3;
+  color: #4a6a8a;
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: #f3f4f6;
-  border-color: #9ca3af;
+  background: #f7faff;
+  border-color: #2f78dd;
 }
 
 .btn:disabled {

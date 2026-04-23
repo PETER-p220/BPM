@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 font-['DM_Sans',sans-serif]">
+  <div class="min-h-screen bg-white font-['DM_Sans',sans-serif]">
     <!-- Top Navigation -->
     <div class="bg-white dark:bg-slate-900 shadow-sm border-b border-slate-200 dark:border-slate-700">
       <div class="max-w-7xl mx-auto px-6 py-4">

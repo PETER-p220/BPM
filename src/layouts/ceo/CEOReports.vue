@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900 font-['DM_Sans',sans-serif]">
+  <div class="min-h-screen bg-white font-['DM_Sans',sans-serif]">
     <!-- Header -->
     <div class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
       <div class="max-w-7xl mx-auto px-6 py-4">
@@ -16,7 +16,7 @@
               <option value="90">Last 90 Days</option>
               <option value="365">Last Year</option>
             </select>
-            <button @click="generateReport" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+            <button @click="generateReport" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
               Generate Report
             </button>
           </div>

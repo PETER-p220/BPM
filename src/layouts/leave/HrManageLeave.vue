@@ -1,11 +1,11 @@
 <template>
-  <div class="p-6 bg-gray-50 min-h-screen">
+  <div class="p-6 min-h-screen" style="background:radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%);">
     <div class="max-w-7xl mx-auto">
       <!-- Header -->
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Leave Management</h1>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <h1 class="text-2xl font-bold" style="color:#183b63;">Leave Management</h1>
+          <p class="mt-1 text-sm" style="color:#67819d;">
             <span v-if="[1, 6, 7].includes(userRole)">Approve or reject employee leave requests</span>
             <span v-else>Manage your leave requests</span>
           </p>
@@ -14,101 +14,105 @@
           <button
             v-if="![1, 6, 7].includes(userRole)"
             @click="showModal = true"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            class="px-4 py-2 text-white rounded-[10px] transition-colors font-semibold"
+            style="background:linear-gradient(135deg,#194f92,#2f78dd);box-shadow:0 4px 14px rgba(35,96,182,0.22);"
           >
             <i class="fas fa-plus mr-2"></i>
             New Leave Request
           </button>
-          <button          
+          <button
             @click="exportToExcel"
-            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-          >   
-            <i class="fas fa-download mr-2"></i>
+            class="px-4 py-2 rounded-[10px] transition-colors font-semibold"
+            style="border:1px solid #d7e4f1;background:#fff;color:#183b63;"
+          >
+            <i class="fas fa-download mr-2" style="color:#2f78dd;"></i>
             Export
           </button>
         </div>
       </div>              
       <!-- Statistics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="bg-white rounded-[16px] p-4" style="border:1px solid #d9e6f3;box-shadow:0 4px 16px rgba(18,58,99,0.07);">
           <div class="flex items-center">
-            <div class="p-3 bg-blue-100 rounded-full">
-              <i class="fas fa-calendar-alt text-blue-600"></i>
+            <div class="p-3 rounded-full" style="background:#deebfd;">
+              <i class="fas fa-calendar-alt" style="color:#2f78dd;"></i>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">Total Leaves</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ statistics.total }}</p>
+              <p class="text-sm font-semibold" style="color:#67819d;">Total Leaves</p>
+              <p class="text-2xl font-bold" style="color:#183b63;">{{ statistics.total }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="bg-white rounded-[16px] p-4" style="border:1px solid #d9e6f3;box-shadow:0 4px 16px rgba(18,58,99,0.07);">
           <div class="flex items-center">
-            <div class="p-3 bg-yellow-100 rounded-full">
-              <i class="fas fa-clock text-yellow-600"></i>
+            <div class="p-3 rounded-full" style="background:#deebfd;">
+              <i class="fas fa-clock" style="color:#2f78dd;"></i>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">Pending</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ statistics.pending }}</p>
+              <p class="text-sm font-semibold" style="color:#67819d;">Pending</p>
+              <p class="text-2xl font-bold" style="color:#183b63;">{{ statistics.pending }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="bg-white rounded-[16px] p-4" style="border:1px solid #d9e6f3;box-shadow:0 4px 16px rgba(18,58,99,0.07);">
           <div class="flex items-center">
-            <div class="p-3 bg-green-100 rounded-full">
-              <i class="fas fa-check-circle text-green-600"></i>
+            <div class="p-3 rounded-full" style="background:#deebfd;">
+              <i class="fas fa-check-circle" style="color:#2f78dd;"></i>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">Approved</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ statistics.approved }}</p>
+              <p class="text-sm font-semibold" style="color:#67819d;">Approved</p>
+              <p class="text-2xl font-bold" style="color:#183b63;">{{ statistics.approved }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="bg-white rounded-[16px] p-4" style="border:1px solid #d9e6f3;box-shadow:0 4px 16px rgba(18,58,99,0.07);">
           <div class="flex items-center">
-            <div class="p-3 bg-red-100 rounded-full">
-              <i class="fas fa-times-circle text-red-600"></i>
+            <div class="p-3 rounded-full" style="background:#deebfd;">
+              <i class="fas fa-times-circle" style="color:#2f78dd;"></i>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">Rejected</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ statistics.rejected }}</p>
+              <p class="text-sm font-semibold" style="color:#67819d;">Rejected</p>
+              <p class="text-2xl font-bold" style="color:#183b63;">{{ statistics.rejected }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="bg-white rounded-[16px] p-4" style="border:1px solid #d9e6f3;box-shadow:0 4px 16px rgba(18,58,99,0.07);">
           <div class="flex items-center">
-            <div class="p-3 bg-purple-100 rounded-full">
-              <i class="fas fa-calendar-day text-purple-600"></i>
+            <div class="p-3 rounded-full" style="background:#deebfd;">
+              <i class="fas fa-calendar-day" style="color:#2f78dd;"></i>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">This Month</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ statistics.this_month }}</p>
+              <p class="text-sm font-semibold" style="color:#67819d;">This Month</p>
+              <p class="text-2xl font-bold" style="color:#183b63;">{{ statistics.this_month }}</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Filters -->
-      <div class="bg-white rounded-lg shadow p-4 mb-6">
+      <div class="bg-white rounded-[20px] p-4 mb-6" style="border:1px solid #d9e6f3;box-shadow:0 4px 16px rgba(18,58,99,0.07);">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Search</label>
             <input
               type="text"
               v-model="filters.search"
               placeholder="Search by employee name..."
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+              style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
             />
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Status</label>
             <select
               v-model="filters.status"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+              style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
             >
               <option value="">All Status</option>
               <option value="pending">Pending</option>
@@ -119,10 +123,11 @@
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+            <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Department</label>
             <select
               v-model="filters.department_id"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+              style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
             >
               <option value="">All Departments</option>
               <option v-for="dept in departments" :key="dept.department_id" :value="dept.department_id">
@@ -132,10 +137,11 @@
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Leave Type</label>
+            <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Leave Type</label>
             <select
               v-model="filters.leave_type"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+              style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
             >
               <option value="">All Types</option>
               <option value="sick">Sick Leave</option>
@@ -151,7 +157,8 @@
         <div class="mt-4 flex justify-end">
           <button
             @click="clearFilters"
-            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            class="px-4 py-2 rounded-[8px] text-sm font-semibold transition-colors"
+            style="border:1px solid #d7e4f1;color:#183b63;background:#fff;"
           >
             Clear Filters
           </button>
@@ -159,20 +166,20 @@
       </div>
 
       <!-- Table -->
-      <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="rounded-[24px] bg-white overflow-hidden" style="border:1px solid #d9e6f3;box-shadow:0 28px 70px rgba(18,58,99,0.12);">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requested</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions </th>
+          <table class="min-w-full">
+            <thead style="background:#f3f8ff;">
+              <tr style="border-bottom:1px solid #dce9f7;">
+                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Employee</th>
+                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Type</th>
+                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Duration</th>
+                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Requested</th>
+                <th class="px-6 py-3 text-center text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Actions</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white divide-y" style="border-color:#e8f0f8;">
               <tr v-if="isLoading">
                 <td colspan="6" class="px-6 py-4 text-center">
                   <div class="flex justify-center items-center">
@@ -182,16 +189,16 @@
                 </td>
               </tr>
               <tr v-else-if="filteredLeaves.length === 0">
-                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                <td colspan="6" class="px-6 py-4 text-center" style="color:#67819d;">
                   No leave requests found
                 </td>
               </tr>
-              <tr v-for="leave in filteredLeaves" :key="leave.id" class="hover:bg-gray-50">
+              <tr v-for="leave in filteredLeaves" :key="leave.id" class="hover:bg-[#f8fbff] transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div>
-                    <div class="text-sm font-medium text-gray-900">{{ leave.employee?.name }}</div>
-                    <div class="text-sm text-gray-500">{{ leave.employee?.email }}</div>
-                    <div class="text-xs text-gray-400">{{ leave.employee?.department?.name }}</div>
+                    <div class="text-sm font-semibold" style="color:#183b63;">{{ leave.employee?.name }}</div>
+                    <div class="text-sm" style="color:#67819d;">{{ leave.employee?.email }}</div>
+                    <div class="text-xs" style="color:#9ab8d8;">{{ leave.employee?.department?.name }}</div>
                   </div>
                 </td>
                 
@@ -203,10 +210,10 @@
                 </td>
                 
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">
+                  <div class="text-sm" style="color:#183b63;">
                     {{ formatDate(leave.start_date) }} - {{ formatDate(leave.end_date) }}
                   </div>
-                  <div class="text-xs text-gray-500">{{ leave.days }} days</div>
+                  <div class="text-xs" style="color:#67819d;">{{ leave.days }} days</div>
                 </td>
                 
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -216,7 +223,7 @@
                   </span>
                 </td>
                 
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm" style="color:#7a93af;">
                   {{ formatDate(leave.created_at) }}
                 </td>
                 
@@ -273,23 +280,24 @@
     </div>
 
     <!-- Create/Edit Modal -->
-    <div v-if="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="closeModal">
-      <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-lg bg-white" @click.stop>
+    <div v-if="showModal" class="fixed inset-0 overflow-y-auto h-full w-full z-50" style="background:rgba(10,30,66,0.65);" @click="closeModal">
+      <div class="relative top-20 mx-auto p-5 w-11/12 md:w-3/4 lg:w-1/2 shadow-2xl rounded-[24px] bg-white" @click.stop>
         <div class="mt-3">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">
+          <h3 class="text-lg font-bold mb-4" style="color:#183b63;">
             {{ isEditing ? 'Edit Leave Request' : 'Create Leave Request' }}
           </h3>
           
           <form @submit.prevent="submitLeave">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
+                <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">
                   Employee <span class="text-red-500">*</span>
                 </label>
                 <select
                   v-model="form.employee_id"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+                  style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
                   :class="{ 'border-red-500': !form.employee_id }"
                 >
                   <option value="">Select Employee</option>
@@ -300,13 +308,14 @@
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
+                <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">
                   Leave Type <span class="text-red-500">*</span>
                 </label>
                 <select
                   v-model="form.leave_type"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+                  style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
                   :class="{ 'border-red-500': !form.leave_type }"
                 >
                   <option value="">Select Type</option>
@@ -320,34 +329,36 @@
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
+                <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">
                   Start Date <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   v-model="form.start_date"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+                  style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
                   :class="{ 'border-red-500': !form.start_date }"
                 />
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
+                <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">
                   End Date <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   v-model="form.end_date"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+                  style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
                   :class="{ 'border-red-500': !form.end_date }"
                 />
               </div>
             </div>
             
             <div class="mt-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">
                 Reason <span class="text-red-500">*</span>
               </label>
               <textarea
@@ -355,7 +366,8 @@
                 rows="4"
                 required
                 placeholder="Enter leave reason..."
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+                style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
                 :class="{ 'border-red-500': !form.reason }"
               ></textarea>
             </div>
@@ -364,14 +376,16 @@
               <button
                 type="button"
                 @click="closeModal"
-                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                class="px-4 py-2 rounded-[8px] text-sm font-semibold"
+                style="border:1px solid #d7e4f1;color:#183b63;background:#fff;"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 :disabled="isSubmitting"
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                class="px-4 py-2 text-white rounded-[8px] text-sm font-semibold disabled:opacity-50"
+                style="background:linear-gradient(135deg,#194f92,#2f78dd);"
               >
                 <span v-if="isSubmitting">Saving...</span>
                 <span v-else>{{ isEditing ? 'Update' : 'Create' }}</span>
@@ -383,24 +397,24 @@
     </div>
 
     <!-- View Modal -->
-    <div v-if="showViewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="closeViewModal">
-      <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-lg bg-white" @click.stop>
+    <div v-if="showViewModal" class="fixed inset-0 overflow-y-auto h-full w-full z-50" style="background:rgba(10,30,66,0.65);" @click="closeViewModal">
+      <div class="relative top-20 mx-auto p-5 w-11/12 md:w-3/4 lg:w-1/2 shadow-2xl rounded-[24px] bg-white" @click.stop>
         <div class="mt-3">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">
+          <h3 class="text-lg font-bold mb-4" style="color:#183b63;">
             Leave Request Details
           </h3>
           
           <div v-if="selectedLeave" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Employee</label>
-                <p class="text-gray-900 font-medium">{{ selectedLeave.employee?.name }}</p>
-                <p class="text-gray-500 text-sm">{{ selectedLeave.employee?.email }}</p>
-                <p class="text-gray-500 text-sm">{{ selectedLeave.employee?.department?.name }}</p>
+                <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Employee</label>
+                <p class="font-semibold" style="color:#183b63;">{{ selectedLeave.employee?.name }}</p>
+                <p class="text-sm" style="color:#67819d;">{{ selectedLeave.employee?.email }}</p>
+                <p class="text-sm" style="color:#9ab8d8;">{{ selectedLeave.employee?.department?.name }}</p>
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Leave Type</label>
+                <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Leave Type</label>
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
                   :class="getLeaveTypeClass(selectedLeave.leave_type)">
                   {{ formatLeaveType(selectedLeave.leave_type) }}
@@ -408,13 +422,13 @@
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                <p class="text-gray-900">{{ formatDate(selectedLeave.start_date) }} - {{ formatDate(selectedLeave.end_date) }}</p>
-                <p class="text-gray-500 text-sm">{{ selectedLeave.days }} days</p>
+                <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Duration</label>
+                <p style="color:#183b63;">{{ formatDate(selectedLeave.start_date) }} - {{ formatDate(selectedLeave.end_date) }}</p>
+                <p class="text-sm" style="color:#67819d;">{{ selectedLeave.days }} days</p>
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Status</label>
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
                   :class="getStatusClass(selectedLeave.status)">
                   {{ formatStatus(selectedLeave.status) }}
@@ -423,31 +437,32 @@
             </div>
             
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Reason</label>
-              <div class="p-4 bg-gray-50 rounded-lg">
-                <p class="text-gray-700 whitespace-pre-wrap">{{ selectedLeave.reason }}</p>
+              <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Reason</label>
+              <div class="p-4 rounded-[10px]" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                <p class="whitespace-pre-wrap" style="color:#183b63;">{{ selectedLeave.reason }}</p>
               </div>
             </div>
             
             <div v-if="selectedLeave.rejection_reason" class="mt-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Rejection Reason</label>
-              <div class="p-4 bg-red-50 rounded-lg">
+              <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Rejection Reason</label>
+              <div class="p-4 bg-red-50 rounded-[10px]">
                 <p class="text-red-700 whitespace-pre-wrap">{{ selectedLeave.rejection_reason }}</p>
               </div>
             </div>
             
-            <div v-if="selectedLeave.approver" class="mt-4 pt-4 border-t">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Processed By</label>
-              <p class="text-gray-900">{{ selectedLeave.approver?.name }}</p>
-              <p class="text-gray-500 text-sm">{{ selectedLeave.approver?.email }}</p>
-              <p class="text-gray-500 text-sm">{{ formatDate(selectedLeave.approved_at) }}</p>
+            <div v-if="selectedLeave.approver" class="mt-4 pt-4" style="border-top:1px solid #e8f0f8;">
+              <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">Processed By</label>
+              <p style="color:#183b63;">{{ selectedLeave.approver?.name }}</p>
+              <p class="text-sm" style="color:#67819d;">{{ selectedLeave.approver?.email }}</p>
+              <p class="text-sm" style="color:#67819d;">{{ formatDate(selectedLeave.approved_at) }}</p>
             </div>
           </div>
           
           <div class="mt-6 flex justify-end gap-3">
             <button
               @click="closeViewModal"
-              class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+              class="px-6 py-2 text-white rounded-[10px] transition-colors font-semibold"
+              style="background:linear-gradient(135deg,#194f92,#2f78dd);"
             >
               <i class="fas fa-times mr-2"></i>
               Close
@@ -458,16 +473,16 @@
     </div>
 
     <!-- Reject Modal -->
-    <div v-if="showRejectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="closeRejectModal">
-      <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-lg bg-white" @click.stop>
+    <div v-if="showRejectModal" class="fixed inset-0 overflow-y-auto h-full w-full z-50" style="background:rgba(10,30,66,0.65);" @click="closeRejectModal">
+      <div class="relative top-20 mx-auto p-5 w-11/12 md:w-1/2 shadow-2xl rounded-[24px] bg-white" @click.stop>
         <div class="mt-3">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">
+          <h3 class="text-lg font-bold mb-4" style="color:#183b63;">
             Reject Leave Request
           </h3>
           
           <form @submit.prevent="submitRejection">
             <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label class="block text-sm font-semibold mb-1" style="color:#4e6781;">
                 Rejection Reason <span class="text-red-500">*</span>
               </label>
               <textarea
@@ -475,7 +490,8 @@
                 rows="4"
                 required
                 placeholder="Enter reason for rejection..."
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                class="w-full px-3 py-2 rounded-[8px] outline-none transition-all text-sm"
+                style="border:1.5px solid #d6e4f2;color:#183b63;background:#f8fbff;"
               ></textarea>
             </div>
             
@@ -483,14 +499,15 @@
               <button
                 type="button"
                 @click="closeRejectModal"
-                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                class="px-4 py-2 rounded-[8px] text-sm font-semibold"
+                style="border:1px solid #d7e4f1;color:#183b63;background:#fff;"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 :disabled="isSubmitting"
-                class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+                class="px-4 py-2 bg-red-600 text-white rounded-[8px] text-sm font-semibold disabled:opacity-50"
               >
                 <span v-if="isSubmitting">Rejecting...</span>
                 <span v-else>Reject</span>

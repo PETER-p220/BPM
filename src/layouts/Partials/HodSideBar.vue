@@ -346,11 +346,11 @@ const navigations = ref([
 
   {
 
-    icon: 'fas fa-calendar-alt text-green-400',
+    icon: 'fas fa-paper-plane text-blue-400',
 
-    label: 'Leave Management',
+    label: 'My Requests',
 
-    name: 'HodLeaveManagement',
+    name: 'HodMyRequests',
 
   },
 
@@ -366,9 +366,7 @@ const navigations = ref([
 
     children: [
 
-      { icon: 'fas fa-plus-circle', label: 'Submit Update', name: 'HodSubmitUpdate' },
-
-      { icon: 'fas fa-list', label: 'View / Manage Updates', name: 'HodViewUpdate' },
+      { icon: 'fas fa-list', label: 'My Updates', name: 'HodViewUpdate' },
 
     ],
 

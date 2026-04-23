@@ -1,19 +1,11 @@
 <template>
     <div v-if="sidebar == 'mobile'" class="fixed inset-0 flex z-40 lg:hidden">
-        <div class="relative w-72 py-3 bg-white dark:bg-dark-header dark:text-gray-400 border-r border-primary dark:border-gray-700">
-            <i class="absolute top-6 right-6 fas fa-times" @click="setSidebar('full')"></i>
-            <img
-                class="px-4 h-10 w-auto"
-                src="../../assets/images/logo.png"
-                alt="logo"
-            />
-            <div class="mt-5 flex-1 h-0">
-                <nav>
-                    <div class="space-y-1">
-                        <TendersSideBar></TendersSideBar>
-                    </div>
-                </nav>
-            </div>
+        <div class="fixed inset-0 bg-black/50" @click="setSidebar('full')"></div>
+        <div class="relative w-60 flex flex-col" style="z-index:1;">
+            <button class="absolute top-4 right-4 text-white/50 hover:text-white z-10" @click="setSidebar('full')">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+            <TendersSideBar></TendersSideBar>
         </div>
     </div>
 </template>

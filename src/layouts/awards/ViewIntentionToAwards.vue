@@ -1,49 +1,51 @@
 <template>
-  <div class="intentions-page py-8 md:py-10 bg-gray-50 min-h-screen relative overflow-hidden">
+  <div class="intentions-page min-h-screen font-['DM_Sans',sans-serif] relative overflow-hidden" style="background:radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%)">
     <!-- Ambient background -->
     <div class="ambient-bg">
       <div class="orb orb-1"></div>
       <div class="orb orb-2"></div>
     </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
       <!-- Header -->
-      <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-white text-xl shadow-md">
-            <i class="fas fa-file-signature"></i>
+      <div class="mb-8 rounded-2xl px-6 py-5 shadow-sm border border-[#dce7f3]" style="background:linear-gradient(135deg,#eef5ff 0%,#ffffff 46%,#f7fbff 100%)">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-2xl bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] flex items-center justify-center text-white shadow-md">
+              <i class="fas fa-file-signature text-lg"></i>
+            </div>
+            <div>
+              <h1 class="text-xl md:text-2xl font-bold text-[#183b63]">Intentions to Award</h1>
+              <p class="text-[13px] text-[#7a93af]">Manage and track intention to award documents</p>
+            </div>
           </div>
-          <div>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Intentions to Award</h1>
-            <p class="text-gray-600">Manage and track intention to award documents</p>
-          </div>
-        </div>
 
-        <router-link to="/create/intention-to-award">
-          <button class="btn-primary flex items-center gap-2">
-            <i class="fas fa-plus"></i>
-            Create New
-          </button>
-        </router-link>
+          <router-link to="/create/intention-to-award">
+            <button class="bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-[0_12px_24px_rgba(35,96,182,0.22)] hover:shadow-lg transition-all flex items-center gap-2">
+              <i class="fas fa-plus"></i>
+              Create New
+            </button>
+          </router-link>
+        </div>
       </div>
 
       <!-- Toolbar -->
-      <div class="mb-6 bg-white shadow rounded-lg p-4 border border-gray-200">
+      <div class="mb-6 bg-white rounded-2xl p-4 shadow-sm border border-[#dce7f3]">
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="relative flex-1">
             <input
               v-model="filter"
               type="text"
               placeholder="Search by tender title or date..."
-              class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              class="w-full pl-10 pr-10 py-2.5 border border-[#d9e6f3] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition text-[#183b63] placeholder:text-[#a4b8cf]"
               @focus="searchFocused = true"
               @blur="searchFocused = false"
             />
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-[#a4b8cf]"></i>
             <button
               v-if="filter"
               @click="filter = ''"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#a4b8cf] hover:text-[#183b63]"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -52,19 +54,19 @@
           <div class="flex gap-3">
             <button
               @click="exportToExcel"
-              class="btn-export excel"
+              class="px-4 py-2.5 rounded-xl font-semibold text-sm border border-[#1f9d8b]/30 text-[#1f9d8b] bg-[#edfaf7] hover:bg-[#d4f3ec] transition-all flex items-center gap-2"
               :disabled="isExporting || isLoading || !filteredData.length"
             >
-              <i class="fas fa-file-excel mr-2"></i>
+              <i class="fas fa-file-excel"></i>
               Excel
             </button>
 
             <button
               @click="exportToPDF"
-              class="btn-export pdf"
+              class="px-4 py-2.5 rounded-xl font-semibold text-sm border border-[#e87461]/30 text-[#e87461] bg-[#fef2f0] hover:bg-[#fde3df] transition-all flex items-center gap-2"
               :disabled="isExporting || isLoading || !filteredData.length"
             >
-              <i class="fas fa-file-pdf mr-2"></i>
+              <i class="fas fa-file-pdf"></i>
               PDF
             </button>
           </div>
@@ -73,41 +75,43 @@
 
       <!-- Summary Chips -->
       <div class="mb-6 grid grid-cols-3 gap-4">
-        <div class="bg-white p-4 rounded-lg shadow border border-gray-200 text-center">
-          <p class="text-sm text-gray-600">Total Records</p>
-          <p class="text-2xl font-bold text-slate-800">{{ intentions.length }}</p>
+        <div class="bg-white px-5 py-4 rounded-xl shadow-sm border border-[#dce7f3] text-center">
+          <p class="text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Total Records</p>
+          <p class="text-2xl font-bold text-[#183b63]">{{ intentions.length }}</p>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow border border-gray-200 text-center">
-          <p class="text-sm text-gray-600">Filtered</p>
-          <p class="text-2xl font-bold text-blue-600">{{ filteredData.length }}</p>
+        <div class="bg-white px-5 py-4 rounded-xl shadow-sm border border-[#dce7f3] text-center">
+          <p class="text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Filtered</p>
+          <p class="text-2xl font-bold text-[#2f78dd]">{{ filteredData.length }}</p>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow border border-gray-200 text-center">
-          <p class="text-sm text-gray-600">Page</p>
-          <p class="text-2xl font-bold text-green-600">{{ currentPage }} / {{ totalPages || 1 }}</p>
+        <div class="bg-white px-5 py-4 rounded-xl shadow-sm border border-[#dce7f3] text-center">
+          <p class="text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Page</p>
+          <p class="text-2xl font-bold text-[#1f9d8b]">{{ currentPage }} / {{ totalPages || 1 }}</p>
         </div>
       </div>
 
       <!-- Table / Content -->
-      <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#dce7f3]">
         <!-- Loading -->
         <div v-if="isLoading" class="p-12 text-center">
-          <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-blue-600 border-gray-200"></div>
-          <p class="mt-4 text-gray-600">Loading intentions...</p>
+          <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-[#2f78dd] border-[#edf4fb]"></div>
+          <p class="mt-4 text-[#7a93af]">Loading intentions...</p>
         </div>
 
         <!-- Empty -->
         <div v-else-if="paginatedData.length === 0" class="p-12 text-center">
-          <i class="fas fa-folder-open text-6xl text-gray-300 mb-4"></i>
-          <h3 class="text-xl font-medium text-gray-700">
+          <div class="w-14 h-14 bg-[#edf4fb] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-folder-open text-[#7d94ac] text-2xl"></i>
+          </div>
+          <h3 class="text-[15px] font-semibold text-[#183b63]">
             {{ filter ? 'No matching intentions found' : 'No intentions yet' }}
           </h3>
-          <p class="mt-2 text-gray-500">
+          <p class="mt-2 text-[13px] text-[#7a93af]">
             {{ filter ? 'Try a different search term.' : 'Create your first intention to award.' }}
           </p>
           <router-link
             v-if="!filter"
             to="/create/intention-to-award"
-            class="mt-6 inline-block btn-primary"
+            class="mt-6 inline-block bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all"
           >
             Create Intention
           </router-link>
@@ -115,39 +119,39 @@
 
         <!-- Table -->
         <div v-else class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50 sticky top-0 z-10">
+          <table class="min-w-full divide-y divide-[#edf2fa]">
+            <thead class="bg-[#f7faff] sticky top-0 z-10">
               <tr>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">#</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tender</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Document</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Created At</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">#</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Tender</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Document</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Created At</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-[#edf2fa]">
               <tr
                 v-for="(intention, index) in paginatedData"
                 :key="intention.intention_id"
-                class="hover:bg-gray-50 transition-colors"
+                class="hover:bg-[#f7faff] transition-colors"
               >
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#67819d] font-medium">
                   {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#183b63]">
                   {{ intention.tender?.title || '—' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <button
                     v-if="intention.intention_file"
                     @click="downloadIntentionFile(intention.intention_file)"
-                    class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-green-700 bg-green-50 rounded-md hover:bg-green-100 transition"
+                    class="inline-flex items-center px-3 py-1.5 text-sm font-semibold text-[#2f78dd] bg-[#edf4fb] rounded-xl hover:bg-[#dce7f3] transition"
                   >
                     <i class="fas fa-download mr-1.5"></i>
                     Download PDF
                   </button>
-                  <span v-else class="text-gray-400">No file</span>
+                  <span v-else class="text-[#a4b8cf]">No file</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4a6a8a]">
                   {{ formatDate(intention.created_at) }}
                 </td>
               </tr>
@@ -156,22 +160,22 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="filteredData.length > 0" class="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200 bg-gray-50">
-          <div class="text-sm text-gray-700">
-            Showing <span class="font-medium">{{ rangeStart }}</span>–<span class="font-medium">{{ rangeEnd }}</span> of
-            <span class="font-medium">{{ filteredData.length }}</span>
+        <div v-if="filteredData.length > 0" class="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#e4edf7] bg-[#f7faff]">
+          <div class="text-[13px] text-[#7a93af]">
+            Showing <span class="font-semibold text-[#183b63]">{{ rangeStart }}</span>–<span class="font-semibold text-[#183b63]">{{ rangeEnd }}</span> of
+            <span class="font-semibold text-[#183b63]">{{ filteredData.length }}</span>
           </div>
 
           <div class="flex flex-wrap gap-2">
             <button
-              class="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
+              class="px-3 py-1.5 text-sm rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 transition"
               :disabled="currentPage === 1"
               @click="changePage(1)"
             >
               First
             </button>
             <button
-              class="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
+              class="px-3 py-1.5 text-sm rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 transition"
               :disabled="currentPage === 1"
               @click="changePage(currentPage - 1)"
             >
@@ -181,11 +185,11 @@
             <button
               v-for="p in visiblePages"
               :key="p"
-              class="px-3 py-1.5 text-sm rounded-md border border-gray-300 min-w-[36px]"
+              class="px-3 py-1.5 text-sm rounded-xl border min-w-[36px]"
               :class="{
-                'bg-slate-800 text-white border-slate-800': p === currentPage,
-                'bg-white text-gray-700 hover:bg-gray-50': p !== currentPage && p !== '...',
-                'border-transparent cursor-default': p === '...'
+                'bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white border-[#2f78dd] shadow-md': p === currentPage,
+                'bg-white text-[#4a6a8a] border-[#d9e6f3] hover:bg-[#f7faff]': p !== currentPage && p !== '...',
+                'border-transparent cursor-default text-[#a4b8cf]': p === '...'
               }"
               :disabled="p === '...'"
               @click="p !== '...' && changePage(p)"
@@ -194,14 +198,14 @@
             </button>
 
             <button
-              class="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
+              class="px-3 py-1.5 text-sm rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 transition"
               :disabled="currentPage === totalPages"
               @click="changePage(currentPage + 1)"
             >
               Next
             </button>
             <button
-              class="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
+              class="px-3 py-1.5 text-sm rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 transition"
               :disabled="currentPage === totalPages"
               @click="changePage(totalPages)"
             >
@@ -357,8 +361,8 @@ function exportToPDF() {
   const timeStr = today.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
 
   // Colors
-  const DARK = [30, 41, 59]      // #1e293b
-  const ACCENT = [16, 163, 74]   // #10b981
+  const DARK = [25, 79, 146]      // #194f92
+  const ACCENT = [31, 157, 139]   // #1f9d8b
   const MUTED = [100, 110, 120]
 
   // Draw header banner
@@ -482,7 +486,6 @@ function handleError(error) {
 /* ─── Page ─── */
 .intentions-page {
   position: relative;
-  background: #f8fafc;
 }
 
 .ambient-bg {
@@ -496,13 +499,13 @@ function handleError(error) {
   position: absolute;
   border-radius: 50%;
   filter: blur(100px);
-  opacity: 0.08;
+  opacity: 0.06;
 }
 
 .orb-1 {
   width: 500px;
   height: 500px;
-  background: #3b82f6;
+  background: #2f78dd;
   top: -150px;
   right: -150px;
 }
@@ -510,93 +513,12 @@ function handleError(error) {
 .orb-2 {
   width: 400px;
   height: 400px;
-  background: #10b981;
+  background: #1f9d8b;
   bottom: -100px;
   left: -100px;
 }
 
-/* ─── Header & Buttons ─── */
-.btn-primary {
-  background: #1e293b;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.btn-primary:hover {
-  background: #0f172a;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-/* ─── Search ─── */
-.search-input {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 10px 40px 10px 40px;
-  transition: all 0.2s;
-}
-
-.search-input:focus {
-  border-color: #1e293b;
-  box-shadow: 0 0 0 3px rgba(30,41,59,0.1);
-}
-
-/* ─── Export Buttons ─── */
-.btn-export {
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-  border: 1px solid;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.btn-export.excel {
-  border-color: #16a34a;
-  color: #166534;
-}
-
-.btn-export.excel:hover {
-  background: #f0fdf4;
-}
-
-.btn-export.pdf {
-  border-color: #dc2626;
-  color: #991b1b;
-}
-
-.btn-export.pdf:hover {
-  background: #fef2f2;
-}
-
-/* ─── Table ─── */
-.table-card {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #e5e7eb;
-}
-
-.data-table thead th {
-  background: #f8f9fa;
-  padding: 12px 16px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #4b5563;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 2px solid #e5e7eb;
-}
+/* Budget design system - btn styles now inline */
 
 .table-row {
   transition: background 0.15s;

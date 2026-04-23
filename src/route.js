@@ -132,6 +132,11 @@ import AdminViewALlProjectActivities from "./layouts/project_activities/ViewProj
 import AdminGetActivityDetailsPage from "./layouts/project_activities/AdminGetActivityDetailsPage.vue";
 import CEODashboardVue from "./layouts/ceo/CEODashboard.vue";
 import CEOAnalyticsVue from "./layouts/ceo/CEOAnalytics.vue";
+import CEOProjectsVue from "./layouts/ceo/CEOProjects.vue";
+import Inventory from "@/components/Pages/Inventory.vue";
+import CEODepartmentsVue from "./layouts/ceo/CEODepartments.vue";
+import CEOTeamVue from "./layouts/ceo/CEOTeam.vue";
+import CEOProfileVue from "./layouts/ceo/CEOProfile.vue";
 import BudgetManagementVue from "./layouts/ceo/BudgetManagement.vue";
 import AdvancedReportingVue from "./layouts/ceo/AdvancedReporting.vue";
 import CEOTendersVue from "./layouts/ceo/CEOTenders.vue";
@@ -226,12 +231,11 @@ import AccViewPortofolio from "./layouts/assignProjects/AccViewPortofolio.vue";
 import AccViewAnalysis from "./layouts/analyses/AccViewAnalysis.vue";
 import Followup from "./layouts/assignProjects/Followup.vue";
 import AdminFinancialRecords from "./layouts/hr/AdminFinancialRecords.vue";
-import CEOFinancialRecords from "./layouts/ceo/CEOFinancialRecords.vue";
+
 import UpdateFollowup from "./layouts/assignProjects/UpdateFollowup.vue";
 import TeraInvites from "./components/Pages/TeraInvites.vue";
 import TeraPOS from "./components/Pages/TeraPOS.vue";
 import VTS from "./components/Pages/VTS.vue";
-import SmartShelves from "./components/Pages/SmartShelves.vue";
 import AccManageRequests from "./layouts/requests/AccManageRequests.vue";
 import AccManageExtendedRequests from "./layouts/extend-request/AccManageExtendedRequests.vue";
 import AccManageInvoices from "./layouts/invoices/AccManageInvoices.vue";
@@ -239,6 +243,8 @@ import AccCreateBudget from "./layouts/accountant/AccCreateBudget.vue";
 import AccMyBudgets from "./layouts/accountant/AccMyBudgets.vue";
 import FinancialRecords from "./layouts/accountant/FinancialRecords.vue";
 import FinancialMaintenance from "./layouts/accountant/FinancialMaintenance.vue";
+import UserRequestsPage from "./layouts/requests/UserRequestsPage.vue";
+import CEOPendingRequestsVue from "./layouts/ceo/CEOPendingRequests.vue";
 import DepartmentUpdates from "./layouts/updates/DepartmentUpdates.vue";
 import HrManagePerformance from "./layouts/performance/HrManagePerformance.vue";
 import HrCreatePerformance from "./layouts/performance/HrCreatePerformance.vue";
@@ -250,7 +256,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            redirect: { name: 'Welcome' },
+            redirect: { name: 'Login' },
         },
 
         // ─── ADMIN LAYOUT (role_id: 1) ───────────────────────────────────────────
@@ -1080,6 +1086,18 @@ const router = createRouter({
                     component: ComplianceSubmission,
                     meta: { requiresAuth: true, allowedRoles: [3] }
                 },
+                {
+                    path: '/hod/my-requests',
+                    name: 'HodMyRequests',
+                    component: UserRequestsPage,
+                    meta: { requiresAuth: true, allowedRoles: [2] }
+                },
+                {
+                    path: '/user/my-requests',
+                    name: 'UserMyRequests',
+                    component: UserRequestsPage,
+                    meta: { requiresAuth: true, allowedRoles: [3] }
+                },
             ],
         },
 
@@ -1113,7 +1131,7 @@ const router = createRouter({
                     path: 'create-tender',
                     name: 'CreateTender',
                     component: CreateTenderVue,
-                    meta: { requiresAuth: true, allowedRoles: [4] }
+                    meta: { requiresAuth: true, allowedRoles: [3, 4] }
                 },
                 {
                     path: '/edit-tender/:tender_id',
@@ -1287,6 +1305,39 @@ const router = createRouter({
                     props: true,
                     meta: { requiresAuth: true, allowedRoles: [4] }
                 },
+
+                {
+                    path: '/assign/project',
+                    name: 'HrAssignProject',
+                    component: HrAssignProject,
+                    meta: { requiresAuth: true, allowedRoles: [4] }
+                },
+                {
+                    path: '/manage/projects',
+                    name: 'HrManageProject',
+                    component: HrManageProject,
+                    meta: { requiresAuth: true, allowedRoles: [4] }
+                },
+                {
+                    path: '/edit-project/:project_id',
+                    name: 'HrEditProject',
+                    component: HrEditProject,
+                    props: true,
+                    meta: { requiresAuth: true, allowedRoles: [4] }
+                },
+                {
+                    path: '/view/tenders-submitted',
+                    name: 'HrViewSubmittedTenders',
+                    component: HrViewSubmittedTenders,
+                    meta: { requiresAuth: true, allowedRoles: [4] }
+                },
+                {
+                    path: 'view/portofolio',
+                    name: 'ProjectPortofolio',
+                    component: ProjectPortofolio,
+                    meta: { requiresAuth: true, allowedRoles: [4] }
+                },
+
                 {
                     path: '/tenderuser-award-reports',
                     name: 'TenderUserAwardReports',
@@ -1361,6 +1412,12 @@ const router = createRouter({
                     path: '/tender/ComplianceSubmission',
                     name: 'tenderComplianceSubmission',
                     component: ComplianceSubmission,
+                    meta: { requiresAuth: true, allowedRoles: [4] }
+                },
+                {
+                    path: '/tender/my-requests',
+                    name: 'TenderMyRequests',
+                    component: UserRequestsPage,
                     meta: { requiresAuth: true, allowedRoles: [4] }
                 },
             ],
@@ -1447,6 +1504,12 @@ const router = createRouter({
                     name: 'HodEditUpdate',
                     component: TenderUserEditUpdatesVue,
                     props: true,
+                    meta: { requiresAuth: true, allowedRoles: [2] }
+                },
+                {
+                    path: '/hod/view-updates',
+                    name: 'HodViewUpdates',
+                    component: TenderUserViewUpdatesVue,
                     meta: { requiresAuth: true, allowedRoles: [2] }
                 },
                 {
@@ -1651,6 +1714,12 @@ const router = createRouter({
                     component: ComplianceSubmission,
                     meta: { requiresAuth: true, allowedRoles: [5] }
                 },
+                {
+                    path: '/accountant/my-requests',
+                    name: 'AccMyRequests',
+                    component: UserRequestsPage,
+                    meta: { requiresAuth: true, allowedRoles: [5] }
+                },
             ],
         },
 
@@ -1690,37 +1759,6 @@ const router = createRouter({
                     path: '/register-contract',
                     name: 'RegisterContract',
                     component: RegisterContract,
-                    meta: { requiresAuth: true, allowedRoles: [6] }
-                },
-                {
-                    path: '/assign/project',
-                    name: 'HrAssignProject',
-                    component: HrAssignProject,
-                    meta: { requiresAuth: true, allowedRoles: [6] }
-                },
-                {
-                    path: '/manage/projects',
-                    name: 'HrManageProject',
-                    component: HrManageProject,
-                    meta: { requiresAuth: true, allowedRoles: [6] }
-                },
-                {
-                    path: '/edit-project/:project_id',
-                    name: 'HrEditProject',
-                    component: HrEditProject,
-                    props: true,
-                    meta: { requiresAuth: true, allowedRoles: [6] }
-                },
-                {
-                    path: '/view/tenders-submitted',
-                    name: 'HrViewSubmittedTenders',
-                    component: HrViewSubmittedTenders,
-                    meta: { requiresAuth: true, allowedRoles: [6] }
-                },
-                {
-                    path: 'view/portofolio',
-                    name: 'ProjectPortofolio',
-                    component: ProjectPortofolio,
                     meta: { requiresAuth: true, allowedRoles: [6] }
                 },
                 {
@@ -1810,6 +1848,12 @@ const router = createRouter({
                     component: ComplianceManagement,
                     meta: { requiresAuth: true, allowedRoles: [6] }
                 },
+                {
+                    path: '/hr/my-requests',
+                    name: 'HrMyRequests',
+                    component: UserRequestsPage,
+                    meta: { requiresAuth: true, allowedRoles: [6] }
+                },
             ],
         },
 
@@ -1844,9 +1888,9 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: [7] }
                 },
                 {
-                    path: 'quotations',
-                    name: 'CEOQuotations',
-                    component: CEOQuotationsVue,
+                    path: 'tenders',
+                    name: 'CEOTenders',
+                    component: CEOTendersVue,
                     meta: { requiresAuth: true, allowedRoles: [7] }
                 },
                 {
@@ -1943,7 +1987,7 @@ const router = createRouter({
                 {
                     path: 'financial-records',
                     name: 'CEOFinancialRecords',
-                    component: CEOFinancialRecords,
+                    component: FinancialRecords,
                     meta: { requiresAuth: true, allowedRoles: [7] }
                 },
                 {
@@ -1965,12 +2009,6 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: [7] }
                 },
                 {
-                    path: 'smart-shelves',
-                    name: 'SmartShelves',
-                    component: SmartShelves,
-                    meta: { requiresAuth: true, allowedRoles: [7] }
-                },
-                {
                     path: 'performance-evaluations',
                     name: 'CEOPerformance',
                     component: CEOPerformanceVue,
@@ -1983,9 +2021,39 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: [7] }
                 },
                 {
+                    path: 'requests',
+                    name: 'CEOPendingRequests',
+                    component: CEOPendingRequestsVue,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
+                    path: 'projects',
+                    name: 'CEOProjects',
+                    component: CEOProjectsVue,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
+                    path: 'inventory',
+                    name: 'CEOInventory',
+                    component: Inventory,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
+                    path: 'departments',
+                    name: 'CEODepartments',
+                    component: CEODepartmentsVue,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
+                    path: 'team',
+                    name: 'CEOTeam',
+                    component: CEOTeamVue,
+                    meta: { requiresAuth: true, allowedRoles: [7] }
+                },
+                {
                     path: 'profile',
                     name: 'CEOProfile',
-                    component: UserProfile4Vue,
+                    component: CEOProfileVue,
                     meta: { requiresAuth: true, allowedRoles: [7] }
                 },
             ],
@@ -1998,11 +2066,6 @@ const router = createRouter({
             children: [
                 {
                     path: '/',
-                    name: 'Welcome',
-                    component: Welcome,
-                },
-                {
-                    path: 'login',
                     name: 'Login',
                     component: Login,
                 },
@@ -2082,16 +2145,16 @@ router.beforeEach((to, from, next) => {
         allowedRoles: to.meta.allowedRoles,
     });
 
-    // No token → redirect to welcome page
+    // No token → redirect to login page
     if (to.meta.requiresAuth && !token) {
-        console.log('No token, redirecting to welcome page');
-        next({ name: 'Welcome' });
+        console.log('No token, redirecting to login page');
+        next({ name: 'Login' });
         return;
     }
 
     if (token && role_id) {
         // Already authenticated → redirect away from login and welcome
-        if (to.path === '/' || to.name === 'Login' || to.name === 'Welcome') {
+        if (to.path === '/' || to.name === 'Login') {
             const dashboardPath = roleDashboards[role_id];
             console.log(`Authenticated user on login/welcome page, redirecting to: ${dashboardPath}`);
             next({ path: dashboardPath });

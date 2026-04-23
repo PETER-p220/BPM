@@ -1,20 +1,26 @@
 <template>
-  <div class="min-h-screen bg-[#f5f6fa]">
+  <div class="min-h-screen" style="background:radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%);">
 
     <!-- Header -->
-    <div class="border-b border-gray-200 bg-white px-6 py-4 shadow-sm">
+    <div class="px-6 py-5 border-b" style="background:linear-gradient(135deg,#eef5ff 0%,#ffffff 46%,#f7fbff 100%);border-color:#dbe7f3;">
       <div class="mx-auto flex max-w-6xl items-center justify-between">
-        <div>
-          <h1 class="text-xl font-bold text-gray-900">Dashboard Overview</h1>
-          <p class="mt-0.5 text-sm text-gray-400">Your analytics at a glance</p>
+        <div class="flex items-center gap-4">
+          <div class="w-11 h-11 rounded-[14px] flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#194f92,#2f78dd);box-shadow:0 16px 34px rgba(35,96,182,0.26);">
+            <i class="fas fa-chart-line text-white" style="font-size:15px;"></i>
+          </div>
+          <div>
+            <p class="text-[11px] font-bold uppercase tracking-widest" style="color:#2d6aaf;">User Portal</p>
+            <h1 class="text-xl font-bold leading-tight" style="color:#183b63;">Dashboard Overview</h1>
+            <p class="text-xs mt-0.5" style="color:#67819d;">Your analytics at a glance</p>
+          </div>
         </div>
         <div class="flex items-center gap-3">
-          <div class="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-right">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Total Items</p>
-            <p class="text-base font-extrabold text-gray-900 tabular-nums">{{ totalItems }}</p>
+          <div class="rounded-[12px] px-4 py-2 text-right" style="border:1px solid #d9e6f3;background:#f3f8ff;">
+            <p class="text-[10px] font-bold uppercase tracking-widest" style="color:#7a93af;">Total Items</p>
+            <p class="text-base font-extrabold tabular-nums" style="color:#183b63;">{{ totalItems }}</p>
           </div>
-          <div class="rounded-lg border border-gray-900 bg-gray-900 px-3 py-2 text-right">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Completion</p>
+          <div class="rounded-[12px] px-4 py-2 text-right" style="background:linear-gradient(135deg,#194f92,#2f78dd);border:1px solid #1a4a88;">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-white/70">Completion</p>
             <p class="text-base font-extrabold text-white tabular-nums">{{ completionRate }}%</p>
           </div>
         </div>
@@ -100,28 +106,28 @@
       <div v-if="hasAnyData" class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
 
         <!-- Work Distribution donut -->
-        <div class="rounded-xl border border-gray-200/80 bg-white shadow-sm p-5">
-          <div class="pb-3 mb-3 border-b border-gray-100">
-            <p class="text-sm font-bold text-gray-900">Work Distribution</p>
-            <p class="text-xs text-gray-400 mt-0.5">By category</p>
+        <div class="rounded-[20px] bg-white p-5" style="border:1px solid #d9e6f3;box-shadow:0 8px 32px rgba(18,58,99,0.08);">
+          <div class="pb-3 mb-3" style="border-bottom:1px solid #e8f0f8;">
+            <p class="text-sm font-bold" style="color:#183b63;">Work Distribution</p>
+            <p class="text-xs mt-0.5" style="color:#67819d;">By category</p>
           </div>
           <apexchart type="donut" :options="donutOptions" :series="donutSeries" height="240" />
         </div>
 
         <!-- Status stacked bar -->
-        <div class="rounded-xl border border-gray-200/80 bg-white shadow-sm p-5">
-          <div class="pb-3 mb-3 border-b border-gray-100">
-            <p class="text-sm font-bold text-gray-900">Status Overview</p>
-            <p class="text-xs text-gray-400 mt-0.5">Current state</p>
+        <div class="rounded-[20px] bg-white p-5" style="border:1px solid #d9e6f3;box-shadow:0 8px 32px rgba(18,58,99,0.08);">
+          <div class="pb-3 mb-3" style="border-bottom:1px solid #e8f0f8;">
+            <p class="text-sm font-bold" style="color:#183b63;">Status Overview</p>
+            <p class="text-xs mt-0.5" style="color:#67819d;">Current state</p>
           </div>
           <apexchart type="bar" :options="stackedOptions" :series="stackedSeries" height="240" />
         </div>
 
         <!-- Approval rate horizontal bar -->
-        <div class="rounded-xl border border-gray-200/80 bg-white shadow-sm p-5">
-          <div class="pb-3 mb-3 border-b border-gray-100">
-            <p class="text-sm font-bold text-gray-900">Approval Rates</p>
-            <p class="text-xs text-gray-400 mt-0.5">Success metrics</p>
+        <div class="rounded-[20px] bg-white p-5" style="border:1px solid #d9e6f3;box-shadow:0 8px 32px rgba(18,58,99,0.08);">
+          <div class="pb-3 mb-3" style="border-bottom:1px solid #e8f0f8;">
+            <p class="text-sm font-bold" style="color:#183b63;">Approval Rates</p>
+            <p class="text-xs mt-0.5" style="color:#67819d;">Success metrics</p>
           </div>
           <apexchart type="bar" :options="approvalOptions" :series="approvalSeries" height="240" />
         </div>
@@ -188,9 +194,9 @@ const hasAnyData = computed(() =>
 )
 
 // ── Chart configs ─────────────────────────────────────────
-const GRID = { borderColor: '#f3f4f6', strokeDashArray: 3 }
-const LABEL = { fontSize: '10px', fontWeight: '600', colors: '#9ca3af' }
-const COLORS = ['#6366f1', '#0891b2', '#10b981', '#d97706']
+const GRID = { borderColor: '#e8f0f8', strokeDashArray: 3 }
+const LABEL = { fontSize: '10px', fontWeight: '600', colors: '#7a93af' }
+const COLORS = ['#2f78dd', '#1f5aa5', '#4a8ce3', '#174278']
 
 const donutSeries = computed(() => [
   totalAssignedTenders.value, totalPriceSchedules.value,
@@ -203,9 +209,10 @@ const donutOptions = {
   colors: COLORS,
   legend: { position: 'bottom', fontSize: '11px' },
   dataLabels: { enabled: true, formatter: v => Math.round(v) + '%', style: { fontSize: '11px' } },
-  plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total', fontSize: '11px', fontWeight: '600', color: '#374151' } } } } },
+  plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total', fontSize: '11px', fontWeight: '600', color: '#183b63' } } } } },
   stroke: { width: 2, colors: ['#fff'] },
   tooltip: { y: { formatter: v => v + ' items' } },
+  theme: { monochrome: { enabled: false } },
 }
 
 const stackedSeries = computed(() => [
@@ -216,7 +223,7 @@ const stackedSeries = computed(() => [
 
 const stackedOptions = {
   chart: { type: 'bar', toolbar: { show: false }, stacked: true, fontFamily: 'inherit', animations: { speed: 400 } },
-  colors: ['#10b981', '#6366f1', '#ef4444'],
+  colors: ['#2f78dd', '#93c0f5', '#e57373'],
   plotOptions: { bar: { borderRadius: 3, columnWidth: '52%' } },
   xaxis: { categories: ['Tenders', 'Quotations', 'Analyses', 'Projects'], labels: { style: LABEL } },
   yaxis: { labels: { style: LABEL } },
@@ -237,7 +244,7 @@ const approvalSeries = computed(() => {
 
 const approvalOptions = {
   chart: { type: 'bar', toolbar: { show: false }, fontFamily: 'inherit', animations: { speed: 400 } },
-  colors: ['#10b981', '#ef4444'],
+  colors: ['#2f78dd', '#e57373'],
   plotOptions: { bar: { horizontal: true, borderRadius: 3, barHeight: '48%', dataLabels: { position: 'top' } } },
   dataLabels: { enabled: true, formatter: v => v + '%', offsetX: 22, style: { fontSize: '11px', fontWeight: '600', colors: ['#374151'] } },
   xaxis: { categories: ['Quotations', 'Analyses'], labels: { formatter: v => v + '%', style: LABEL }, max: 100 },
@@ -344,28 +351,28 @@ onMounted(() => {
 <script>
 // ── Sub-components ─────────────────────────────────────────
 const accentMap = {
-  indigo: 'bg-indigo-50 border-indigo-100 text-indigo-600',
-  cyan:   'bg-cyan-50   border-cyan-100   text-cyan-600',
-  teal:   'bg-teal-50   border-teal-100   text-teal-600',
-  amber:  'bg-amber-50  border-amber-100  text-amber-600',
-  red:    'bg-rose-50   border-rose-100   text-rose-600',
-  gray:   'bg-gray-50   border-gray-100   text-gray-600',
+  indigo: 'border-[#d9e6f3] text-[#2f78dd]',
+  cyan:   'border-[#d9e6f3] text-[#2f78dd]',
+  teal:   'border-[#d9e6f3] text-[#2f78dd]',
+  amber:  'border-[#d9e6f3] text-[#2f78dd]',
+  red:    'border-[#d9e6f3] text-[#2f78dd]',
+  gray:   'border-[#d9e6f3] text-[#2f78dd]',
 }
 
 const topBar = {
-  indigo: 'bg-indigo-500',
-  cyan:   'bg-cyan-500',
-  teal:   'bg-teal-500',
-  amber:  'bg-amber-500',
-  red:    'bg-rose-500',
+  indigo: 'bg-[#2f78dd]',
+  cyan:   'bg-[#4a8ce3]',
+  teal:   'bg-[#1f5aa5]',
+  amber:  'bg-[#174278]',
+  red:    'bg-[#2f78dd]',
 }
 
 const colorMap = {
-  indigo: 'text-indigo-600',
-  teal:   'text-teal-600',
-  amber:  'text-amber-600',
-  red:    'text-rose-600',
-  gray:   'text-gray-700',
+  indigo: 'text-[#2f78dd]',
+  teal:   'text-[#1f5aa5]',
+  amber:  'text-[#174278]',
+  red:    'text-[#c54533]',
+  gray:   'text-[#4e6781]',
 }
 
 // StatCard wraps each section with loading/error/retry handling
@@ -376,18 +383,18 @@ const StatCard = {
     return { bar: topBar[p.accent] || topBar.indigo, iconBg: accentMap[p.accent] || accentMap.indigo }
   },
   template: `
-    <div class="relative overflow-hidden rounded-xl border border-gray-200/80 bg-white shadow-sm">
+    <div class="relative overflow-hidden rounded-[20px] bg-white" style="border:1px solid #d9e6f3;box-shadow:0 8px 32px rgba(18,58,99,0.10);">
       <!-- top accent bar -->
       <div :class="bar" class="h-0.5 w-full"></div>
 
       <!-- Header -->
-      <div class="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+      <div class="flex items-center gap-3 px-5 py-4" style="border-bottom:1px solid #e8f0f8;">
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-bold text-gray-900">{{ title }}</p>
-          <p class="text-xs text-gray-400 tabular-nums">{{ total }} {{ unit }}</p>
+          <p class="text-sm font-bold" style="color:#183b63;">{{ title }}</p>
+          <p class="text-xs tabular-nums" style="color:#7a93af;">{{ total }} {{ unit }}</p>
         </div>
         <button @click="$emit('navigate')"
-          class="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-700 transition-all flex-shrink-0">
+          class="flex h-7 w-7 items-center justify-center rounded-lg transition-all flex-shrink-0" style="border:1px solid #d9e6f3;color:#7a93af;" onmouseover="this.style.borderColor='#2f78dd';this.style.color='#2f78dd'" onmouseout="this.style.borderColor='#d9e6f3';this.style.color='#7a93af'">
           <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>
@@ -398,14 +405,14 @@ const StatCard = {
       <div class="px-5 py-4 min-h-[140px]">
         <!-- Loading skeleton -->
         <div v-if="loading" class="grid grid-cols-2 gap-2">
-          <div v-for="i in 4" :key="i" class="h-14 rounded-lg bg-gray-100 animate-pulse"></div>
+          <div v-for="i in 4" :key="i" class="h-14 rounded-[10px] animate-pulse" style="background:#eef5ff;"></div>
         </div>
 
         <!-- Error -->
         <div v-else-if="error" class="flex flex-col items-center justify-center h-24 gap-2 text-center">
-          <p class="text-xs font-medium text-rose-600">{{ error }}</p>
+          <p class="text-xs font-medium" style="color:#c54533;">{{ error }}</p>
           <button @click="$emit('retry')"
-            class="rounded-lg bg-rose-50 border border-rose-200 px-3 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-100 transition-all">
+            class="rounded-[8px] px-3 py-1 text-xs font-semibold transition-all" style="background:#fff0ed;border:1px solid #f5c4bb;color:#c54533;">
             Retry
           </button>
         </div>
@@ -423,8 +430,8 @@ const MetricTile = {
   props: ['label', 'value', 'color'],
   setup(p) { return { vc: colorMap[p.color] || colorMap.gray } },
   template: `
-    <div class="rounded-lg bg-gray-50 border border-gray-100 px-3 py-2.5">
-      <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">{{ label }}</p>
+    <div class="rounded-[10px] px-3 py-2.5" style="background:#f3f8ff;border:1px solid #dce9f9;">
+      <p class="text-[10px] font-bold uppercase tracking-wider mb-0.5" style="color:#7a93af;">{{ label }}</p>
       <p :class="vc" class="text-lg font-extrabold tabular-nums leading-none">{{ value }}</p>
     </div>
   `

@@ -1,246 +1,118 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 font-['DM_Sans',sans-serif]">
-    <!-- Top Navigation -->
-    <div class="bg-white dark:bg-slate-900 shadow-sm border-b border-slate-200 dark:border-slate-700">
-      <div class="max-w-7xl mx-auto px-6 py-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </div>
-            <div>
-              <h1 class="text-xl font-bold text-slate-900 dark:text-white">Financial Records</h1>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Manage financial transactions and records</p>
-            </div>
-          </div>
-          
-          <div class="flex items-center gap-3">
-            <button @click="showAddRecordModal = true" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors">
-              + Add Record
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="min-h-screen px-4 py-4 lg:px-5" style="background: radial-gradient(circle at top right, rgba(48,120,221,0.08), transparent 22%), linear-gradient(180deg, #eff5fb 0%, #eaf1f8 100%);">
+    <div class="mx-auto max-w-[1580px] overflow-hidden rounded-[34px] border border-[#d9e6f3] bg-white/84 shadow-[0_28px_70px_rgba(18,58,99,0.14)] backdrop-blur-sm">
 
-    <div class="max-w-7xl mx-auto px-6 py-8">
-      <!-- Statistics Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Total Records</p>
-              <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ stats.total }}</p>
-            </div>
-            <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
+      <!-- ── HERO ── -->
+      <div class="relative overflow-hidden border-b border-[#dbe7f3] bg-[linear-gradient(135deg,#eef5ff_0%,#ffffff_46%,#f7fbff_100%)] px-6 py-5 lg:px-7">
+        <div class="pointer-events-none absolute -left-10 top-0 h-40 w-40 rounded-full bg-[#dce9fb] blur-3xl"></div>
+        <div class="pointer-events-none absolute right-6 top-3 h-24 w-24 opacity-35" style="background-image: radial-gradient(#2b74d7 1.2px, transparent 1.2px); background-size: 10px 10px;"></div>
 
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Income</p>
-              <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ formatCurrency(stats.income) }}</p>
-            </div>
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8l-8 8-8-8" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Expenses</p>
-              <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ formatCurrency(stats.expenses) }}</p>
-            </div>
-            <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20V4m8 8l-8-8-8 8" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Net Balance</p>
-              <p class="text-2xl font-bold" :class="stats.balance >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'">
-                {{ formatCurrency(stats.balance) }}
-              </p>
-            </div>
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div class="flex items-start gap-4">
+            <div class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-[20px] text-white shadow-[0_16px_34px_rgba(35,96,182,0.26)]" style="background: linear-gradient(135deg,#194f92,#2f78dd);">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </div>
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.24em]" style="color:#2d6aaf;">Finance Workspace</p>
+              <h1 class="mt-1 text-2xl font-bold tracking-tight lg:text-[28px]" style="color:#183b63;">Financial Records</h1>
+              <p class="mt-1.5 text-sm leading-6" style="color:#67819d;">Manage transactions, income, expenses and record verification status.</p>
+            </div>
           </div>
+          <button @click="showAddRecordModal = true"
+                  class="inline-flex shrink-0 items-center gap-2 rounded-[16px] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(35,96,182,0.22)] transition-all hover:brightness-105"
+                  style="background: linear-gradient(135deg,#194f92,#2f78dd);">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add Record
+          </button>
         </div>
-      </div>
 
-      <!-- Filters and Search -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 mb-6 border border-slate-200 dark:border-slate-700">
-        <div class="flex flex-wrap items-center gap-4">
-          <div class="flex-1 min-w-[200px]">
-            <input v-model="searchQuery" type="text" placeholder="Search records..."
-                   class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+
+        <!-- Stats cards -->
+        <div class="relative mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div class="rounded-[22px] p-5 text-white" style="background: linear-gradient(135deg,#164c93,#2f78dd);">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xl font-bold">{{ stats.total }}</p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/72">Total Records</p>
+              </div>
+              <div class="flex h-10 w-10 items-center justify-center rounded-[14px] bg-white/15">
+                <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+            </div>
           </div>
-          <select v-model="typeFilter" @change="loadRecords"
-                  class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-            <option value="">All Types</option>
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-          </select>
-          <select v-model="categoryFilter" @change="loadRecords"
-                  class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-            <option value="">All Categories</option>
-            <option value="sales">Sales</option>
-            <option value="services">Services</option>
-            <option value="operations">Operations</option>
-            <option value="salary">Salary</option>
-            <option value="utilities">Utilities</option>
-            <option value="maintenance">Maintenance</option>
-          </select>
-          <input v-model="dateFilter" type="date" @change="loadRecords"
-                 class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-        </div>
-      </div>
-
-      <!-- Records Table -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <div class="p-6 border-b border-slate-200 dark:border-slate-700">
-          <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Financial Records</h2>
-            <div class="flex items-center gap-2">
-              <button @click="exportRecords" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-lg transition-colors">
-                Export
-              </button>
+          <div class="rounded-[22px] p-5 text-white" style="background: linear-gradient(135deg,#164c93,#2f78dd);">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xl font-bold">{{ formatCurrency(stats.income) }}</p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/72">Total Income</p>
+              </div>
+              <div class="flex h-10 w-10 items-center justify-center rounded-[14px] bg-white/15">
+                <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8l-8 8-8-8" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="rounded-[22px] p-5 text-white" style="background: linear-gradient(135deg,#164c93,#2f78dd);">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xl font-bold">{{ formatCurrency(stats.expenses) }}</p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/72">Total Expenses</p>
+              </div>
+              <div class="flex h-10 w-10 items-center justify-center rounded-[14px] bg-white/15">
+                <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20V4m8 8l-8-8-8 8" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="rounded-[22px] p-5 text-white" style="background: linear-gradient(135deg,#164c93,#2f78dd);">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xl font-bold">{{ formatCurrency(stats.balance) }}</p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/72">Net Balance</p>
+              </div>
+              <div class="flex h-10 w-10 items-center justify-center rounded-[14px] bg-white/15">
+                <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
-        
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-slate-50 dark:bg-slate-700">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Description</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Category</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Type</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Amount</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-              <tr v-if="loading">
-                <td colspan="7" class="px-6 py-8 text-center">
-                  <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600"></div>
-                  <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Loading records...</p>
-                </td>
-              </tr>
-              <tr v-else-if="filteredRecords.length === 0">
-                <td colspan="7" class="px-6 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
-                  No records found
-                </td>
-              </tr>
-              <tr v-for="record in filteredRecords" :key="record.id" class="hover:bg-slate-50 dark:hover:bg-slate-700">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
-                  {{ formatDate(record.date) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div class="text-sm font-medium text-slate-900 dark:text-white">
-                      {{ record.description }}
-                    </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400">
-                      Ref: {{ record.reference }}
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
-                  <span class="capitalize">{{ record.category }}</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getTypeColor(record.type)" class="px-2 py-1 text-xs font-medium rounded-full">
-                    {{ record.type }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm" :class="record.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                  {{ record.type === 'income' ? '+' : '-' }} {{ formatCurrency(record.amount) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getStatusColor(record.status)" class="px-2 py-1 text-xs font-medium rounded-full">
-                    {{ record.status }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <button @click="editRecord(record)" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 mr-3">
-                    Edit
-                  </button>
-                  <button @click="deleteRecord(record.id)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
-    </div>
 
-    <!-- Add/Edit Record Modal -->
-    <div v-if="showAddRecordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-          {{ editingRecord ? 'Edit Record' : 'Add Financial Record' }}
-        </h3>
-        
-        <form @submit.prevent="saveRecord" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Date</label>
-            <input v-model="recordForm.date" type="date" required
-                   class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-          </div>
+      <!-- ── BODY ── -->
+      <div class="space-y-4 bg-[linear-gradient(180deg,#fbfdff_0%,#f7fbff_100%)] p-4">
 
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Description</label>
-            <input v-model="recordForm.description" type="text" required
-                   placeholder="Enter description"
-                   class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Reference</label>
-            <input v-model="recordForm.reference" type="text"
-                   placeholder="Reference number"
-                   class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Type</label>
-            <select v-model="recordForm.type" required
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-              <option value="">Select Type</option>
+        <!-- Filters -->
+        <div class="rounded-[24px] border border-[#dce7f3] bg-white p-5 shadow-[0_4px_16px_rgba(18,58,99,0.06)]">
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="relative flex-1 min-w-[200px]">
+              <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2" style="color:#9ab8d8;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input v-model="searchQuery" type="text" placeholder="Search records..."
+                     class="w-full rounded-[10px] py-2.5 pl-10 pr-4 text-sm outline-none transition-all"
+                     style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;" />
+            </div>
+            <select v-model="typeFilter" @change="loadRecords"
+                    class="rounded-[10px] px-4 py-2.5 text-sm outline-none"
+                    style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;">
+              <option value="">All Types</option>
               <option value="income">Income</option>
               <option value="expense">Expense</option>
             </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Category</label>
-            <select v-model="recordForm.category" required
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-              <option value="">Select Category</option>
+            <select v-model="categoryFilter" @change="loadRecords"
+                    class="rounded-[10px] px-4 py-2.5 text-sm outline-none"
+                    style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;">
+              <option value="">All Categories</option>
               <option value="sales">Sales</option>
               <option value="services">Services</option>
               <option value="operations">Operations</option>
@@ -248,40 +120,334 @@
               <option value="utilities">Utilities</option>
               <option value="maintenance">Maintenance</option>
             </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Amount (TZS)</label>
-            <input v-model="recordForm.amount" type="number" step="0.01" min="0" required
-                   placeholder="Enter amount"
-                   class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Status</label>
-            <select v-model="recordForm.status" required
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-              <option value="">Select Status</option>
-              <option value="pending">Pending</option>
-              <option value="verified">Verified</option>
-              <option value="approved">Approved</option>
-            </select>
-          </div>
-
-          <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
-            <button type="button" @click="closeModal"
-                    class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-lg transition-colors">
-              Cancel
-            </button>
-            <button type="submit" :disabled="submitting"
-                    class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-400 text-white text-sm font-medium rounded-lg transition-colors">
-              <span v-if="submitting">Saving...</span>
-              <span v-else>{{ editingRecord ? 'Update' : 'Save' }}</span>
+            <input v-model="dateFilter" type="date" @change="loadRecords"
+                   class="rounded-[10px] px-4 py-2.5 text-sm outline-none"
+                   style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;" />
+            <button @click="exportRecords"
+                    class="inline-flex items-center gap-2 rounded-[10px] px-4 py-2.5 text-sm font-semibold transition-colors"
+                    style="border: 1px solid #d7e4f1; background: #fff; color: #183b63;">
+              <svg class="h-4 w-4" style="color:#2f78dd;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export
             </button>
           </div>
-        </form>
+        </div>
+
+        <!-- Records Table -->
+        <div class="overflow-hidden rounded-[24px] border border-[#d9e6f3] bg-white shadow-[0_28px_70px_rgba(18,58,99,0.12)]">
+          <div class="flex items-center justify-between border-b border-[#e6eef7] px-6 py-4">
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-[0.18em]" style="color:#7d94ac;">Financial Activity</p>
+              <h2 class="mt-1 text-base font-bold" style="color:#183b63;">Records</h2>
+            </div>
+            <span class="rounded-full px-3 py-1 text-xs font-semibold" style="background:#edf4ff; color:#1f5aa6;">
+              {{ filteredRecords.length }} record{{ filteredRecords.length !== 1 ? 's' : '' }}
+            </span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead style="background: #f3f8ff;">
+                <tr style="border-bottom: 1px solid #dce9f7;">
+                  <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Date</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Description</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Category</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Type</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Amount</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Status</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Receipt</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y" style="border-color: #e8f0f8;">
+                <tr v-if="loading">
+                  <td colspan="8" class="px-6 py-10 text-center">
+                    <div class="inline-block h-6 w-6 animate-spin rounded-full border-b-2" style="border-color:#2f78dd;"></div>
+                    <p class="mt-2 text-sm" style="color:#8aa0b7;">Loading records...</p>
+                  </td>
+                </tr>
+                <tr v-else-if="filteredRecords.length === 0">
+                  <td colspan="8" class="px-6 py-14 text-center">
+                    <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full" style="background:#e9f2ff;">
+                      <svg class="h-6 w-6" style="color:#2b74d7;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <p class="text-sm font-semibold" style="color:#183b63;">No records found</p>
+                    <p class="mt-1 text-xs" style="color:#8aa0b7;">Try adjusting your search or filters.</p>
+                  </td>
+                </tr>
+                <tr v-for="record in filteredRecords" :key="record.id" class="transition-colors hover:bg-[#f8fbff]">
+                  <td class="whitespace-nowrap px-6 py-4 text-sm" style="color:#4e6781;">{{ formatDate(record.date) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-semibold" style="color:#183b63;">{{ record.description }}</div>
+                    <div class="mt-0.5 text-xs" style="color:#8aa0b7;">Ref: {{ record.reference }}</div>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm capitalize" style="color:#4e6781;">{{ record.category }}</td>
+                  <td class="whitespace-nowrap px-6 py-4">
+                    <span :class="getTypeColor(record.type)" class="rounded-full px-2.5 py-1 text-xs font-semibold">{{ record.type }}</span>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold" :class="record.type === 'income' ? 'text-emerald-700' : 'text-red-600'">
+                    {{ record.type === 'income' ? '+' : '-' }} {{ formatCurrency(record.amount) }}
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4">
+                    <span :class="getStatusColor(record.status)" class="rounded-full px-2.5 py-1 text-xs font-semibold">{{ record.status }}</span>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm">
+                    <button v-if="record.receipt_file" @click="viewReceipt(record.receipt_file)"
+                            class="inline-flex items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-xs font-semibold transition-colors"
+                            style="background:#edf4ff; border:1px solid #c3d9f7; color:#1f5aa6;">
+                      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      View
+                    </button>
+                    <span v-else class="text-xs italic" style="color:#b0c4d8;">None</span>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm">
+                    <button @click="editRecord(record)" class="mr-3 font-semibold transition-colors" style="color:#2f78dd;">Edit</button>
+                    <button @click="deleteRecord(record.id)" class="font-semibold text-red-500 transition-colors hover:text-red-700">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Add/Edit Record Modal -->
+    <Teleport to="body">
+      <div v-if="showAddRecordModal" class="fixed inset-0 z-50 flex items-center justify-center p-4"
+           style="background: rgba(14,34,64,0.45); backdrop-filter: blur(4px);"
+           @click.self="closeModal">
+        <div class="w-full max-w-2xl rounded-[24px] bg-white"
+             style="border: 1px solid #d6e4f2; box-shadow: 0 32px 80px rgba(18,58,99,0.24); max-height: 92vh; display:flex; flex-direction:column;">
+          <!-- Header -->
+          <div class="flex shrink-0 items-center justify-between px-6 py-4"
+               style="border-bottom: 1px solid #e8f0f8; background: linear-gradient(135deg,#eef5ff 0%,#ffffff 100%);">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 items-center justify-center rounded-[12px] text-white"
+                   style="background: linear-gradient(135deg,#194f92,#2f78dd);">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-[15px] font-bold leading-tight" style="color:#183b63;">
+                  {{ editingRecord ? 'Edit Record' : 'Add Financial Record' }}
+                </h2>
+                <p class="mt-0.5 text-[11px]" style="color:#7a93af;">
+                  {{ editingRecord ? 'Update existing record details' : 'Create a new financial record entry' }}
+                </p>
+              </div>
+            </div>
+            <button @click="closeModal" class="flex h-8 w-8 items-center justify-center rounded-lg transition-all hover:bg-[#eef5ff]" style="color:#7a93af;">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Form (scrollable) -->
+          <form @submit.prevent="saveRecord" class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+            <!-- Type toggle buttons (full width) -->
+            <div>
+              <label class="mb-2 block text-[10px] font-semibold uppercase tracking-wide" style="color:#7d94ac;">Type <span class="text-red-500">*</span></label>
+              <div class="grid grid-cols-2 gap-3">
+                <button type="button" @click="recordForm.type = 'income'"
+                        class="flex items-center justify-center gap-2 rounded-[12px] px-4 py-3 text-sm font-semibold transition-all"
+                        :style="recordForm.type === 'income' ? 'background:linear-gradient(135deg,#0f7b55,#19a974);color:#fff;border:2px solid #0f7b55;box-shadow:0 4px 14px rgba(15,123,85,0.25);' : 'border:2px solid #d6e4f2;background:#f8fbff;color:#4e6781;'">
+                  <i class="fas fa-arrow-circle-up" :style="recordForm.type === 'income' ? 'color:#fff' : 'color:#19a974'"></i>
+                  Income
+                </button>
+                <button type="button" @click="recordForm.type = 'expense'"
+                        class="flex items-center justify-center gap-2 rounded-[12px] px-4 py-3 text-sm font-semibold transition-all"
+                        :style="recordForm.type === 'expense' ? 'background:linear-gradient(135deg,#b91c1c,#ef4444);color:#fff;border:2px solid #b91c1c;box-shadow:0 4px 14px rgba(185,28,28,0.2);' : 'border:2px solid #d6e4f2;background:#f8fbff;color:#4e6781;'">
+                  <i class="fas fa-arrow-circle-down" :style="recordForm.type === 'expense' ? 'color:#fff' : 'color:#ef4444'"></i>
+                  Expense
+                </button>
+              </div>
+            </div>
+
+            <!-- Row: Date + Amount -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide" style="color:#7d94ac;">Date</label>
+                <input v-model="recordForm.date" type="date" required
+                       class="w-full rounded-[10px] px-3 py-2.5 text-sm outline-none transition-all"
+                       style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;" />
+              </div>
+              <div>
+                <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide" style="color:#7d94ac;">Amount (TZS) <span class="text-red-500">*</span></label>
+                <input v-model="recordForm.amount" type="number" step="0.01" min="0" required placeholder="0.00"
+                       class="w-full rounded-[10px] px-3 py-2.5 text-sm outline-none transition-all"
+                       style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;" />
+              </div>
+            </div>
+
+            <!-- Row: Category + Status -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide" style="color:#7d94ac;">Category <span class="text-red-500">*</span></label>
+                <select v-model="recordForm.category" required
+                        class="w-full rounded-[10px] px-3 py-2.5 text-sm outline-none"
+                        style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;">
+                  <option value="">Select Category</option>
+                  <option value="sales">Sales</option>
+                  <option value="services">Services</option>
+                  <option value="operations">Operations</option>
+                  <option value="salary">Salary</option>
+                  <option value="utilities">Utilities</option>
+                  <option value="maintenance">Maintenance</option>
+                </select>
+              </div>
+              <div>
+                <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide" style="color:#7d94ac;">Status <span class="text-red-500">*</span></label>
+                <select v-model="recordForm.status" required
+                        class="w-full rounded-[10px] px-3 py-2.5 text-sm outline-none"
+                        style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;">
+                  <option value="">Select Status</option>
+                  <option value="approved">Approved</option>
+                  <option value="pending">Pending</option>
+                  <option value="verified">Verified</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row: Description + Reference (both optional) -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide" style="color:#7d94ac;">
+                  Description <span class="font-normal normal-case" style="color:#b8ccdf;font-size:9px;">(optional)</span>
+                </label>
+                <textarea v-model="recordForm.description" rows="2" placeholder="Enter description"
+                          class="w-full rounded-[10px] px-3 py-2.5 text-sm outline-none transition-all resize-none"
+                          style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63; line-height:1.6;"></textarea>
+              </div>
+              <div>
+                <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide" style="color:#7d94ac;">
+                  Reference <span class="font-normal normal-case" style="color:#b8ccdf;font-size:9px;">(optional)</span>
+                </label>
+                <input v-model="recordForm.reference" type="text" :placeholder="`e.g. INV-${new Date().getFullYear()}-001`"
+                       class="w-full rounded-[10px] px-3 py-2.5 text-sm outline-none transition-all"
+                       style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;" />
+              </div>
+            </div>
+
+            <!-- Receipt upload (full width) -->
+            <div>
+              <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide" style="color:#7d94ac;">
+                Receipt <span class="font-normal normal-case" style="color:#b8ccdf;font-size:9px;">(optional)</span>
+              </label>
+              <!-- Current receipt preview when editing -->
+              <div v-if="editingRecord && editingRecord.receipt_file" class="mb-2 flex items-center gap-2">
+                <button type="button" @click="viewReceipt(editingRecord.receipt_file)"
+                        class="inline-flex items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-xs font-semibold"
+                        style="background:#edf4ff; border:1px solid #c3d9f7; color:#1f5aa6;">
+                  <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  View current receipt
+                </button>
+              </div>
+              <!-- File drop zone -->
+              <label class="block cursor-pointer rounded-[12px] p-4 text-center transition-colors"
+                     :style="receiptFile ? 'border:2px solid #2f78dd; background:#f0f7ff;' : 'border:2px dashed #c8ddf0; background:#f8fbff;'">
+                <input ref="receiptFileInput" type="file" accept="image/*,.pdf" class="sr-only" @change="handleFileChange" />
+                <div v-if="receiptFile" class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 flex-shrink-0" style="color:#2f78dd;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="max-w-[220px] truncate text-xs font-semibold" style="color:#183b63;">{{ receiptFile.name }}</span>
+                  </div>
+                  <button type="button" @click.prevent="clearFile"
+                          class="ml-2 text-xs font-bold text-red-400 hover:text-red-600">✕</button>
+                </div>
+                <div v-else class="flex flex-col items-center gap-1">
+                  <svg class="h-6 w-6" style="color:#9ab8d8;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="text-xs" style="color:#7a93af;">Click to upload receipt image or PDF</span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Footer actions -->
+            <div class="flex items-center justify-end gap-3 pt-2" style="border-top: 1px solid #e8f0f8;">
+              <button type="button" @click="closeModal"
+                      class="rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors"
+                      style="background: #f3f8ff; color: #183b63; border: 1px solid #d7e4f1;">
+                Cancel
+              </button>
+              <button type="submit" :disabled="submitting"
+                      class="rounded-[10px] px-5 py-2 text-sm font-semibold text-white transition-all hover:brightness-105 disabled:opacity-60"
+                      style="background: linear-gradient(135deg,#194f92,#2f78dd);">
+                <span v-if="submitting">Saving...</span>
+                <span v-else>{{ editingRecord ? 'Update' : 'Save Record' }}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Receipt Viewer Modal -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="viewingReceiptUrl" class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+             style="background: rgba(5,20,45,0.85); backdrop-filter: blur(8px);"
+             @click.self="viewingReceiptUrl = null">
+          <div class="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-[24px] bg-white"
+               style="box-shadow: 0 40px 100px rgba(0,0,0,0.45);">
+            <!-- Viewer header -->
+            <div class="flex shrink-0 items-center justify-between px-5 py-3.5"
+                 style="border-bottom: 1px solid #e8f0f8; background: linear-gradient(135deg,#eef5ff 0%,#ffffff 100%);">
+              <div class="flex items-center gap-3">
+                <div class="flex h-8 w-8 items-center justify-center rounded-[10px] text-white"
+                     style="background: linear-gradient(135deg,#194f92,#2f78dd);">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </div>
+                <span class="text-sm font-bold" style="color:#183b63;">Receipt Preview</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <a :href="viewingReceiptUrl" target="_blank" download
+                   class="inline-flex items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-xs font-semibold transition-colors"
+                   style="background:#f3f8ff; border:1px solid #d7e4f1; color:#2d6aaf;">
+                  <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download
+                </a>
+                <button @click="viewingReceiptUrl = null"
+                        class="flex h-8 w-8 items-center justify-center rounded-lg transition-all hover:bg-[#eef5ff]" style="color:#7a93af;">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <!-- Viewer body -->
+            <div class="flex-1 overflow-auto" style="background:#f0f4f9;">
+              <img v-if="isImageUrl(viewingReceiptUrl)"
+                   :src="viewingReceiptUrl"
+                   class="mx-auto block max-h-[80vh] object-contain p-4"
+                   alt="Receipt" />
+              <iframe v-else
+                      :src="viewingReceiptUrl"
+                      class="h-[80vh] w-full border-0"
+                      title="Receipt"></iframe>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -302,9 +468,16 @@ const searchQuery = ref('')
 const typeFilter = ref('')
 const categoryFilter = ref('')
 const dateFilter = ref('')
+const receiptFile = ref(null)
+const receiptFileInput = ref(null)
+const viewingReceiptUrl = ref(null)
+
+function todayDate() {
+  return new Date().toISOString().split('T')[0]
+}
 
 const recordForm = ref({
-  date: '',
+  date: todayDate(),
   description: '',
   reference: '',
   type: '',
@@ -385,8 +558,21 @@ const saveRecord = async () => {
       ? `api/financial/records/${editingRecord.value.id}`
       : 'api/financial/records'
     
-    const method = editingRecord.value ? 'put' : 'post'
-    const response = await axios[method](endpoint, recordForm.value)
+    let response
+    if (receiptFile.value) {
+      const formData = new FormData()
+      Object.entries(recordForm.value).forEach(([k, v]) => {
+        if (v !== '' && v !== null) formData.append(k, v)
+      })
+      formData.append('receipt', receiptFile.value)
+      if (editingRecord.value) formData.append('_method', 'PUT')
+      response = await axios.post(endpoint, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+    } else {
+      const method = editingRecord.value ? 'put' : 'post'
+      response = await axios[method](endpoint, recordForm.value)
+    }
     
     if (response.data.status === 'success') {
       toast.success(`Record ${editingRecord.value ? 'updated' : 'created'} successfully`)
@@ -434,8 +620,10 @@ const exportRecords = () => {
 const closeModal = () => {
   showAddRecordModal.value = false
   editingRecord.value = null
+  receiptFile.value = null
+  if (receiptFileInput.value) receiptFileInput.value.value = ''
   recordForm.value = {
-    date: '',
+    date: todayDate(),
     description: '',
     reference: '',
     type: '',
@@ -487,8 +675,28 @@ const getStatusColor = (status) => {
 onMounted(() => {
   loadRecords()
 })
+
+const handleFileChange = (e) => {
+  receiptFile.value = e.target.files[0] || null
+}
+
+const clearFile = () => {
+  receiptFile.value = null
+  if (receiptFileInput.value) receiptFileInput.value.value = ''
+}
+
+const viewReceipt = (url) => {
+  viewingReceiptUrl.value = url
+}
+
+const isImageUrl = (url) => {
+  if (!url) return false
+  return /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i.test(url)
+}
 </script>
 
 <style scoped>
 @import url('https://fonts.2?family=DM+Sans:wght@400;500;600;700&display=swap');
+.fade-enter-active, .fade-leave-active { transition: opacity 0.18s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

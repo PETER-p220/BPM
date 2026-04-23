@@ -1,101 +1,103 @@
 <template>
-  <div class="min-h-screen bg-gray-50/40 dark:bg-neutral-950 pb-12">
-    <!-- Sticky Header + Actions -->
-    <div class="sticky top-0 z-10 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-gray-200 dark:border-neutral-800 px-4 sm:px-6 lg:px-8 py-4">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 max-w-7xl mx-auto">
+  <div class="min-h-screen pb-12" style="background: radial-gradient(circle at top right, rgba(48,120,221,0.08), transparent 22%), linear-gradient(180deg, #eff5fb 0%, #eaf1f8 100%);">
+    <!-- Sticky Header -->
+    <div class="sticky top-0 z-10 border-b px-4 py-4 backdrop-blur-md sm:px-6 lg:px-8"
+         style="background: rgba(255,255,255,0.92); border-color: #d9e6f3;">
+      <div class="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 class="text-2xl font-semibold text-gray-900 dark:text-white tracking-tight">
-            Receipts
-          </h1>
-          <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">
-            {{ filteredReceipts.length }} receipts found
-          </p>
+          <h1 class="text-2xl font-bold tracking-tight" style="color:#183b63;">Receipts</h1>
+          <p class="mt-1 text-sm" style="color:#67819d;">{{ filteredReceipts.length }} receipts found</p>
         </div>
-
-        <div class="flex items-center gap-4 w-full sm:w-auto">
-          <div class="relative flex-1 sm:flex-none sm:w-72">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fas fa-search text-gray-400 dark:text-neutral-500"></i>
+        <div class="flex w-full items-center gap-4 sm:w-auto">
+          <div class="relative flex-1 sm:w-72 sm:flex-none">
+            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <svg class="h-4 w-4" style="color:#9ab8d8;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </span>
-            <input
-              v-model="filter"
-              type="search"
-              placeholder="Search receipts..."
-              class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 outline-none transition"
-            />
+            <input v-model="filter" type="search" placeholder="Search receipts..."
+                   class="w-full rounded-[10px] py-2.5 pl-10 pr-4 text-sm outline-none transition-all"
+                   style="border: 1.5px solid #d6e4f2; background: #f8fbff; color: #183b63;" />
           </div>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
-    <div class="px-4 sm:px-6 lg:px-8 pt-8 max-w-7xl mx-auto">
-      <!-- Loading State -->
-      <div
-        v-if="loading"
-        class="flex flex-col items-center justify-center py-24 text-gray-500 dark:text-neutral-400"
-      >
-        <svg class="animate-spin h-10 w-10 text-indigo-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+      <!-- Loading -->
+      <div v-if="loading" class="flex flex-col items-center justify-center py-24">
+        <svg class="mb-4 h-10 w-10 animate-spin" style="color:#2f78dd;" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <p class="text-lg font-medium">Loading receipts...</p>
+        <p class="text-base font-semibold" style="color:#183b63;">Loading receipts...</p>
       </div>
 
       <!-- Empty State -->
-      <div
-        v-else-if="filteredReceipts.length === 0"
-        class="text-center py-24 bg-white dark:bg-neutral-900 rounded-xl border border-dashed border-gray-300 dark:border-neutral-700"
-      >
-        <i class="fas fa-receipt text-6xl text-gray-300 dark:text-neutral-700 mb-6"></i>
-        <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">
-          No receipts found
-        </h3>
-        <p class="text-gray-500 dark:text-neutral-400 mb-6 max-w-md mx-auto">
+      <div v-else-if="filteredReceipts.length === 0"
+           class="rounded-[24px] border border-dashed py-24 text-center"
+           style="border-color:#d9e6f3; background:#fff;">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full" style="background:#e9f2ff;">
+          <svg class="h-8 w-8" style="color:#2b74d7;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold" style="color:#183b63;">No receipts found</h3>
+        <p class="mt-1 text-sm" style="color:#8aa0b7;">
           {{ filter ? 'Try adjusting your search' : 'No receipts have been submitted yet' }}
         </p>
       </div>
 
       <!-- Table -->
-      <div v-else class="bg-white dark:bg-neutral-900 shadow-sm rounded-xl border border-gray-200/70 dark:border-neutral-800 overflow-hidden">
+      <div v-else class="overflow-hidden rounded-[24px] border border-[#d9e6f3] bg-white shadow-[0_28px_70px_rgba(18,58,99,0.12)]">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-800">
-            <thead class="bg-gray-50/70 dark:bg-neutral-800/50">
-              <tr>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider w-16">No</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Submitted By</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Description</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Receipt File</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Submitted At</th>
+          <table class="min-w-full text-sm">
+            <thead style="background: #f3f8ff;">
+              <tr style="border-bottom: 1px solid #dce9f7;">
+                <th class="w-16 px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">#</th>
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Submitted By</th>
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Description</th>
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Receipt File</th>
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">Submitted At</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-neutral-800 bg-white dark:bg-neutral-900">
-              <tr
-                v-for="(receipt, index) in paginatedReceipts"
-                :key="receipt.receipt_id"
-                class="hover:bg-gray-50/60 dark:hover:bg-neutral-800/40 transition-colors group"
-              >
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-neutral-400">
+            <tbody class="divide-y" style="border-color: #e8f0f8;">
+              <tr v-for="(receipt, index) in paginatedReceipts" :key="receipt.receipt_id"
+                  class="cursor-pointer transition-colors hover:bg-[#f0f7ff]"
+                  @click="openViewer(receipt)">
+                <td class="whitespace-nowrap px-6 py-4 text-sm" style="color:#8aa0b7;">
                   {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                 </td>
-                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                <td class="px-6 py-4 text-sm font-semibold" style="color:#183b63;">
                   {{ receipt.user_name || '—' }}
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-600 dark:text-neutral-300 max-w-md truncate">
+                <td class="max-w-md truncate px-6 py-4 text-sm" style="color:#4e6781;">
                   {{ receipt.description || 'No description' }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <button
-                    v-if="receipt.receipt_file"
-                    @click="downloadReceipt(receipt.receipt_file, receipt.description || 'receipt')"
-                    class="inline-flex items-center px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 transition font-medium"
-                  >
-                    <i class="fas fa-download mr-2"></i>
-                    Download Receipt
-                  </button>
-                  <span v-else class="text-gray-400 dark:text-neutral-600 italic">No file</span>
+                <td class="whitespace-nowrap px-6 py-4 text-sm">
+                  <div v-if="receipt.receipt_file" class="flex items-center gap-2">
+                    <button @click.stop="openViewer(receipt)"
+                            class="inline-flex items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-xs font-semibold transition-colors"
+                            style="background:#edf4ff; border:1px solid #c3d9f7; color:#1f5aa6;">
+                      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      View
+                    </button>
+                    <button @click.stop="downloadReceipt(receipt.receipt_file, receipt.description || 'receipt')"
+                            class="inline-flex items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-xs font-semibold transition-colors"
+                            style="background: #f3f8ff; border: 1px solid #d7e4f1; color: #2d6aaf;">
+                      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Download
+                    </button>
+                  </div>
+                  <span v-else class="text-xs italic" style="color:#8aa0b7;">No file</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-neutral-300">
+                <td class="whitespace-nowrap px-6 py-4 text-sm" style="color:#7a93af;">
                   {{ formatDate(receipt.created_at) }}
                 </td>
               </tr>
@@ -104,35 +106,93 @@
         </div>
 
         <!-- Pagination -->
-        <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50">
-          <div class="text-sm text-gray-500 dark:text-neutral-400">
+        <div class="flex items-center justify-between px-6 py-4" style="border-top: 1px solid #e8f0f8; background: #fbfdff;">
+          <div class="text-sm" style="color:#7a93af;">
             Showing
-            <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>–
-            <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredReceipts.length) }}</span> of
-            <span class="font-medium">{{ filteredReceipts.length }}</span>
+            <span class="font-semibold" style="color:#183b63;">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>–
+            <span class="font-semibold" style="color:#183b63;">{{ Math.min(currentPage * itemsPerPage, filteredReceipts.length) }}</span> of
+            <span class="font-semibold" style="color:#183b63;">{{ filteredReceipts.length }}</span>
           </div>
-
           <div class="flex items-center gap-2">
-            <button
-              :disabled="currentPage === 1"
-              @click="changePage(currentPage - 1)"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-neutral-700 rounded-lg text-sm font-medium text-gray-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 disabled:opacity-50 transition"
-            >
-              <i class="fas fa-chevron-left mr-1.5"></i> Prev
+            <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)"
+                    class="flex h-9 w-9 items-center justify-center rounded-[8px] transition-all disabled:opacity-40"
+                    style="border: 1px solid #d9e6f3; color: #7a93af;">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
-
-            <button
-              :disabled="currentPage * itemsPerPage >= filteredReceipts.length"
-              @click="changePage(currentPage + 1)"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-neutral-700 rounded-lg text-sm font-medium text-gray-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 disabled:opacity-50 transition"
-            >
-              Next <i class="fas fa-chevron-right ml-1.5"></i>
+            <button :disabled="currentPage * itemsPerPage >= filteredReceipts.length" @click="changePage(currentPage + 1)"
+                    class="flex h-9 w-9 items-center justify-center rounded-[8px] transition-all disabled:opacity-40"
+                    style="border: 1px solid #d9e6f3; color: #7a93af;">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Receipt Viewer Lightbox -->
+  <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="viewingReceipt" class="fixed inset-0 z-50 flex items-center justify-center p-4"
+           style="background: rgba(5,20,45,0.88); backdrop-filter: blur(8px);"
+           @click.self="viewingReceipt = null">
+        <div class="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-[24px] bg-white"
+             style="box-shadow: 0 40px 100px rgba(0,0,0,0.45);">
+          <!-- Header -->
+          <div class="flex shrink-0 items-center justify-between px-5 py-3.5"
+               style="border-bottom: 1px solid #e8f0f8; background: linear-gradient(135deg,#eef5ff 0%,#ffffff 100%);">
+            <div class="flex items-center gap-3">
+              <div class="flex h-8 w-8 items-center justify-center rounded-[10px] text-white"
+                   style="background: linear-gradient(135deg,#194f92,#2f78dd);">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-bold" style="color:#183b63;">Receipt Preview</p>
+                <p v-if="viewingReceipt.user_name" class="mt-0.5 text-xs" style="color:#7a93af;">{{ viewingReceipt.user_name }} &middot; {{ formatDate(viewingReceipt.created_at) }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <a :href="viewingReceipt.receipt_file" target="_blank" download
+                 class="inline-flex items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-xs font-semibold"
+                 style="background:#f3f8ff; border:1px solid #d7e4f1; color:#2d6aaf;">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download
+              </a>
+              <button @click="viewingReceipt = null"
+                      class="flex h-8 w-8 items-center justify-center rounded-lg transition-all hover:bg-[#eef5ff]" style="color:#7a93af;">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <!-- Description banner -->
+          <div v-if="viewingReceipt.description" class="shrink-0 px-5 py-2.5" style="background:#f3f8ff; border-bottom:1px solid #e8f0f8;">
+            <p class="text-xs" style="color:#4e6781;">{{ viewingReceipt.description }}</p>
+          </div>
+          <!-- Image / PDF body -->
+          <div class="flex flex-1 items-center justify-center overflow-auto" style="background:#f0f4f9; min-height:200px;">
+            <img v-if="isImageUrl(viewingReceipt.receipt_file)"
+                 :src="viewingReceipt.receipt_file"
+                 class="max-h-[75vh] object-contain p-4"
+                 alt="Receipt" />
+            <iframe v-else
+                    :src="viewingReceipt.receipt_file"
+                    class="h-[75vh] w-full border-0"
+                    title="Receipt document"></iframe>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup>
@@ -148,6 +208,7 @@ const filter = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 10
 const loading = ref(false)
+const viewingReceipt = ref(null)
 
 onMounted(() => {
   fetchReceipts()
@@ -225,4 +286,18 @@ function changePage(page) {
   currentPage.value = page
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+
+function openViewer(receipt) {
+  if (receipt.receipt_file) viewingReceipt.value = receipt
+}
+
+function isImageUrl(url) {
+  if (!url) return false
+  return /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i.test(url)
+}
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.18s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

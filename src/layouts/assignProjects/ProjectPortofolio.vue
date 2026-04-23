@@ -1,90 +1,92 @@
 <template>
-  <div class="min-h-screen bg-[#f5f6fa] dark:bg-[#0d0f14] transition-colors duration-300">
+  <div class="min-h-screen font-['DM_Sans',sans-serif] transition-colors duration-300" style="background:radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%)">
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
 
       <!-- Header -->
-      <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 class="text-xl font-bold text-gray-900 dark:text-white">Engineers with Projects</h1>
-          <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Project assignments and performance overview</p>
-        </div>
-        <div class="flex gap-2" v-if="filteredUsers.length">
-          <button @click="exportToExcel" :disabled="exporting"
-            class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 transition-all">
-            <svg class="h-3.5 w-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Excel
-          </button>
-          <button @click="exportToPDF" :disabled="exporting"
-            class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 transition-all">
-            <svg class="h-3.5 w-3.5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            PDF
-          </button>
+      <div class="mb-8 rounded-2xl px-6 py-5 shadow-sm border border-[#dce7f3]" style="background:linear-gradient(135deg,#eef5ff 0%,#ffffff 46%,#f7fbff 100%)">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 class="text-xl md:text-2xl font-bold text-[#183b63]">Engineers with Projects</h1>
+            <p class="text-[13px] text-[#7a93af]">Project assignments and performance overview</p>
+          </div>
+          <div class="flex gap-2" v-if="filteredUsers.length">
+            <button @click="exportToExcel" :disabled="exporting"
+              class="px-4 py-2.5 rounded-xl font-semibold text-sm border border-[#1f9d8b]/30 text-[#1f9d8b] bg-[#edfaf7] hover:bg-[#d4f3ec] transition-all flex items-center gap-2">
+              <svg class="h-3.5 w-3.5 text-[#1f9d8b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Excel
+            </button>
+            <button @click="exportToPDF" :disabled="exporting"
+              class="px-4 py-2.5 rounded-xl font-semibold text-sm border border-[#e87461]/30 text-[#e87461] bg-[#fef2f0] hover:bg-[#fde3df] transition-all flex items-center gap-2">
+              <svg class="h-3.5 w-3.5 text-[#e87461]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              PDF
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Search -->
       <div class="mb-4 relative max-w-xs">
-        <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#a4b8cf]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <input v-model="filter" type="text" placeholder="Search name or email…"
-          class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-8 text-sm text-gray-900 placeholder:text-gray-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 shadow-sm" />
-        <button v-if="filter" @click="filter = ''" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+          class="w-full rounded-xl border border-[#d9e6f3] bg-white py-2 pl-9 pr-8 text-sm text-[#183b63] placeholder:text-[#a4b8cf] focus:border-[#2f78dd] focus:outline-none focus:ring-2 focus:ring-[#2f78dd]/20 shadow-sm" />
+        <button v-if="filter" @click="filter = ''" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#a4b8cf] hover:text-[#183b63]">
           <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
       </div>
 
       <!-- Table -->
-      <div class="overflow-hidden rounded-xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/50 dark:bg-gray-900">
+      <div class="overflow-hidden rounded-2xl border border-[#dce7f3] bg-white shadow-sm">
         <div class="overflow-x-auto">
           <table class="min-w-full">
             <thead>
-              <tr class="border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40">
-                <th class="px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-400 w-10">#</th>
-                <th class="px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-400">Engineer</th>
-                <th class="px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-400">Email</th>
-                <th class="px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-gray-400">Total</th>
-                <th class="px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-amber-500/80">Progress</th>
-                <th class="px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-teal-500/80">Done</th>
-                <th class="px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-rose-400/80">Failed</th>
+              <tr class="border-b border-[#edf2fa] bg-[#f7faff]">
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac] w-10">#</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Engineer</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Email</th>
+                <th class="px-5 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Total</th>
+                <th class="px-5 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-500/80">Progress</th>
+                <th class="px-5 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#1f9d8b]">Done</th>
+                <th class="px-5 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-rose-400/80">Failed</th>
                 <th class="px-5 py-3 w-20"></th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-50 dark:divide-gray-800/60">
+            <tbody class="divide-y divide-[#edf2fa]">
               <tr v-for="(user, index) in paginatedUsers" :key="user.user_id"
-                class="hover:bg-gray-50/70 dark:hover:bg-gray-800/30 transition-colors">
-                <td class="px-5 py-3.5 text-xs text-gray-400">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
+                class="hover:bg-[#f7faff] transition-colors">
+                <td class="px-5 py-3.5 text-xs text-[#67819d]">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
                 <td class="px-5 py-3.5">
                   <div class="flex items-center gap-2.5">
-                    <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    <div class="h-8 w-8 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);">
                       {{ getInitials(user.name) }}
                     </div>
                     <div>
-                      <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ user.name || '—' }}</p>
-                      <p v-if="user.role || user.department" class="text-xs text-gray-400">{{ user.role || user.department }}</p>
+                      <p class="text-sm font-semibold text-[#183b63]">{{ user.name || '—' }}</p>
+                      <p v-if="user.role || user.department" class="text-xs text-[#7a93af]">{{ user.role || user.department }}</p>
                     </div>
                   </div>
                 </td>
-                <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ user.email || '—' }}</td>
+                <td class="px-5 py-3.5 text-sm text-[#4a6a8a]">{{ user.email || '—' }}</td>
                 <td class="px-5 py-3.5 text-center">
-                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-gray-100 px-1.5 text-xs font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">{{ user.total_projects || 0 }}</span>
+                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-[#edf4fb] px-1.5 text-xs font-semibold text-[#2f78dd]">{{ user.total_projects || 0 }}</span>
                 </td>
                 <td class="px-5 py-3.5 text-center">
-                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-amber-50 px-1.5 text-xs font-semibold text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">{{ user.on_progress_projects || 0 }}</span>
+                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-amber-50 px-1.5 text-xs font-semibold text-amber-600">{{ user.on_progress_projects || 0 }}</span>
                 </td>
                 <td class="px-5 py-3.5 text-center">
-                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-teal-50 px-1.5 text-xs font-semibold text-teal-600 dark:bg-teal-900/20 dark:text-teal-400">{{ user.completed_projects || 0 }}</span>
+                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-[#edfaf7] px-1.5 text-xs font-semibold text-[#1f9d8b]">{{ user.completed_projects || 0 }}</span>
                 </td>
                 <td class="px-5 py-3.5 text-center">
-                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-rose-50 px-1.5 text-xs font-semibold text-rose-600 dark:bg-rose-900/20 dark:text-rose-400">{{ user.failed_projects || 0 }}</span>
+                  <span class="inline-flex h-6 min-w-[26px] items-center justify-center rounded-md bg-rose-50 px-1.5 text-xs font-semibold text-rose-600">{{ user.failed_projects || 0 }}</span>
                 </td>
                 <td class="px-5 py-3.5 text-right">
                   <button @click="openModal(user)"
-                    class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-all shadow-sm">
+                    class="rounded-xl border border-[#d9e6f3] bg-white px-3 py-1.5 text-xs font-semibold text-[#4a6a8a] hover:bg-[#f7faff] hover:border-[#2f78dd]/30 transition-all shadow-sm">
                     View
                   </button>
                 </td>
@@ -95,31 +97,35 @@
 
         <!-- Empty -->
         <div v-if="!isLoading && paginatedUsers.length === 0" class="py-16 text-center">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ filter ? 'No engineers match your search.' : 'No engineers found.' }}</p>
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style="background:#edf4fb;">
+            <i class="fas fa-users text-xl" style="color:#a4b8cf;"></i>
+          </div>
+          <p class="text-sm font-medium text-[#7a93af]">{{ filter ? 'No engineers match your search.' : 'No engineers found.' }}</p>
         </div>
         <div v-else-if="isLoading" class="py-16 text-center">
-          <div class="inline-block h-7 w-7 animate-spin rounded-full border-4 border-gray-200 border-t-teal-500 mb-2"></div>
-          <p class="text-sm text-gray-400">Loading…</p>
+          <div class="inline-block h-7 w-7 animate-spin rounded-full border-4 border-[#edf2fa] border-t-[#2f78dd] mb-2"></div>
+          <p class="text-sm text-[#7a93af]">Loading…</p>
         </div>
       </div>
 
       <!-- Pagination -->
       <div v-if="filteredUsers.length > itemsPerPage" class="mt-5 flex items-center justify-between">
-        <p class="text-xs text-gray-400">
+        <p class="text-xs text-[#7a93af]">
           {{ (currentPage - 1) * itemsPerPage + 1 }}–{{ Math.min(currentPage * itemsPerPage, filteredUsers.length) }} of {{ filteredUsers.length }}
         </p>
         <div class="flex items-center gap-1">
           <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)"
-            class="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 transition-all">
+            class="flex h-7 w-7 items-center justify-center rounded-xl border border-[#d9e6f3] text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-30 transition-all">
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
           </button>
           <button v-for="page in visiblePages" :key="page" @click="changePage(page)"
-            :class="['flex h-7 w-7 items-center justify-center rounded-md text-xs font-semibold transition-all',
-              page === currentPage ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'border border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800']">
+            :class="['flex h-7 w-7 items-center justify-center rounded-xl text-xs font-semibold transition-all',
+              page === currentPage ? 'text-white border-[#2f78dd] shadow-md' : 'border border-[#d9e6f3] text-[#4a6a8a] hover:bg-[#f7faff]']"
+            :style="page === currentPage ? 'background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);' : ''">
             {{ page }}
           </button>
           <button :disabled="currentPage >= totalPages" @click="changePage(currentPage + 1)"
-            class="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 transition-all">
+            class="flex h-7 w-7 items-center justify-center rounded-xl border border-[#d9e6f3] text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-30 transition-all">
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
           </button>
         </div>
@@ -132,22 +138,22 @@
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
         @click="closeModal">
         <div
-          class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl bg-white dark:bg-gray-900 shadow-2xl overflow-hidden"
+          class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl bg-white shadow-2xl overflow-hidden border border-[#dce7f3]"
           @click.stop>
 
           <!-- Modal Header -->
-          <div class="flex items-center gap-4 px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
-            <div class="h-11 w-11 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow">
+          <div class="flex items-center gap-4 px-6 py-5 border-b border-[#edf2fa] flex-shrink-0">
+            <div class="h-11 w-11 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow" style="background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);">
               {{ getInitials(selectedUser.name) }}
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-base font-bold text-gray-900 dark:text-gray-100 truncate">{{ selectedUser.name || '—' }}</p>
-              <p class="text-xs text-gray-400 truncate">{{ selectedUser.email || '—' }}</p>
+              <p class="text-base font-bold text-[#183b63] truncate">{{ selectedUser.name || '—' }}</p>
+              <p class="text-xs text-[#7a93af] truncate">{{ selectedUser.email || '—' }}</p>
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
               <StatusBadge :value="selectedUser.status" />
               <button @click="closeModal"
-                class="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 transition-all">
+                class="flex h-8 w-8 items-center justify-center rounded-lg text-[#a4b8cf] hover:bg-[#f7faff] hover:text-[#183b63] transition-all">
                 <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -169,19 +175,19 @@
             <!-- Projects -->
             <div>
               <div class="flex items-center justify-between mb-3">
-                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Projects</p>
-                <span class="text-xs font-semibold text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-0.5">{{ selectedUser.projects?.length || 0 }}</span>
+                <p class="text-xs font-bold uppercase tracking-widest text-[#7d94ac]">Projects</p>
+                <span class="text-xs font-semibold text-[#4a6a8a] bg-[#edf4fb] rounded-full px-2 py-0.5">{{ selectedUser.projects?.length || 0 }}</span>
               </div>
 
               <div v-if="selectedUser.projects?.length" class="space-y-2.5">
                 <div v-for="project in selectedUser.projects" :key="project.project_id"
-                  class="rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                  class="rounded-xl border border-[#edf2fa] overflow-hidden">
 
                   <!-- Project title row -->
-                  <div class="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-800/50">
+                  <div class="flex items-center justify-between px-4 py-3 bg-[#f7faff]">
                     <div class="flex items-center gap-2 min-w-0">
                       <span class="h-1.5 w-1.5 rounded-full flex-shrink-0" :class="statusDot(project.project_status)"></span>
-                      <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{{ project.project_name || 'Unnamed' }}</span>
+                      <span class="text-sm font-semibold text-[#183b63] truncate">{{ project.project_name || 'Unnamed' }}</span>
                     </div>
                     <StatusBadge :value="project.project_status" />
                   </div>
@@ -200,16 +206,16 @@
                 </div>
               </div>
 
-              <div v-else class="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 py-10 text-center">
-                <p class="text-sm text-gray-400">No projects assigned</p>
+              <div v-else class="rounded-xl border border-dashed border-[#d9e6f3] py-10 text-center">
+                <p class="text-sm text-[#7a93af]">No projects assigned</p>
               </div>
             </div>
           </div>
 
           <!-- Footer -->
-          <div class="flex-shrink-0 border-t border-gray-100 dark:border-gray-800 px-6 py-4 flex justify-end">
+          <div class="flex-shrink-0 border-t border-[#edf2fa] px-6 py-4 flex justify-end">
             <button @click="closeModal"
-              class="rounded-lg border border-gray-200 px-5 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-all">
+              class="rounded-xl border border-[#d9e6f3] px-5 py-2 text-sm font-semibold text-[#4a6a8a] hover:bg-[#f7faff] transition-all">
               Close
             </button>
           </div>
@@ -328,7 +334,7 @@ function exportToPDF() {
         u.total_projects || 0, u.on_progress_projects || 0, u.completed_projects || 0, u.failed_projects || 0
       ]),
       styles: { fontSize: 8, cellPadding: 3 },
-      headStyles: { fillColor: [15, 118, 110], textColor: 255 },
+      headStyles: { fillColor: [25, 79, 146], textColor: 255 },
       margin: { top: 20 }
     })
     doc.save('engineers_with_projects.pdf')
@@ -347,12 +353,12 @@ const StatusBadge = {
     cls() {
       const v = (this.value || '').toLowerCase()
       if (v.includes('active') || v.includes('complete') || v.includes('done'))
-        return 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300'
+        return 'bg-[#edfaf7] text-[#1f9d8b]'
       if (v.includes('progress') || v.includes('ongoing') || v.includes('pending'))
-        return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+        return 'bg-amber-50 text-amber-700'
       if (v.includes('fail') || v.includes('cancel') || v.includes('inactive'))
-        return 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300'
-      return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
+        return 'bg-rose-50 text-rose-700'
+      return 'bg-[#edf4fb] text-[#4a6a8a]'
     }
   }
 }
@@ -361,22 +367,22 @@ const InfoTile = {
   props: ['label', 'value', 'color'],
   template: `
     <div :class="bg" class="rounded-lg px-3.5 py-3 border">
-      <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">{{ label }}</p>
+      <p class="text-[10px] font-bold uppercase tracking-wider text-[#7d94ac] mb-0.5">{{ label }}</p>
       <p :class="vc" class="text-sm font-bold truncate">{{ value ?? '—' }}</p>
     </div>
   `,
   computed: {
     bg() {
       return {
-        amber: 'bg-amber-50 border-amber-100 dark:bg-amber-900/10 dark:border-amber-800/20',
-        teal:  'bg-teal-50  border-teal-100  dark:bg-teal-900/10  dark:border-teal-800/20',
-      }[this.color] || 'bg-gray-50 border-gray-100 dark:bg-gray-800/40 dark:border-gray-700/50'
+        amber: 'bg-amber-50 border-amber-100',
+        teal:  'bg-[#edfaf7] border-[#1f9d8b]/20',
+      }[this.color] || 'bg-[#f7faff] border-[#edf2fa]'
     },
     vc() {
       return {
-        amber: 'text-amber-600 dark:text-amber-400',
-        teal:  'text-teal-600  dark:text-teal-400',
-      }[this.color] || 'text-gray-800 dark:text-gray-100'
+        amber: 'text-amber-600',
+        teal:  'text-[#1f9d8b]',
+      }[this.color] || 'text-[#183b63]'
     }
   }
 }
@@ -386,9 +392,9 @@ const ProjectField = {
   components: { StatusBadge },
   template: `
     <div>
-      <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">{{ label }}</p>
+      <p class="text-[10px] font-bold uppercase tracking-wider text-[#7d94ac] mb-0.5">{{ label }}</p>
       <StatusBadge v-if="badge" :value="value" />
-      <p v-else class="text-sm text-gray-700 dark:text-gray-300">{{ value || '—' }}</p>
+      <p v-else class="text-sm text-[#4a6a8a]">{{ value || '—' }}</p>
     </div>
   `
 }

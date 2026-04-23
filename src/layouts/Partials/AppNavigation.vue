@@ -71,16 +71,34 @@
       </ul>
     </nav>
 
-    <!-- Footer -->
+    <!-- Footer / Profile -->
     <div class="tsb-footer">
-      <div class="tsb-footer-avatar">
-        <i class="fas fa-user-circle"></i>
+      <!-- Avatar -->
+      <div class="tsb-footer-avatar tsb-footer-avatar--letter">
+        {{ (user?.name || 'U')[0]?.toUpperCase() }}
       </div>
+      <!-- Info -->
       <div class="tsb-footer-info">
-        <span class="tsb-footer-name">My Account</span>
-        <span class="tsb-footer-copy">© {{ new Date().getFullYear() }} Portal</span>
+        <span class="tsb-footer-name">{{ user?.name || 'My Account' }}</span>
+        <span class="tsb-footer-copy">{{ user?.email || '' }}</span>
       </div>
-      <div class="tsb-footer-status"></div>
+      <!-- Actions -->
+      <div class="tsb-footer-actions">
+        <button
+          @click="router.push({ name: 'engineerProfile' })"
+          class="tsb-footer-btn"
+          title="View Profile"
+        >
+          <i class="fas fa-user text-[10px]"></i>
+        </button>
+        <button
+          @click="logout"
+          class="tsb-footer-btn tsb-footer-btn--danger"
+          title="Logout"
+        >
+          <i class="fas fa-sign-out-alt text-[10px]"></i>
+        </button>
+      </div>
     </div>
 
   </div>
@@ -88,10 +106,28 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from '@/axios'
 
 const router = useRouter()
 const route  = useRoute()
+
+const user = ref(null)
+
+onMounted(async () => {
+  try {
+    const res = await axios.get('/api/user/profile')
+    user.value = res.data.data
+  } catch (e) {
+    console.error('Failed to fetch user profile', e)
+  }
+})
+
+function logout() {
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  router.push('/login')
+}
 
 const navigations = ref([
   {
@@ -107,13 +143,9 @@ const navigations = ref([
   {
     icon: 'fas fa-file-contract',
     label: 'Tenders',
-    name: 'TendersManagement',
+    name: 'MyTender',
+    path: 'MyTender',
     active: false,
-    children: [
-      { icon: 'fas fa-tasks',       label: 'Assigned Tenders', name: 'UserAssignedTenders',   path: 'MyTender' },
-      { icon: 'fas fa-paper-plane', label: 'Submit Tender',    name: 'UserTenderSubmissions', path: 'MySubmissions' },
-      { icon: 'fas fa-calculator',  label: 'Submit Quotation', name: 'UserQuotations',        path: 'MySchedules' },
-    ],
   },
   {
     icon: 'fas fa-project-diagram',
@@ -121,9 +153,9 @@ const navigations = ref([
     name: 'ProjectsManagement',
     active: false,
     children: [
-      { icon: 'fas fa-file-signature', label: 'Appointment Letter', name: 'UserAppointmentLetter',   path: 'UserAppointmentLetter' },
+    
       { icon: 'fas fa-tasks',          label: 'Assigned Projects',  name: 'UserAssignedProjects',    path: 'MyProjects' },
-      { icon: 'fas fa-chart-bar',      label: 'Submit Analysis',    name: 'UserAnalysisSubmissions', path: 'UserAnalyses' },
+      
       { icon: 'fas fa-envelope',       label: 'Submit Request',     name: 'UserRequests',            path: 'MyRequests' },
       { icon: 'fas fa-clock',          label: 'Extend Request',     name: 'UserExtensionRequests',   path: 'UserExtentions' },
     ],
@@ -136,10 +168,10 @@ const navigations = ref([
     label: 'Receipts',
     name: 'ReceiptsManagement',
     active: false,
-    children: [
-      { icon: 'fas fa-upload', label: 'Submit Receipt',  name: 'UserSubmitReceipt',  path: 'SubmitReceipt' },
-      { icon: 'fas fa-search', label: 'Manage Receipts', name: 'UserManageReceipts', path: 'Myreceipts' },
-    ],
+    path: 'Myreceipts' 
+   
+     
+     
   },
 
   { divider: 'Activity' },
@@ -149,19 +181,17 @@ const navigations = ref([
     label: 'Updates',
     name: 'UpdatesManagement',
     active: false,
-    children: [
-      { icon: 'fas fa-plus', label: 'Create Update',  name: 'UserCreateUpdate',  path: 'UserSubmitUpdate' },
-      { icon: 'fas fa-eye',  label: 'Manage Updates', name: 'UserManageUpdates', path: 'UserUpdates' },
-    ],
+    path: 'UserUpdates' 
+    
   },
 
   { divider: 'Account' },
 
   {
     icon: 'fas fa-calendar-alt',
-    label: 'Leave Management',
-    name: 'LeaveManagement',
-    path: 'UserLeaveManagement',
+    label: 'My Requests',
+    name: 'MyRequestsNav',
+    path: 'UserMyRequests',
     active: false,
   },
   {
@@ -207,160 +237,212 @@ function isChildActive(item) {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* ── CEO-aligned design palette ──────────────────────────── */
 .tsb-root {
-  --c-bg:        #0b1f45;
-  --c-deep:      #07152e;
-  --c-card:      rgba(255,255,255,.04);
-  --c-hover:     rgba(255,255,255,.055);
-  --c-active:    rgba(59,114,240,.15);
-  --c-border:    rgba(255,255,255,.07);
-  --c-blue:      #3b72f0;
-  --c-glow:      rgba(59,114,240,.4);
-  --c-dim-blue:  rgba(59,114,240,.18);
-  --c-text:      rgba(255,255,255,.9);
-  --c-muted:     rgba(255,255,255,.45);
-  --c-dim:       rgba(255,255,255,.22);
-
   display: flex; flex-direction: column; height: 100vh; min-height: 100vh;
-  background: linear-gradient(175deg, var(--c-bg) 0%, var(--c-deep) 100%);
+  background:
+    radial-gradient(circle at top left, rgba(124,181,255,0.24), transparent 22%),
+    linear-gradient(180deg, #174278 0%, #1f5aa5 58%, #163d71 100%);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.04);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   position: relative; overflow: hidden;
 }
 
+/* Subtle dot texture overlay */
 .tsb-root::before {
   content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,.032) 1px, transparent 1px);
-  background-size: 26px 26px;
-  mask-image: linear-gradient(180deg, transparent 0%, black 15%, black 85%, transparent 100%);
-}
-.tsb-root::after {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 2;
-  background: linear-gradient(90deg, transparent 0%, var(--c-blue) 40%, rgba(59,114,240,.3) 100%);
+  background-image: radial-gradient(circle, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(180deg, transparent 0%, black 12%, black 88%, transparent 100%);
 }
 
+/* Top accent line */
+.tsb-root::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 2;
+  background: linear-gradient(90deg, transparent 0%, rgba(124,181,255,0.6) 40%, rgba(74,140,227,0.3) 100%);
+}
+
+/* ── Brand header ──────────────────────────────────────────── */
 .tsb-brand {
   display: flex; align-items: center; gap: 11px;
-  padding: 18px 16px 16px; border-bottom: 1px solid var(--c-border);
+  padding: 18px 16px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   position: relative; z-index: 1; flex-shrink: 0;
 }
 .tsb-brand-icon {
   width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
-  background: linear-gradient(135deg, #1a56db 0%, var(--c-blue) 100%);
+  background: linear-gradient(135deg, #2c6cc0 0%, #4a8ce3 100%);
   display: flex; align-items: center; justify-content: center;
   font-size: 14px; color: #fff;
-  box-shadow: 0 0 0 1px rgba(59,114,240,.3), 0 4px 16px var(--c-glow);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 4px 14px rgba(8,34,67,0.3);
 }
 .tsb-brand-text { display: flex; flex-direction: column; gap: 2px; }
 .tsb-brand-name { font-size: 13.5px; font-weight: 700; color: #fff; letter-spacing: .06em; line-height: 1; }
-.tsb-brand-role { font-size: 10px; color: var(--c-muted); font-weight: 500; letter-spacing: .05em; }
+.tsb-brand-role { font-size: 10px; color: rgba(255,255,255,0.55); font-weight: 500; letter-spacing: .05em; }
 
+/* ── Nav scroll area ──────────────────────────────────────── */
 .tsb-nav {
   flex: 1; overflow-y: auto; padding: 10px 8px 8px;
   position: relative; z-index: 1;
-  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.1) transparent;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent 40%);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.22) transparent;
 }
 .tsb-nav::-webkit-scrollbar { width: 3px; }
-.tsb-nav::-webkit-scrollbar-track { background: transparent; }
-.tsb-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 999px; }
+.tsb-nav::-webkit-scrollbar-track { background: rgba(255,255,255,0.08); }
+.tsb-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.22); border-radius: 999px; }
+.tsb-nav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.32); }
 
 .tsb-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
 .tsb-item { animation: tsb-slide .3s ease both; }
 
+/* ── Section dividers ─────────────────────────────────────── */
 .tsb-divider { display: flex; align-items: center; gap: 8px; padding: 14px 6px 5px; }
-.tsb-divider span { font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--c-dim); white-space: nowrap; }
-.tsb-divider::after { content: ''; flex: 1; height: 1px; background: var(--c-border); }
+.tsb-divider span {
+  font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.38); white-space: nowrap;
+}
+.tsb-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
 
+/* ── Nav items ────────────────────────────────────────────── */
 .tsb-parent {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 10px; border-radius: 8px; cursor: pointer;
-  position: relative; overflow: hidden; border: 1px solid transparent;
-  transition: background .15s, border-color .15s;
+  padding: 8px 10px; border-radius: 10px; cursor: pointer;
+  position: relative; border: 1px solid transparent;
+  transition: background .15s, border-color .15s, box-shadow .15s, transform .18s;
+  backdrop-filter: blur(8px);
 }
-.tsb-parent:hover         { background: var(--c-hover); border-color: rgba(255,255,255,.05); }
-.tsb-parent--open         { background: var(--c-hover); border-color: rgba(255,255,255,.06); }
-.tsb-parent--active       { background: var(--c-active) !important; border-color: rgba(59,114,240,.25) !important; }
-.tsb-parent--active::before {
-  content: ''; position: absolute; left: 0; top: 18%; bottom: 18%;
-  width: 3px; border-radius: 0 3px 3px 0;
-  background: var(--c-blue); box-shadow: 0 0 10px var(--c-glow);
+.tsb-parent:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.1);
 }
-.tsb-parent--active .tsb-icon-wrap { background: var(--c-dim-blue); color: var(--c-blue); }
-.tsb-parent--active .tsb-label     { color: #fff; font-weight: 600; }
-.tsb-parent--child-active .tsb-icon-wrap { color: var(--c-blue); }
-.tsb-parent--child-active .tsb-label     { color: rgba(255,255,255,.85); font-weight: 600; }
+.tsb-parent--open {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* Active = CEO white-card style */
+.tsb-parent--active {
+  background: #fff !important;
+  border-color: rgba(255,255,255,0.9) !important;
+  box-shadow: 0 16px 30px rgba(8,38,74,0.22) !important;
+  transform: translateX(4px);
+}
+.tsb-parent--active .tsb-icon-wrap {
+  background: #deebfd !important;
+  color: #174278 !important;
+}
+.tsb-parent--active .tsb-label   { color: #174278 !important; font-weight: 700; }
+.tsb-parent--active .tsb-chevron { color: #4a7fc0; }
+
+/* Child-open parent — slight highlight */
+.tsb-parent--child-active .tsb-icon-wrap { background: rgba(255,255,255,0.16); color: rgba(255,255,255,0.9); }
+.tsb-parent--child-active .tsb-label     { color: #fff; font-weight: 600; }
 
 .tsb-parent-left { display: flex; align-items: center; gap: 10px; }
 
+/* Icon box */
 .tsb-icon-wrap {
   width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; color: var(--c-muted); background: var(--c-card);
+  font-size: 12px; color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.08);
   transition: background .15s, color .15s;
 }
-.tsb-parent:hover .tsb-icon-wrap { background: rgba(255,255,255,.09); color: rgba(255,255,255,.75); }
-.tsb-parent--open .tsb-icon-wrap { color: rgba(255,255,255,.75); }
+.tsb-parent:hover .tsb-icon-wrap { background: rgba(255,255,255,0.16); color: #fff; }
 
-.tsb-label { font-size: 12.5px; font-weight: 500; color: var(--c-muted); transition: color .15s; white-space: nowrap; }
-.tsb-parent:hover .tsb-label { color: var(--c-text); }
-.tsb-parent--open .tsb-label { color: rgba(255,255,255,.8); }
+/* Label */
+.tsb-label {
+  font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.82);
+  transition: color .15s; white-space: nowrap;
+}
+.tsb-parent:hover .tsb-label { color: #fff; }
+.tsb-parent--open .tsb-label { color: #fff; font-weight: 600; }
 
-.tsb-chevron { font-size: 9px; color: var(--c-dim); transition: transform .22s ease, color .15s; }
-.tsb-chevron--open { transform: rotate(90deg); color: var(--c-muted); }
-.tsb-parent:hover .tsb-chevron { color: var(--c-muted); }
+/* Chevron */
+.tsb-chevron { font-size: 9px; color: rgba(255,255,255,0.38); transition: transform .22s ease, color .15s; }
+.tsb-chevron--open  { transform: rotate(90deg); color: rgba(255,255,255,0.6); }
+.tsb-parent:hover .tsb-chevron { color: rgba(255,255,255,0.55); }
 
+/* ── Submenu ──────────────────────────────────────────────── */
 .tsb-sub-list {
   list-style: none; margin: 3px 0 3px 10px; padding: 2px 0;
-  border-left: 1px solid rgba(255,255,255,.09);
+  border-left: 1px solid rgba(255,255,255,0.1);
   display: flex; flex-direction: column; gap: 1px;
 }
 
 .tsb-child {
   display: flex; align-items: center; gap: 8px;
-  padding: 7px 10px 7px 13px; border-radius: 7px; cursor: pointer;
-  border: 1px solid transparent; transition: background .15s; position: relative;
+  padding: 7px 10px 7px 13px; border-radius: 8px; cursor: pointer;
+  border: 1px solid transparent; transition: background .15s, box-shadow .15s, transform .18s;
+  position: relative; backdrop-filter: blur(8px);
 }
-.tsb-child:hover { background: rgba(255,255,255,.05); }
+.tsb-child:hover { background: rgba(255,255,255,0.08); }
+
+/* Child active = smaller white card */
+.tsb-child--active {
+  background: #fff !important;
+  border-color: rgba(255,255,255,0.9) !important;
+  box-shadow: 0 10px 22px rgba(8,38,74,0.16) !important;
+  transform: translateX(3px);
+}
+.tsb-child--active .tsb-child-dot   { background: #2f78dd; transform: scale(1.4); box-shadow: 0 0 6px rgba(47,120,221,.5); }
+.tsb-child--active .tsb-child-icon  { color: #174278; }
+.tsb-child--active .tsb-child-label { color: #174278; font-weight: 700; }
 
 .tsb-child-dot {
   width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0;
-  background: rgba(255,255,255,.18); margin-left: -1rem;
+  background: rgba(255,255,255,0.3); margin-left: -1rem;
   transition: background .15s, transform .15s, box-shadow .15s;
 }
-.tsb-child:hover .tsb-child-dot   { background: rgba(255,255,255,.45); transform: scale(1.3); }
-.tsb-child--active .tsb-child-dot { background: var(--c-blue); transform: scale(1.4); box-shadow: 0 0 7px var(--c-glow); }
+.tsb-child:hover .tsb-child-dot { background: rgba(255,255,255,0.6); transform: scale(1.3); }
 
-.tsb-child-icon { font-size: 11px; color: var(--c-dim); flex-shrink: 0; width: 16px; text-align: center; transition: color .15s; }
-.tsb-child:hover .tsb-child-icon   { color: rgba(255,255,255,.55); }
-.tsb-child--active .tsb-child-icon { color: var(--c-blue); }
+.tsb-child-icon { font-size: 11px; color: rgba(255,255,255,0.4); flex-shrink: 0; width: 16px; text-align: center; transition: color .15s; }
+.tsb-child:hover .tsb-child-icon { color: rgba(255,255,255,0.75); }
 
-.tsb-child-label { font-size: 12px; font-weight: 500; color: var(--c-muted); transition: color .15s; }
-.tsb-child:hover .tsb-child-label   { color: rgba(255,255,255,.8); }
-.tsb-child--active .tsb-child-label { color: #fff; font-weight: 600; }
+.tsb-child-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.72); transition: color .15s; }
+.tsb-child:hover .tsb-child-label { color: #fff; }
 
-.tsb-child--active { background: var(--c-active); border-color: rgba(59,114,240,.18); }
-.tsb-child--active::before {
-  content: ''; position: absolute; left: 0; top: 18%; bottom: 18%;
-  width: 2px; border-radius: 0 2px 2px 0;
-  background: var(--c-blue); box-shadow: 0 0 6px var(--c-glow);
-}
-
+/* ── Footer ───────────────────────────────────────────────── */
 .tsb-footer {
   display: flex; align-items: center; gap: 10px;
-  padding: 12px 14px 14px; border-top: 1px solid var(--c-border);
+  padding: 10px 10px 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  background: linear-gradient(180deg, rgba(69,126,205,0.86), rgba(34,86,157,0.92));
   position: relative; z-index: 1; flex-shrink: 0;
 }
 .tsb-footer-avatar {
-  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-  background: rgba(255,255,255,.06); border: 1px solid var(--c-border);
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; color: var(--c-muted);
+  font-size: 12px; color: rgba(255,255,255,0.8);
 }
-.tsb-footer-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.tsb-footer-name { font-size: 11.5px; font-weight: 600; color: rgba(255,255,255,.55); }
-.tsb-footer-copy { font-size: 10px; color: var(--c-dim); }
-.tsb-footer-status { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,.5); flex-shrink: 0; }
+.tsb-footer-avatar--letter {
+  background: #fff;
+  color: #1e4d8e;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 3px 8px rgba(8,34,67,0.3);
+}
+.tsb-footer-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tsb-footer-name { font-size: 11.5px; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tsb-footer-copy { font-size: 9.5px; color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tsb-footer-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.tsb-footer-btn {
+  width: 26px; height: 26px; border-radius: 6px; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
+  transition: background .15s, color .15s;
+}
+.tsb-footer-btn:hover { background: rgba(255,255,255,0.18); color: #fff; }
+.tsb-footer-btn--danger:hover { background: rgba(255,80,80,0.18); color: #fca5a5; }
 
+/* ── Transitions ─────────────────────────────────────────── */
 .tsb-sub-enter-active { transition: opacity .2s ease, transform .2s ease; }
 .tsb-sub-leave-active { transition: opacity .15s ease, transform .15s ease; }
 .tsb-sub-enter-from  { opacity: 0; transform: translateY(-5px); }

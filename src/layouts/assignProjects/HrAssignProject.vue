@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen font-['DM_Sans',sans-serif] py-8 px-4 sm:px-6 lg:px-8" style="background:radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%)">
     <div class="mx-auto max-w-4xl">
       <!-- Card -->
-      <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div class="overflow-hidden rounded-2xl border border-[#dce7f3] bg-white shadow-sm">
         <!-- Header -->
-        <div class="flex items-center justify-between bg-gray-800 px-6 py-4 text-white">
+        <div class="flex items-center justify-between px-6 py-4 text-white" style="background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%)">
           <div class="flex items-center gap-3">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -13,7 +13,7 @@
           </div>
           <button 
             @click="closeModal" 
-            class="rounded-full p-1.5 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            class="rounded-full p-1.5 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -26,7 +26,7 @@
           <!-- Error Summary -->
           <div 
             v-if="Object.keys(errors).length" 
-            class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/30"
+            class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4"
           >
             <h4 class="mb-2 text-sm font-semibold text-red-800 dark:text-red-300">
               Please correct the following errors:
@@ -42,14 +42,14 @@
             <!-- Row 1: Project Name, Tender, Contract -->
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
               <div>
-                <label for="projectName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="projectName" class="block text-sm font-medium text-[#183b63]">
                   Project Name <span class="text-red-500">*</span>
                 </label>
                 <input
                   id="projectName"
                   v-model="projectData.project_name"
                   type="text"
-                  class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-teal-500 sm:text-sm"
+                  class="mt-1 block w-full rounded-xl border border-[#d9e6f3] bg-white px-3 py-2.5 text-[#183b63] placeholder:text-[#a4b8cf] focus:border-[#2f78dd] focus:ring-1 focus:ring-[#2f78dd] sm:text-sm"
                   :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.project_name }"
                   placeholder="Enter project name"
                 />
@@ -59,13 +59,13 @@
               </div>
 
               <div>
-                <label for="tenderSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="tenderSelect" class="block text-sm font-medium text-[#183b63]">
                   Tender <span class="text-red-500">*</span>
                 </label>
                 <select
                   id="tenderSelect"
                   v-model="projectData.tender_id"
-                  class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 focus:border-teal-500 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 sm:text-sm"
+                  class="mt-1 block w-full rounded-xl border border-[#d9e6f3] bg-white px-3 py-2.5 text-[#183b63] focus:border-[#2f78dd] focus:ring-[#2f78dd] sm:text-sm"
                   :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.tender_id }"
                 >
                   <option value="" disabled>Select tender</option>
@@ -79,13 +79,13 @@
               </div>
 
               <div>
-                <label for="contractSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="contractSelect" class="block text-sm font-medium text-[#183b63]">
                   Contract <span class="text-red-500">*</span>
                 </label>
                 <select
                   id="contractSelect"
                   v-model="projectData.contract_id"
-                  class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 focus:border-teal-500 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 sm:text-sm"
+                  class="mt-1 block w-full rounded-xl border border-[#d9e6f3] bg-white px-3 py-2.5 text-[#183b63] focus:border-[#2f78dd] focus:ring-[#2f78dd] sm:text-sm"
                   :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.contract_id }"
                 >
                   <option value="" disabled>Select contract</option>
@@ -102,13 +102,13 @@
             <!-- Row 2: Engineer, Members, Dates -->
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div>
-                <label for="engineerSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="engineerSelect" class="block text-sm font-medium text-[#183b63]">
                   Project Engineer <span class="text-red-500">*</span>
                 </label>
                 <select
                   id="engineerSelect"
                   v-model="projectData.user_id"
-                  class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 focus:border-teal-500 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 sm:text-sm"
+                  class="mt-1 block w-full rounded-xl border border-[#d9e6f3] bg-white px-3 py-2.5 text-[#183b63] focus:border-[#2f78dd] focus:ring-[#2f78dd] sm:text-sm"
                   :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.user_id }"
                 >
                   <option value="" disabled>Select engineer</option>
@@ -122,14 +122,14 @@
               </div>
 
               <div class="sm:col-span-2 lg:col-span-1">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label class="block text-sm font-medium text-[#183b63]">
                   Team Members
                 </label>
                 <div class="mt-1 flex flex-col gap-2">
                   <div class="flex gap-2">
                     <select
                       v-model="selectedMember"
-                      class="block flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 focus:border-teal-500 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 sm:text-sm"
+                      class="block flex-1 rounded-xl border border-[#d9e6f3] bg-white px-3 py-2.5 text-[#183b63] focus:border-[#2f78dd] focus:ring-[#2f78dd] sm:text-sm"
                     >
                       <option value="" disabled>Add team member</option>
                       <option v-for="user in engineers" :key="user.user_id" :value="user.user_id">
@@ -139,7 +139,8 @@
                     <button
                       type="button"
                       @click="addMember"
-                      class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 disabled:opacity-50"
+                      class="rounded-xl px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-[#2f78dd] focus:ring-offset-2 disabled:opacity-50"
+                      style="background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);"
                       :disabled="!selectedMember"
                     >
                       Add
@@ -150,13 +151,13 @@
                     <div
                       v-for="memberId in projectData.member_id"
                       :key="memberId"
-                      class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+                      class="flex items-center justify-between rounded-xl border border-[#dce7f3] bg-[#f7faff] px-3 py-2 text-sm"
                     >
-                      <span class="text-gray-900 dark:text-gray-100">{{ getMemberName(memberId) }}</span>
+                      <span class="text-[#183b63]">{{ getMemberName(memberId) }}</span>
                       <button
                         type="button"
                         @click="removeMember(memberId)"
-                        class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                        class="text-red-600 hover:text-red-800"
                       >
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -172,14 +173,14 @@
               </div>
 
               <div>
-                <label for="startDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="startDate" class="block text-sm font-medium text-[#183b63]">
                   Start Date <span class="text-red-500">*</span>
                 </label>
                 <input
                   id="startDate"
                   v-model="projectData.start_date"
                   type="date"
-                  class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 sm:text-sm"
+                  class="mt-1 block w-full rounded-xl border border-[#d9e6f3] bg-white px-3 py-2.5 text-[#183b63] focus:border-[#2f78dd] focus:ring-1 focus:ring-[#2f78dd] sm:text-sm"
                   :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.start_date }"
                 />
                 <p v-if="errors.start_date" class="mt-1 text-xs text-red-600 dark:text-red-400">
@@ -188,14 +189,14 @@
               </div>
 
               <div>
-                <label for="endDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="endDate" class="block text-sm font-medium text-[#183b63]">
                   End Date <span class="text-red-500">*</span>
                 </label>
                 <input
                   id="endDate"
                   v-model="projectData.end_date"
                   type="date"
-                  class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 sm:text-sm"
+                  class="mt-1 block w-full rounded-xl border border-[#d9e6f3] bg-white px-3 py-2.5 text-[#183b63] focus:border-[#2f78dd] focus:ring-1 focus:ring-[#2f78dd] sm:text-sm"
                   :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.end_date }"
                 />
                 <p v-if="errors.end_date" class="mt-1 text-xs text-red-600 dark:text-red-400">
@@ -206,14 +207,14 @@
 
             <!-- Assigned By -->
             <div>
-              <label for="created_by" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label for="created_by" class="block text-sm font-medium text-[#183b63]">
                 Assigned By <span class="text-red-500">*</span>
               </label>
               <input
                 id="created_by"
                 v-model="projectData.created_by"
                 type="text"
-                class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 sm:text-sm"
+                class="mt-1 block w-full rounded-xl border border-[#d9e6f3] bg-white px-3 py-2.5 text-[#183b63] placeholder:text-[#a4b8cf] focus:border-[#2f78dd] focus:ring-1 focus:ring-[#2f78dd] sm:text-sm"
                 :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.created_by }"
                 placeholder="Your name or ID"
               />
@@ -227,7 +228,7 @@
               <button
                 type="button"
                 @click="closeModal"
-                class="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                class="rounded-xl border border-[#d9e6f3] bg-white px-5 py-2.5 text-sm font-medium text-[#4a6a8a] hover:bg-[#f7faff] focus:outline-none focus:ring-2 focus:ring-[#2f78dd]"
               >
                 Cancel
               </button>
@@ -235,7 +236,8 @@
               <button
                 type="submit"
                 :disabled="isLoading"
-                class="inline-flex items-center justify-center gap-2 rounded-lg bg-gray-800 px-6 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                class="inline-flex items-center justify-center gap-2 rounded-xl px-6 py-2.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-[#2f78dd] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                style="background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);box-shadow:0 8px 20px rgba(35,96,182,0.22);"
               >
                 <span v-if="isLoading" class="flex items-center gap-2">
                   <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24">

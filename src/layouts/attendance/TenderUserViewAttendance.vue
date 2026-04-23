@@ -1,12 +1,17 @@
 <template>
-  <div class="min-h-screen bg-gray-50" style="font-family: 'cygre', sans-serif">
+  <div class="min-h-screen" style="font-family: 'DM Sans', sans-serif; background: radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%)">
     <!-- Header Section -->
-    <div class="bg-white border-b border-gray-200 shadow-sm">
+    <div style="background: linear-gradient(135deg,#eef5ff 0%,#ffffff 46%,#f7fbff 100%); border-bottom: 1px solid #dce7f3;">
       <div class="container mx-auto px-4 py-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">Manage Attendance</h1>
-            <p class="text-sm text-gray-600 mt-1">View, edit, and export attendance records</p>
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);">
+              <i class="fas fa-users text-white text-lg"></i>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold" style="color:#183b63;">Manage Attendance</h1>
+              <p class="text-sm mt-0.5" style="color:#7a93af;">View, edit, and export attendance records</p>
+            </div>
           </div>
           
           <!-- Export Buttons -->
@@ -14,19 +19,19 @@
             <button
               @click="exportToExcel"
               :disabled="isExporting || attendance.length === 0"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-all font-medium border border-green-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all font-semibold text-sm border border-[#1f9d8b]/30 text-[#1f9d8b] bg-[#edfaf7] hover:bg-[#d4f3ec] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i :class="isExporting ? 'fas fa-spinner fa-spin' : 'fas fa-file-excel'"></i>
-              <span class="hidden sm:inline">Export Excel</span>
+              <span class="hidden sm:inline">Excel</span>
             </button>
             
             <button
               @click="exportToPDF"
               :disabled="isExporting || attendance.length === 0"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-all font-medium border border-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all font-semibold text-sm border border-[#e87461]/30 text-[#e87461] bg-[#fef2f0] hover:bg-[#fde3df] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i :class="isExporting ? 'fas fa-spinner fa-spin' : 'fas fa-file-pdf'"></i>
-              <span class="hidden sm:inline">Export PDF</span>
+              <span class="hidden sm:inline">PDF</span>
             </button>
           </div>
         </div>
@@ -35,28 +40,29 @@
 
     <div class="container mx-auto px-4 py-8">
       <!-- Filters Section -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-[#dce7f3] p-4 mb-6">
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex-1">
-            <label for="date_filter" class="block text-sm font-medium text-gray-700 mb-2">
+            <label for="date_filter" class="block text-sm font-medium mb-2" style="color:#183b63;">
               Filter by Date
             </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <i class="fas fa-calendar text-gray-400"></i>
+                <i class="fas fa-calendar" style="color:#a4b8cf;"></i>
               </div>
               <input
                 type="date"
                 id="date_filter"
                 v-model="filters.date"
                 @change="fetchAttendance"
-                class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="w-full pl-10 pr-4 py-2.5 border border-[#d9e6f3] rounded-xl focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition-all"
+                style="color:#183b63;"
               />
             </div>
           </div>
           
           <div class="flex-1">
-            <label for="type_filter" class="block text-sm font-medium text-gray-700 mb-2">
+            <label for="type_filter" class="block text-sm font-medium mb-2" style="color:#183b63;">
               Filter by Type
             </label>
             <div class="relative">
@@ -64,7 +70,8 @@
                 id="type_filter"
                 v-model="filters.type"
                 @change="fetchAttendance"
-                class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                class="w-full px-4 py-2.5 bg-white border border-[#d9e6f3] rounded-xl focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition-all appearance-none cursor-pointer"
+                style="color:#183b63;"
               >
                 <option value="">All Types</option>
                 <option value="staff">👥 Staff Meeting</option>
@@ -73,7 +80,7 @@
                 <option value="review">⭐ Performance Review</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                <i class="fa fa-chevron-down text-gray-400"></i>
+                <i class="fa fa-chevron-down" style="color:#a4b8cf;"></i>
               </div>
             </div>
           </div>
@@ -81,7 +88,8 @@
           <div class="flex items-end">
             <button
               @click="clearFilters"
-              class="inline-flex items-center gap-2 px-4 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-medium"
+              class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-[#d9e6f3] rounded-xl hover:bg-[#f7faff] transition-all font-medium"
+              style="color:#4a6a8a;"
             >
               <i class="fas fa-times"></i>
               <span>Clear</span>
@@ -89,16 +97,18 @@
           </div>
         </div>
         
-        <div v-if="filters.date || filters.type" class="mt-3 text-sm text-gray-600">
-          Showing <span class="font-semibold text-gray-900">{{ attendance.length }}</span> record(s)
+        <div v-if="filters.date || filters.type" class="mt-3 text-sm" style="color:#7a93af;">
+          Showing <span class="font-semibold" style="color:#183b63;">{{ attendance.length }}</span> record(s)
         </div>
       </div>
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-20">
         <div class="text-center">
-          <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
-          <p class="text-gray-600">Loading attendance records...</p>
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:#edf4fb;">
+            <i class="fas fa-spinner fa-spin text-2xl" style="color:#2f78dd;"></i>
+          </div>
+          <p style="color:#7a93af;">Loading attendance records...</p>
         </div>
       </div>
 
@@ -106,13 +116,16 @@
       <div v-else-if="attendance.length === 0" class="flex items-center justify-center py-20">
         <div class="text-center max-w-md">
           <div class="mb-4">
-            <i class="fas fa-users text-6xl text-gray-300"></i>
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto" style="background:#edf4fb;">
+              <i class="fas fa-users text-3xl" style="color:#a4b8cf;"></i>
+            </div>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">No Attendance Records</h3>
-          <p class="text-gray-600 mb-6">No attendance records found matching your filters</p>
+          <h3 class="text-xl font-semibold mb-2" style="color:#183b63;">No Attendance Records</h3>
+          <p class="mb-6" style="color:#7a93af;">No attendance records found matching your filters</p>
           <button
             @click="clearFilters"
-            class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-all font-medium bg-blue-600 hover:bg-blue-700"
+            class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-xl transition-all font-medium"
+            style="background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);"
           >
             <i class="fas fa-redo"></i>
             <span>Clear Filters</span>
@@ -121,24 +134,24 @@
       </div>
 
       <!-- Attendance Table -->
-      <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div v-else class="bg-white rounded-2xl shadow-sm border border-[#dce7f3] overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full">
-            <thead class="bg-gray-50 border-b border-gray-200">
+            <thead class="bg-[#f7faff] border-b border-[#edf2fa]">
               <tr>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Meeting Type</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Date</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Location</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Attendees</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Notes</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                <th class="px-6 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Meeting Type</th>
+                <th class="px-6 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Date</th>
+                <th class="px-6 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Location</th>
+                <th class="px-6 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Attendees</th>
+                <th class="px-6 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Notes</th>
+                <th class="px-6 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Actions</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-[#edf2fa]">
               <tr 
                 v-for="record in attendance" 
                 :key="record.att_id"
-                class="hover:bg-gray-50 transition-colors"
+                class="hover:bg-[#f7faff] transition-colors"
               >
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium"
@@ -149,30 +162,30 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2">
-                    <i class="fas fa-calendar text-gray-400"></i>
-                    <span class="text-sm font-medium text-gray-900">{{ formatDate(record.meeting_date) }}</span>
+                    <i class="fas fa-calendar" style="color:#a4b8cf;"></i>
+                    <span class="text-sm font-medium" style="color:#183b63;">{{ formatDate(record.meeting_date) }}</span>
                   </div>
                 </td>
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-2">
-                    <i class="fas fa-map-marker-alt text-gray-400"></i>
-                    <span class="text-sm text-gray-900">{{ record.location }}</span>
+                    <i class="fas fa-map-marker-alt" style="color:#a4b8cf;"></i>
+                    <span class="text-sm" style="color:#183b63;">{{ record.location }}</span>
                   </div>
                 </td>
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-2">
-                    <i class="fas fa-users text-gray-400"></i>
-                    <span class="text-sm font-semibold text-gray-900">{{ getAttendeesCount(record.attendees) }}</span>
+                    <i class="fas fa-users" style="color:#a4b8cf;"></i>
+                    <span class="text-sm font-semibold" style="color:#183b63;">{{ getAttendeesCount(record.attendees) }}</span>
                     <button
                       @click="viewAttendees(record)"
-                      class="text-xs text-blue-600 hover:text-blue-800"
+                      class="text-xs hover:underline" style="color:#2f78dd;"
                     >
                       View
                     </button>
                   </div>
                 </td>
                 <td class="px-6 py-4">
-                  <p class="text-sm text-gray-900 line-clamp-2">
+                  <p class="text-sm line-clamp-2" style="color:#4a6a8a;">
                     {{ record.notes || '-' }}
                   </p>
                 </td>
@@ -180,14 +193,14 @@
                   <div class="flex items-center gap-2">
                     <button
                       @click="editAttendance(record)"
-                      class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-all text-sm font-medium"
+                      class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#edf4fb] text-[#2f78dd] rounded-xl hover:bg-[#dce7f3] transition-all text-sm font-medium"
                     >
                       <i class="fas fa-edit"></i>
                       <span>Edit</span>
                     </button>
                     <button
                       @click="deleteAttendance(record)"
-                      class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-all text-sm font-medium"
+                      class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-all text-sm font-medium"
                     >
                       <i class="fas fa-trash"></i>
                       <span>Delete</span>
@@ -208,12 +221,13 @@
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm"
         @click.self="cancelEdit"
       >
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h3 class="text-xl font-bold text-gray-900">Edit Attendance Record</h3>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden border border-[#dce7f3]">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-[#edf2fa]" style="background:#f7faff;">
+            <h3 class="text-xl font-bold" style="color:#183b63;">Edit Attendance Record</h3>
             <button
               @click="cancelEdit"
-              class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
+              class="p-2 hover:bg-[#edf4fb] rounded-lg transition-colors"
+              style="color:#a4b8cf;"
             >
               <i class="fas fa-times text-lg"></i>
             </button>
@@ -223,24 +237,26 @@
             <div class="space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <label class="block text-sm font-medium mb-2" style="color:#183b63;">
                     Meeting Date <span class="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
                     v-model="editingRecord.meeting_date"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    class="w-full px-4 py-3 border border-[#d9e6f3] rounded-xl focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition-all"
+                    style="color:#183b63;"
                     required
                   />
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <label class="block text-sm font-medium mb-2" style="color:#183b63;">
                     Meeting Type <span class="text-red-500">*</span>
                   </label>
                   <select
                     v-model="editingRecord.meeting_type"
-                    class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                    class="w-full px-4 py-3 bg-white border border-[#d9e6f3] rounded-xl focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition-all appearance-none"
+                    style="color:#183b63;"
                     required
                   >
                     <option value="staff">👥 Staff Meeting</option>
@@ -252,50 +268,54 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium mb-2" style="color:#183b63;">
                   Location <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   v-model="editingRecord.location"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="w-full px-4 py-3 border border-[#d9e6f3] rounded-xl focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition-all"
+                  style="color:#183b63;"
                   placeholder="Enter meeting location"
                   required
                 />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium mb-2" style="color:#183b63;">
                   Attendees <span class="text-red-500">*</span>
                 </label>
                 <textarea
                   v-model="editingRecord.attendees"
                   rows="6"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  class="w-full px-4 py-3 border border-[#d9e6f3] rounded-xl focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition-all resize-none"
+                  style="color:#183b63;"
                   placeholder="List of attendees (one per line)"
                   required
                 ></textarea>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium mb-2" style="color:#183b63;">
                   Meeting Notes
                 </label>
                 <textarea
                   v-model="editingRecord.notes"
                   rows="4"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  class="w-full px-4 py-3 border border-[#d9e6f3] rounded-xl focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition-all resize-none"
+                  style="color:#183b63;"
                   placeholder="Meeting notes and agenda"
                 ></textarea>
               </div>
             </div>
           </form>
 
-          <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#edf2fa]" style="background:#f7faff;">
             <button
               type="button"
               @click="cancelEdit"
-              class="inline-flex items-center gap-2 px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-medium"
+              class="inline-flex items-center gap-2 px-6 py-2.5 bg-white border border-[#d9e6f3] rounded-xl hover:bg-[#f7faff] transition-all font-medium"
+              style="color:#4a6a8a;"
             >
               <i class="fas fa-times"></i>
               <span>Cancel</span>
@@ -303,7 +323,8 @@
             <button
               @click="updateAttendance"
               :disabled="isUpdating"
-              class="inline-flex items-center gap-2 px-6 py-2.5 text-white rounded-lg transition-all font-medium bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="inline-flex items-center gap-2 px-6 py-2.5 text-white rounded-xl transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              style="background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);"
             >
               <i :class="isUpdating ? 'fas fa-spinner fa-spin' : 'fas fa-save'"></i>
               <span>{{ isUpdating ? 'Updating...' : 'Update Record' }}</span>
@@ -320,30 +341,30 @@
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm"
         @click.self="cancelDelete"
       >
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-[#dce7f3]">
           <div class="p-6">
-            <div class="mx-auto flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+            <div class="mx-auto flex items-center justify-center w-16 h-16 bg-red-50 rounded-full mb-4">
               <i class="fas fa-exclamation-triangle text-3xl text-red-600"></i>
             </div>
 
-            <h3 class="text-xl font-bold text-gray-900 mb-2 text-center">Delete Attendance Record?</h3>
-            <p class="text-gray-600 mb-4 text-center">
+            <h3 class="text-xl font-bold mb-2 text-center" style="color:#183b63;">Delete Attendance Record?</h3>
+            <p class="mb-4 text-center" style="color:#7a93af;">
               This action cannot be undone. The attendance record will be permanently deleted.
             </p>
 
-            <div v-if="recordToDelete" class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+            <div v-if="recordToDelete" class="p-4 rounded-xl border border-[#edf2fa] mb-6" style="background:#f7faff;">
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-gray-600">Meeting Type:</span>
-                  <span class="font-semibold text-gray-900">{{ getMeetingTypeLabel(recordToDelete.meeting_type) }}</span>
+                  <span style="color:#7a93af;">Meeting Type:</span>
+                  <span class="font-semibold" style="color:#183b63;">{{ getMeetingTypeLabel(recordToDelete.meeting_type) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600">Date:</span>
-                  <span class="font-semibold text-gray-900">{{ formatDate(recordToDelete.meeting_date) }}</span>
+                  <span style="color:#7a93af;">Date:</span>
+                  <span class="font-semibold" style="color:#183b63;">{{ formatDate(recordToDelete.meeting_date) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600">Location:</span>
-                  <span class="font-semibold text-gray-900">{{ recordToDelete.location }}</span>
+                  <span style="color:#7a93af;">Location:</span>
+                  <span class="font-semibold" style="color:#183b63;">{{ recordToDelete.location }}</span>
                 </div>
               </div>
             </div>
@@ -351,7 +372,8 @@
             <div class="flex gap-3">
               <button
                 @click="cancelDelete"
-                class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-medium text-gray-700"
+                class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-white border border-[#d9e6f3] rounded-xl hover:bg-[#f7faff] transition-all font-medium"
+                style="color:#4a6a8a;"
               >
                 <i class="fas fa-times"></i>
                 <span>Cancel</span>
@@ -359,7 +381,7 @@
               <button
                 @click="confirmDelete"
                 :disabled="isDeleting"
-                class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-white rounded-lg transition-all font-medium bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-white rounded-xl transition-all font-medium bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <i :class="isDeleting ? 'fas fa-spinner fa-spin' : 'fas fa-trash'"></i>
                 <span>{{ isDeleting ? 'Deleting...' : 'Delete' }}</span>
@@ -377,12 +399,13 @@
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm"
         @click.self="showAttendeesModal = false"
       >
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h3 class="text-lg font-bold text-gray-900">Attendees List</h3>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-[#dce7f3]">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-[#edf2fa]" style="background:#f7faff;">
+            <h3 class="text-lg font-bold" style="color:#183b63;">Attendees List</h3>
             <button
               @click="showAttendeesModal = false"
-              class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
+              class="p-2 hover:bg-[#edf4fb] rounded-lg transition-colors"
+              style="color:#a4b8cf;"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -393,12 +416,12 @@
               <div
                 v-for="(attendee, index) in currentAttendees"
                 :key="index"
-                class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                class="flex items-center gap-3 p-3 bg-[#f7faff] rounded-xl border border-[#edf2fa]"
               >
-                <div class="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
-                  <i class="fas fa-user text-blue-600 text-sm"></i>
+                <div class="flex items-center justify-center w-8 h-8 rounded-full" style="background:#edf4fb;">
+                  <i class="fas fa-user text-sm" style="color:#2f78dd;"></i>
                 </div>
-                <span class="text-sm font-medium text-gray-900">{{ attendee }}</span>
+                <span class="text-sm font-medium" style="color:#183b63;">{{ attendee }}</span>
               </div>
             </div>
           </div>
@@ -675,7 +698,7 @@ const exportToPDF = async () => {
         cellPadding: 3
       },
       headStyles: { 
-        fillColor: [46, 64, 83],
+        fillColor: [25, 79, 146],
         textColor: 255,
         fontStyle: 'bold'
       },

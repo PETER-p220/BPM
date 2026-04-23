@@ -1,436 +1,201 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 font-['DM_Sans',sans-serif]">
-    <!-- Top Navigation -->
-    <div class="bg-white dark:bg-slate-900 shadow-sm border-b border-slate-200 dark:border-slate-700">
-      <div class="max-w-7xl mx-auto px-6 py-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  <div class="min-h-screen bg-[#edf4fb] px-4 py-4 lg:px-5 dashboard-shell">
+    <div class="dashboard-frame mx-auto flex min-h-[calc(100vh-32px)] max-w-[1580px] flex-col overflow-hidden rounded-[34px] border border-[#d9e6f3] bg-white/84 shadow-[0_28px_70px_rgba(18,58,99,0.14)] backdrop-blur-sm">
+      <div class="dashboard-hero relative overflow-hidden border-b border-[#dbe7f3] bg-[linear-gradient(135deg,#eef5ff_0%,#ffffff_46%,#f7fbff_100%)] px-6 py-5 lg:px-7">
+        <div class="pointer-events-none absolute -left-10 top-0 h-40 w-40 rounded-full bg-[#dce9fb] blur-3xl"></div>
+        <div class="pointer-events-none absolute right-6 top-3 h-24 w-24 opacity-35" style="background-image: radial-gradient(#2b74d7 1.2px, transparent 1.2px); background-size: 10px 10px;"></div>
+
+        <div class="relative flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+          <div class="flex min-w-0 items-start gap-4">
+            <div class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white shadow-[0_16px_34px_rgba(35,96,182,0.26)]">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z" />
               </svg>
             </div>
-            <div>
-              <h1 class="text-xl font-bold text-slate-900 dark:text-white">Executive Dashboard</h1>
-              <p class="text-sm text-slate-500 dark:text-slate-400">CEO Control Center</p>
+
+            <div class="min-w-0">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#2d6aaf]">CEO Workspace</p>
+              <h1 class="mt-1 text-2xl font-bold tracking-tight text-[#183b63] lg:text-[28px]">Executive Dashboard</h1>
+              <p class="mt-1.5 max-w-3xl text-sm leading-6 text-[#67819d]">Monitor operational load, project value, budget movement, and system readiness from a single executive command surface.</p>
             </div>
           </div>
+
           
-          <div class="flex items-center gap-3">
-            <div class="text-right">
-              <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ user?.name || 'CEO' }}</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Chief Executive Officer</p>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold shadow-lg">
-              {{ (user?.name || 'CEO')[0]?.toUpperCase() }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
-      <!-- Key Performance Indicators -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Total Tenders -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all">
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <span class="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full">
-              {{ stats.totalTenders > 0 ? '+' : '' }}{{ getTenderGrowth() }}% this month
-            </span>
-          </div>
-          <h3 v-if="loading" class="text-2xl font-bold text-slate-900 dark:text-white mb-1 animate-pulse">
-            <div class="h-8 w-16 bg-slate-200 dark:bg-slate-600 rounded"></div>
-          </h3>
-          <h3 v-else class="text-2xl font-bold text-slate-900 dark:text-white mb-1">{{ stats.totalTenders || 0 }}</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Total Tenders</p>
         </div>
 
-        <!-- Active Projects -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all">
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <span class="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
-              {{ stats.activeProjects > 0 ? '+' : '' }}{{ getProjectGrowth() }}% this month
-            </span>
-          </div>
-          <h3 v-if="loading" class="text-2xl font-bold text-slate-900 dark:text-white mb-1 animate-pulse">
-            <div class="h-8 w-16 bg-slate-200 dark:bg-slate-600 rounded"></div>
-          </h3>
-          <h3 v-else class="text-2xl font-bold text-slate-900 dark:text-white mb-1">{{ stats.activeProjects || 0 }}</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Active Projects</p>
-        </div>
-
-        <!-- Pending Approvals -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all">
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <span class="text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded-full">
-              {{ stats.pendingApprovals || 0 }} pending
-            </span>
-          </div>
-          <h3 v-if="loading" class="text-2xl font-bold text-slate-900 dark:text-white mb-1 animate-pulse">
-            <div class="h-8 w-16 bg-slate-200 dark:bg-slate-600 rounded"></div>
-          </h3>
-          <h3 v-else class="text-2xl font-bold text-slate-900 dark:text-white mb-1">{{ stats.pendingApprovals || 0 }}</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Pending Approvals</p>
-        </div>
-
-        <!-- Total Revenue -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all">
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-              <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <span class="text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded-full">
-              {{ getRevenueGrowth() }}% this quarter
-            </span>
-          </div>
-          <h3 v-if="loading" class="text-2xl font-bold text-slate-900 dark:text-white mb-1 animate-pulse">
-            <div class="h-8 w-24 bg-slate-200 dark:bg-slate-600 rounded"></div>
-          </h3>
-          <h3 v-else class="text-2xl font-bold text-slate-900 dark:text-white mb-1">{{ formatCurrency(stats.totalRevenue) }}</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Total Revenue</p>
-        </div>
-      </div>
-
-      <!-- Budget Reduction Tracker -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Budget Reduction Summary -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all">
-          <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Budget Reduction Tracker
-            <span v-if="budgetReductions.projects_count > 0" class="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-xs font-bold rounded-full">
-              {{ budgetReductions.projects_count }} projects
-            </span>
-          </h2>
-          
-          <div v-if="budgetLoading" class="space-y-4">
-            <div class="animate-pulse">
-              <div class="h-4 bg-slate-200 dark:bg-slate-600 rounded w-3/4 mb-2"></div>
-              <div class="h-8 bg-slate-200 dark:bg-slate-600 rounded w-full mb-2"></div>
-              <div class="h-4 bg-slate-200 dark:bg-slate-600 rounded w-1/2"></div>
-            </div>
-          </div>
-          
-          <div v-else class="space-y-4">
-            <div class="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800/40">
+        <div class="relative mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div class="analytics-card analytics-card--revenue p-5 text-white">
+            <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-slate-600 dark:text-slate-300">Total Budget Reduced</p>
-                <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ formatCurrency(budgetReductions.total_reduced_budget) }}</p>
+                <p v-if="loading" class="animate-pulse"><span class="inline-block h-6 w-24 rounded bg-white/30"></span></p>
+                <p v-else class="text-xl font-bold">{{ formatCurrency(stats.totalRevenue) }}</p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/72">Total Revenue</p>
               </div>
-              <div class="text-right">
-                <p class="text-xs text-slate-500 dark:text-slate-400">{{ budgetReductions.overall_reduction_percentage.toFixed(1) }}%</p>
-                <p class="text-xs text-red-600 dark:text-red-400 font-medium">Overall Reduction</p>
+              <div class="analytics-card__icon">
+                <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
             </div>
-            
-            <div class="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800/40">
+          </div>
+
+          <div class="analytics-card analytics-card--tenders p-5 text-white">
+            <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-slate-600 dark:text-slate-300">Current Budget</p>
-                <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ formatCurrency(budgetReductions.total_current_budget) }}</p>
+                <p v-if="loading" class="animate-pulse"><span class="inline-block h-6 w-12 rounded bg-white/30"></span></p>
+                <p v-else class="text-xl font-bold">{{ stats.totalTenders || 0 }}</p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/72">Total Tenders</p>
               </div>
-              <div class="text-right">
-                <p class="text-xs text-slate-500 dark:text-slate-400">{{ ((100 - budgetReductions.overall_reduction_percentage)).toFixed(1) }}%</p>
-                <p class="text-xs text-green-600 dark:text-green-400 font-medium">Remaining</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Budget Reductions -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all">
-          <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Recent Budget Reductions
-          </h2>
-          
-          <div v-if="budgetLoading" class="space-y-3">
-            <div v-for="i in 3" :key="i" class="animate-pulse">
-              <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50">
-                <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600"></div>
-                <div class="flex-1">
-                  <div class="h-4 bg-slate-200 dark:bg-slate-600 rounded w-3/4 mb-2"></div>
-                  <div class="h-3 bg-slate-200 dark:bg-slate-600 rounded w-1/2"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div v-else-if="budgetReductions.recent_reductions.length === 0" class="text-center py-8">
-            <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-3">
-              <svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p class="text-sm text-slate-500 dark:text-slate-400">No budget reductions yet</p>
-            <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Budget reductions will appear when analyses are approved</p>
-          </div>
-          
-          <div v-else class="space-y-3">
-            <div v-for="reduction in budgetReductions.recent_reductions" :key="reduction.project_id" class="flex items-center gap-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40">
-              <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
-                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div class="analytics-card__icon">
+                <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ reduction.project_name }}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span class="text-xs text-slate-500 dark:text-slate-400">{{ reduction.analyses_count }} analyses</span>
-                  <span class="text-xs text-red-600 dark:text-red-400 font-medium">
-                    -{{ formatCurrency(reduction.reduction_amount) }} ({{ reduction.reduction_percentage.toFixed(1) }}%)
-                  </span>
-                  <span class="text-xs text-slate-400 dark:text-slate-500">• {{ getTimeAgo(reduction.last_updated) }}</span>
-                </div>
+            </div>
+          </div>
+
+          <div class="analytics-card analytics-card--projects p-5 text-white">
+            <div class="flex items-center justify-between">
+              <div>
+                <p v-if="loading" class="animate-pulse"><span class="inline-block h-6 w-12 rounded bg-white/30"></span></p>
+                <p v-else class="text-xl font-bold">{{ stats.activeProjects || 0 }}</p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/72">Active Projects</p>
+              </div>
+              <div class="analytics-card__icon">
+                <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="analytics-card analytics-card--pending p-5 text-white">
+            <div class="flex items-center justify-between">
+              <div>
+                <p v-if="loading" class="animate-pulse"><span class="inline-block h-6 w-12 rounded bg-white/30"></span></p>
+                <p v-else class="text-xl font-bold">{{ stats.pendingApprovals || 0 }}</p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/72">Pending Approvals</p>
+              </div>
+              <div class="analytics-card__icon">
+                <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Quick Actions & Recent Activity -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Quick Actions -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-          <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            Quick Actions
-          </h2>
-          <div class="space-y-3">
-            <router-link to="/ceo/tenders" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all group">
-              <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
+      <div class="dashboard-body grid flex-1 grid-cols-1 gap-4 bg-[linear-gradient(180deg,#fbfdff_0%,#f7fbff_100%)] p-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.95fr)]">
+        <div class="grid min-h-0 grid-cols-1 gap-4 2xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+          <section class="workspace-panel flex min-h-0 flex-col overflow-hidden rounded-[28px] border border-[#dce7f3] bg-white shadow-[0_16px_34px_rgba(18,58,99,0.08)]">
+            <div class="workspace-panel__header flex items-center justify-between gap-4 border-b border-[#e6eef7] px-5 py-4">
+              <div>
+                <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Action Queue</p>
+                <h2 class="mt-1 text-base font-bold text-[#183b63]">Pending Approvals</h2>
               </div>
-              <div class="flex-1">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">Manage Tenders</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">View and approve tenders</p>
-              </div>
-            </router-link>
+              <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-xs font-semibold text-[#1f5aa6]">
+                {{ filteredPendingItems.length }} item{{ filteredPendingItems.length !== 1 ? 's' : '' }}
+              </span>
+            </div>
 
-            <router-link to="/ceo/quotations" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all group">
-              <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div class="flex-1">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">Review Quotations</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Price schedule approvals</p>
-              </div>
-            </router-link>
-
-            <router-link to="/ceo/reports" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all group">
-              <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <div class="flex-1">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">View Reports</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Analytics & insights</p>
-              </div>
-            </router-link>
-          </div>
-        </div>
-
-        <!-- Pending Approvals -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-          <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Pending Approvals
-            <span v-if="pendingItems.length > 0" class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-full">
-              {{ pendingItems.length }}
-            </span>
-          </h2>
-          
-          <div v-if="loading" class="space-y-3">
-            <div v-for="i in 3" :key="i" class="animate-pulse">
-              <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50">
-                <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600"></div>
-                <div class="flex-1">
-                  <div class="h-4 bg-slate-200 dark:bg-slate-600 rounded w-3/4 mb-2"></div>
-                  <div class="h-3 bg-slate-200 dark:bg-slate-600 rounded w-1/2"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div v-else-if="pendingItems.length === 0" class="text-center py-8">
-            <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-3">
-              <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p class="text-sm text-slate-500 dark:text-slate-400">No pending approvals</p>
-            <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">All systems running smoothly</p>
-          </div>
-          
-          <div v-else class="space-y-3">
-            <div v-for="item in pendingItems" :key="item.id" class="flex items-center gap-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40">
-              <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
-                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ item.title }}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span class="text-xs text-slate-500 dark:text-slate-400">{{ item.type }}</span>
-                  <span v-if="item.priority" :class="`px-1.5 py-0.5 text-xs font-medium rounded-full ${getPriorityColor(item.priority)}`">
-                    {{ item.priority }}
-                  </span>
-                  <span class="text-xs text-slate-400 dark:text-slate-500">• {{ item.time }}</span>
-                </div>
-              </div>
-              <button @click="handleApproval(item)" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition-colors">
-                Review
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- System Health -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-          <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            System Health
-            <span v-if="systemHealth?.overall" :class="`px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(systemHealth.overall)}`">
-              {{ systemHealth.overall }}
-            </span>
-          </h2>
-          
-          <div v-if="loading" class="space-y-4">
-            <div v-for="i in 4" :key="i" class="animate-pulse">
-              <div class="flex items-center justify-between">
-                <div class="h-4 bg-slate-200 dark:bg-slate-600 rounded w-20"></div>
-                <div class="h-6 bg-slate-200 dark:bg-slate-600 rounded w-16"></div>
-              </div>
-            </div>
-          </div>
-          
-          <div v-else class="space-y-4">
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-slate-600 dark:text-slate-300">API Status</span>
-              <div class="flex items-center gap-2">
-                <span class="text-xs text-slate-500">{{ systemHealth.components?.api?.response_time || 'Unknown' }}</span>
-                <span :class="`px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(systemHealth.components?.api?.status)}`">
-                  {{ systemHealth.components?.api?.status || 'Unknown' }}
-                </span>
-              </div>
-            </div>
-            
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-slate-600 dark:text-slate-300">Database</span>
-              <div class="flex items-center gap-2">
-                <span class="text-xs text-slate-500">{{ systemHealth.components?.database?.response_time || systemHealth.components?.database?.connection || 'Unknown' }}</span>
-                <span :class="`px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(systemHealth.components?.database?.status)}`">
-                  {{ systemHealth.components?.database?.status || 'Unknown' }}
-                </span>
-              </div>
-            </div>
-            
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-slate-600 dark:text-slate-300">Storage</span>
-              <div class="flex items-center gap-2">
-                <span class="text-xs text-slate-500">{{ systemHealth.components?.storage?.usage_percentage || 0 }}% Used</span>
-                <span :class="`px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(systemHealth.components?.storage?.status)}`">
-                  {{ systemHealth.components?.storage?.status || 'Unknown' }}
-                </span>
-              </div>
-            </div>
-            
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-slate-600 dark:text-slate-300">Last Backup</span>
-              <div class="flex items-center gap-2">
-                <span class="text-xs text-slate-500">{{ systemHealth.components?.backup?.time_ago || 'Unknown' }}</span>
-                <span :class="`px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(systemHealth.components?.backup?.status)}`">
-                  {{ systemHealth.components?.backup?.status || 'Unknown' }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Activity Timeline -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-          <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Recent Activity
-        </h2>
-        <div class="space-y-4">
-          <div v-if="loading" class="space-y-4">
-            <div v-for="i in 3" :key="i" class="flex gap-4 animate-pulse">
-              <div class="w-10 h-10 bg-slate-200 dark:bg-slate-600 rounded-full flex-shrink-0"></div>
-              <div class="flex-1">
-                <div class="h-4 bg-slate-200 dark:bg-slate-600 rounded w-1/3 mb-2"></div>
-                <div class="h-3 bg-slate-200 dark:bg-slate-600 rounded w-2/3"></div>
-              </div>
-            </div>
-          </div>
-          
-          <div v-else-if="recentActivities.length === 0" class="text-center py-8">
-            <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto mb-3">
-              <svg class="w-6 h-6 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p class="text-sm text-slate-500 dark:text-slate-400">No recent activity</p>
-            <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Activity will appear here</p>
-          </div>
-          
-          <div v-else class="space-y-4">
-            <div v-for="activity in recentActivities" :key="activity.id" class="flex gap-4">
-              <div class="flex flex-col items-center">
-                <div :class="activity.iconBg" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5" :class="activity.iconColor" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="activity.icon" />
-                  </svg>
-                </div>
-                <div v-if="activity.showLine" class="w-0.5 h-16 bg-slate-200 dark:bg-slate-700"></div>
-              </div>
-              <div class="flex-1 pb-8">
-                <div class="flex items-start justify-between">
-                  <div>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ activity.title }}</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ activity.description }}</p>
+            <div v-if="loading" class="flex-1 space-y-3 px-5 py-4">
+              <div v-for="i in 5" :key="i" class="animate-pulse rounded-2xl border border-[#e3edf7] bg-white p-4 shadow-sm">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-2xl bg-[#dfeaf6]"></div>
+                  <div class="flex-1">
+                    <div class="mb-2 h-4 w-2/3 rounded bg-[#dfeaf6]"></div>
+                    <div class="h-3 w-1/3 rounded bg-[#edf3fa]"></div>
                   </div>
-                  <span class="text-xs text-slate-400 dark:text-slate-500">{{ activity.time }}</span>
+                  <div class="h-7 w-16 rounded-full bg-[#edf3fa]"></div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <div v-else-if="filteredPendingItems.length === 0" class="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
+              <div class="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-[#e9f2ff] shadow-inner">
+                <svg class="h-7 w-7 text-[#2b74d7]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p class="text-sm font-semibold text-[#183b63]">{{ searchQuery ? 'No approvals match your search' : 'No pending approvals' }}</p>
+              <p class="mt-1 text-xs text-[#8aa0b7]">{{ searchQuery ? 'Try a different keyword.' : 'Everything currently looks clear.' }}</p>
+            </div>
+
+            <div v-else class="panel-scroll flex-1 overflow-y-auto px-5 py-4">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-[#edf2f7] text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-[#88a0b8]">
+                    <th class="px-2 py-3">Task</th>
+                    <th class="px-2 py-3">Type</th>
+                    <th class="px-2 py-3">Priority</th>
+                    <th class="px-2 py-3">Age</th>
+                    <th class="px-2 py-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in filteredPendingItems" :key="item.id" class="border-b border-[#f2f6fb] text-[#4e6781] transition-colors hover:bg-[#fbfdff]">
+                    <td class="px-2 py-3.5">
+                      <p class="font-semibold text-[#183b63]">{{ item.title }}</p>
+                      <p class="mt-1 text-xs text-[#8aa0b7]">Executive review required</p>
+                    </td>
+                    <td class="px-2 py-3.5">
+                      <span class="rounded-full px-2.5 py-1 text-[11px] font-semibold" :class="item.type === 'Tender' ? 'bg-[#edf4ff] text-[#1f5aa6]' : 'bg-[#f5f1ff] text-[#6b56cf]'">
+                        {{ item.type }}
+                      </span>
+                    </td>
+                    <td class="px-2 py-3.5">
+                      <span class="rounded-full px-2.5 py-1 text-[11px] font-semibold" :class="getPriorityColor(item.priority)">
+                        {{ item.priority }}
+                      </span>
+                    </td>
+                    <td class="px-2 py-3.5 text-sm text-[#7a93af]">{{ item.time }}</td>
+                    <td class="px-2 py-3.5 text-right">
+                      <button @click="handleApproval(item)" class="inline-flex items-center gap-1.5 rounded-xl bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] px-3 py-2 text-xs font-semibold text-white shadow-[0_10px_20px_rgba(35,96,182,0.16)] transition-all hover:brightness-105">
+                        Review
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+    
+        </div>
+
+        <div class="grid min-h-0 grid-cols-1 gap-4 lg:grid-rows-[auto_auto_minmax(0,1fr)]">
+          
+
+          
+
+          <section class="workspace-panel flex min-h-0 flex-col rounded-[28px] border border-[#dce7f3] bg-white p-5 shadow-[0_16px_34px_rgba(18,58,99,0.08)]">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Executive Totals</p>
+                <h2 class="mt-1 text-base font-bold text-[#183b63]">Portfolio Overview</h2>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-3">
+              <div class="rounded-[22px] border border-[#e6eef7] bg-[#fbfdff] p-4">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Awards</p>
+                <p class="mt-2 text-lg font-bold text-[#183b63]">{{ stats.totalAwards || 0 }}</p>
+              </div>
+              <div class="rounded-[22px] border border-[#e6eef7] bg-[#fbfdff] p-4">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Completed</p>
+                <p class="mt-2 text-lg font-bold text-[#183b63]">{{ stats.completedProjects || 0 }}</p>
+              </div>
+              <div class="rounded-[22px] border border-[#e6eef7] bg-[#fbfdff] p-4">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Failed</p>
+                <p class="mt-2 text-lg font-bold text-[#c24a2d]">{{ stats.failedProjects || 0 }}</p>
+              </div>
+              <div class="rounded-[22px] border border-[#e6eef7] bg-[#fbfdff] p-4">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Tracked Budget</p>
+                <p class="mt-2 text-sm font-bold text-[#183b63]">{{ formatCurrency(stats.totalBudget) }}</p>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
@@ -438,12 +203,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { optimizedRequest, requestWithRetry } from '@/utils/api';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { optimizedRequest } from '@/utils/api';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 const user = ref(null);
+const searchQuery = ref('');
 const stats = ref({
   totalTenders: 0,
   activeProjects: 0,
@@ -482,13 +248,34 @@ const trends = ref({
 });
 const loading = ref(true);
 const budgetLoading = ref(true);
+const currentTime = ref(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }));
 
-// Auto-refresh intervals
+const currentDate = computed(() => new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
+
+const efficiencyPercent = computed(() => {
+  const total = (stats.value.completedProjects || 0) + (stats.value.activeProjects || 0) + (stats.value.failedProjects || 0);
+  if (total === 0) return 0;
+  return Math.round((stats.value.completedProjects / total) * 100);
+});
+
+const filteredPendingItems = computed(() => filterCollection(pendingItems.value, ['title', 'type', 'priority', 'time']));
+const filteredRecentActivities = computed(() => filterCollection(recentActivities.value, ['title', 'description', 'time']));
+
+const healthCards = computed(() => {
+  const components = systemHealth.value.components || {};
+  return [
+    { label: 'API', status: components.api?.status, detail: components.api?.response_time || 'No response data' },
+    { label: 'Database', status: components.database?.status, detail: components.database?.connection || 'No connection data' },
+    { label: 'Storage', status: components.storage?.status, detail: `${components.storage?.usage_percentage || 0}% used` },
+    { label: 'Backup', status: components.backup?.status, detail: components.backup?.time_ago || 'No backup status' }
+  ];
+});
+
 let refreshInterval = null;
 let healthCheckInterval = null;
+let clockInterval = null;
 
 onMounted(async () => {
-  // Initial data load
   await Promise.all([
     fetchDashboardData(),
     fetchUser(),
@@ -501,7 +288,6 @@ onMounted(async () => {
   loading.value = false;
   budgetLoading.value = false;
 
-  // Set up auto-refresh (every 5 minutes for main data)
   refreshInterval = setInterval(() => {
     Promise.all([
       fetchDashboardData(),
@@ -512,29 +298,25 @@ onMounted(async () => {
     ]);
   }, 5 * 60 * 1000);
 
-  // Set up health check (every 2 minutes)
   healthCheckInterval = setInterval(() => {
     fetchSystemHealth();
   }, 2 * 60 * 1000);
+
+  clockInterval = setInterval(() => {
+    currentTime.value = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }, 60 * 1000);
 });
 
 onUnmounted(() => {
-  // Clean up intervals
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-    refreshInterval = null;
-  }
-  if (healthCheckInterval) {
-    clearInterval(healthCheckInterval);
-    healthCheckInterval = null;
-  }
+  if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
+  if (healthCheckInterval) { clearInterval(healthCheckInterval); healthCheckInterval = null; }
+  if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
 });
 
 async function fetchDashboardData() {
   try {
     const response = await optimizedRequest('/api/dashboard/stats');
     const data = response?.data || {};
-    
     stats.value = {
       totalTenders: data.tenders?.registered || 0,
       activeProjects: data.projects?.inProgress || 0,
@@ -561,22 +343,19 @@ async function fetchDashboardDataFallback() {
     const tenders = tendersRes.data.data || [];
     const quotations = quotationsRes.data.data || [];
     const projects = projectsRes.data.data || [];
-    
     stats.value = {
       totalTenders: tenders.length,
-      activeProjects: projects.filter(p => p.status === 'active').length,
-      pendingApprovals: quotations.filter(q => q.status === 'pending').length,
-      totalRevenue: projects.reduce((s, p) => s + (p.value || 0), 0),
+      activeProjects: projects.filter(project => project.status === 'active').length,
+      pendingApprovals: quotations.filter(quotation => quotation.status === 'pending').length,
+      totalRevenue: projects.reduce((sum, project) => sum + (project.value || 0), 0),
       totalAwards: 0,
-      completedProjects: projects.filter(p => p.status === 'completed').length,
-      failedProjects: projects.filter(p => p.status === 'failed').length,
-      totalBudget: projects.reduce((s, p) => s + (p.value || 0), 0)
+      completedProjects: projects.filter(project => project.status === 'completed').length,
+      failedProjects: projects.filter(project => project.status === 'failed').length,
+      totalBudget: projects.reduce((sum, project) => sum + (project.value || 0), 0)
     };
   } catch (error) {
     console.error('Fallback dashboard fetch failed:', error);
     toast.error('Failed to load dashboard statistics');
-    
-    // Set fallback values to prevent undefined errors
     stats.value = {
       totalTenders: 0,
       activeProjects: 0,
@@ -607,31 +386,26 @@ async function fetchUser() {
 
 async function fetchPendingApprovals() {
   try {
-    // Fetch pending tenders and projects that need CEO approval
     const [deadlineTenders, failedProjects] = await Promise.all([
       optimizedRequest('/api/count/deadline-reached/tenders'),
       optimizedRequest('/api/count/failed-projects')
     ]);
-
     const deadlineCount = deadlineTenders.data?.count || 0;
     const failedCount = failedProjects.data?.total_failed_projects || 0;
-
-    const pendingTenders = Array(deadlineCount).fill(0).map((_, i) => ({
-      id: `tender-${i}`,
-      title: `Tender #${i + 1} - Deadline Reached`,
+    const pendingTenders = Array(deadlineCount).fill(0).map((_, index) => ({
+      id: `tender-${index}`,
+      title: `Tender #${index + 1} - Deadline Reached`,
       type: 'Tender',
       time: getTimeAgo('deadline'),
       priority: 'high'
     }));
-
-    const pendingProjects = Array(failedCount).fill(0).map((_, i) => ({
-      id: `project-${i}`,
-      title: `Project #${i + 1} - Failed Status`,
+    const pendingProjects = Array(failedCount).fill(0).map((_, index) => ({
+      id: `project-${index}`,
+      title: `Project #${index + 1} - Failed Status`,
       type: 'Project',
       time: getTimeAgo('failed'),
       priority: 'medium'
     }));
-
     pendingItems.value = [...pendingTenders, ...pendingProjects].slice(0, 5);
   } catch (error) {
     console.error('Error fetching pending approvals:', error);
@@ -642,7 +416,7 @@ async function fetchPendingApprovals() {
 async function fetchBudgetReductions() {
   try {
     const response = await optimizedRequest('/api/budget/reductions');
-    const data = response?.data || {
+    budgetReductions.value = response?.data || {
       total_original_budget: 0,
       total_reduced_budget: 0,
       total_current_budget: 0,
@@ -651,11 +425,8 @@ async function fetchBudgetReductions() {
       recent_reductions: [],
       budget_reduction_trend: []
     };
-    
-    budgetReductions.value = data;
   } catch (error) {
     console.error('Error fetching budget reductions:', error);
-    toast.error('Failed to load budget reductions');
     budgetReductions.value = {
       total_original_budget: 0,
       total_reduced_budget: 0,
@@ -672,17 +443,14 @@ async function fetchBudgetReductions() {
 
 async function fetchRecentActivities() {
   try {
-    // Fetch recent activities from various sources
     const [awardedTenders, completedProjects] = await Promise.all([
       optimizedRequest('/api/count/awarded-tenders'),
       optimizedRequest('/api/count/completed-projects')
     ]);
-
     const awardedCount = awardedTenders.data?.count || 0;
     const completedCount = completedProjects.data?.total_completed_projects || 0;
-
     const activities = [];
-    
+
     if (awardedCount > 0) {
       activities.push({
         id: 1,
@@ -690,8 +458,8 @@ async function fetchRecentActivities() {
         description: `${awardedCount} tenders successfully awarded`,
         time: getTimeAgo('awarded'),
         icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-        iconBg: 'bg-green-100 dark:bg-green-900/30',
-        iconColor: 'text-green-600 dark:text-green-400',
+        iconBg: 'bg-green-100',
+        iconColor: 'text-green-600',
         showLine: true
       });
     }
@@ -703,8 +471,8 @@ async function fetchRecentActivities() {
         description: `${completedCount} projects marked as completed`,
         time: getTimeAgo('completed'),
         icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-        iconBg: 'bg-blue-100 dark:bg-blue-900/30',
-        iconColor: 'text-blue-600 dark:text-blue-400',
+        iconBg: 'bg-blue-100',
+        iconColor: 'text-blue-600',
         showLine: true
       });
     }
@@ -720,7 +488,6 @@ async function fetchSystemHealth() {
   try {
     const response = await optimizedRequest('/api/system/health');
     const data = response?.data || {};
-    
     systemHealth.value = {
       overall: data.overall || 'unknown',
       components: {
@@ -732,7 +499,6 @@ async function fetchSystemHealth() {
     };
   } catch (error) {
     console.error('Error fetching system health:', error);
-    // Set fallback values
     systemHealth.value = {
       overall: 'error',
       components: {
@@ -749,7 +515,6 @@ async function fetchTrends() {
   try {
     const response = await optimizedRequest('/api/dashboard/trends');
     const data = response?.data || {};
-    
     trends.value = {
       tender_growth: data.tender_growth || 0,
       project_growth: data.project_growth || 0,
@@ -757,12 +522,14 @@ async function fetchTrends() {
     };
   } catch (error) {
     console.error('Error fetching trends:', error);
-    trends.value = {
-      tender_growth: 0,
-      project_growth: 0,
-      revenue_growth: 0
-    };
+    trends.value = { tender_growth: 0, project_growth: 0, revenue_growth: 0 };
   }
+}
+
+function filterCollection(collection, fields) {
+  const query = searchQuery.value.trim().toLowerCase();
+  if (!query) return collection;
+  return collection.filter(item => fields.some(field => String(item[field] || '').toLowerCase().includes(query)));
 }
 
 function formatCurrency(value) {
@@ -775,8 +542,18 @@ function formatCurrency(value) {
   }).format(value);
 }
 
+function formatTrendValue(value) {
+  if (!value) return '0%';
+  return `${value > 0 ? '+' : ''}${value}%`;
+}
+
+function formatHealthStatus(status) {
+  if (!status) return 'Unknown';
+  const normalized = String(status).replace(/[_-]/g, ' ');
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
 function handleApproval(item) {
-  // Navigate to appropriate approval page
   if (item.type === 'Tender') {
     window.location.href = '/ceo/tenders';
   } else if (item.type === 'Project') {
@@ -786,105 +563,179 @@ function handleApproval(item) {
 
 function getPriorityColor(priority) {
   switch (priority) {
-    case 'high': return 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30';
-    case 'medium': return 'text-amber-600 bg-amber-100 dark:text-amber-400 dark:bg-amber-900/30';
-    default: return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30';
+    case 'high':
+      return 'bg-red-50 text-red-700';
+    case 'medium':
+      return 'bg-amber-50 text-amber-700';
+    default:
+      return 'bg-emerald-50 text-emerald-700';
   }
 }
 
-function getStatusColor(status) {
-  switch (status) {
-    case 'operational':
+function getTrendTone(value) {
+  if (value > 0) return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+  if (value < 0) return 'border-red-200 bg-red-50 text-red-700';
+  return 'border-slate-200 bg-slate-50 text-slate-600';
+}
+
+function getHealthTone(status) {
+  switch (String(status || '').toLowerCase()) {
     case 'healthy':
-    case 'completed':
-      return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300';
+    case 'ok':
+    case 'up':
+    case 'connected':
+      return 'border-emerald-200 bg-emerald-50 text-emerald-700';
     case 'warning':
-      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
-    case 'error':
-    case 'critical':
-      return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300';
-    case 'loading':
-      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
     case 'degraded':
-    case 'unknown':
-    default:
-      return 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300';
-  }
-}
-
-function getStatusIcon(status) {
-  switch (status) {
-    case 'operational':
-    case 'healthy':
-    case 'completed':
-      return 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z';
-    case 'warning':
-      return 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z';
+      return 'border-amber-200 bg-amber-50 text-amber-700';
     case 'error':
-    case 'critical':
-      return 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z';
+    case 'down':
+    case 'failed':
+      return 'border-red-200 bg-red-50 text-red-700';
     case 'loading':
-      return 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15';
+      return 'border-blue-200 bg-blue-50 text-blue-700';
     default:
-      return 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+      return 'border-slate-200 bg-slate-50 text-slate-600';
   }
-}
-
-function getTenderGrowth() {
-  return trends.value.tender_growth;
-}
-
-function getProjectGrowth() {
-  return trends.value.project_growth;
-}
-
-function getRevenueGrowth() {
-  return trends.value.revenue_growth;
 }
 
 function getTimeAgo(type) {
   const now = new Date();
   let timeAgo;
-  
-  switch(type) {
+
+  switch (type) {
     case 'awarded':
-      timeAgo = new Date(now.getTime() - (2 * 60 * 60 * 1000)); // 2 hours ago
+      timeAgo = new Date(now.getTime() - (2 * 60 * 60 * 1000));
       break;
     case 'completed':
-      timeAgo = new Date(now.getTime() - (5 * 60 * 60 * 1000)); // 5 hours ago
+      timeAgo = new Date(now.getTime() - (5 * 60 * 60 * 1000));
       break;
     case 'deadline':
-      timeAgo = new Date(now.getTime() - (1 * 60 * 60 * 1000)); // 1 hour ago
+      timeAgo = new Date(now.getTime() - (1 * 60 * 60 * 1000));
       break;
     case 'failed':
-      timeAgo = new Date(now.getTime() - (3 * 60 * 60 * 1000)); // 3 hours ago
+      timeAgo = new Date(now.getTime() - (3 * 60 * 60 * 1000));
       break;
     default:
-      timeAgo = new Date(now.getTime() - (30 * 60 * 1000)); // 30 minutes ago
+      timeAgo = new Date(now.getTime() - (30 * 60 * 1000));
   }
-  
+
   const diff = now - timeAgo;
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  
-  if (hours > 0) {
-    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-  } else {
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-  }
+
+  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
 }
 </script>
 
 <style scoped>
-@import url('https://fonts.2?family=DM+Sans:wght@400;500;600;700&display=swap');
-
-/* Custom animations */
-@keyframes pulse-slow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+.dashboard-shell {
+  background:
+    radial-gradient(circle at top right, rgba(48, 120, 221, 0.08), transparent 22%),
+    linear-gradient(180deg, #eff5fb 0%, #eaf1f8 100%);
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 3s ease-in-out infinite;
+.dashboard-frame {
+  position: relative;
+}
+
+.dashboard-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 34px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.dashboard-hero {
+  box-shadow: inset 0 -1px 0 rgba(220, 232, 245, 0.85);
+}
+
+.dashboard-body {
+  background: linear-gradient(180deg, #fbfdff 0%, #f7fbff 100%);
+}
+
+.workspace-panel {
+  position: relative;
+}
+
+.workspace-panel__header {
+  background: linear-gradient(180deg, rgba(243, 248, 255, 0.92), rgba(255, 255, 255, 0.98));
+}
+
+.panel-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(43, 116, 215, 0.24) transparent;
+}
+
+.panel-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(43, 116, 215, 0.18);
+  border-radius: 9999px;
+}
+
+.analytics-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 18px 38px rgba(21, 52, 92, 0.18);
+}
+
+.analytics-card::before {
+  content: '';
+  position: absolute;
+  inset: auto -18% -42% auto;
+  width: 150px;
+  height: 150px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.analytics-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 50%);
+  pointer-events: none;
+}
+
+.analytics-card--revenue {
+  background: linear-gradient(135deg, #164c93 0%, #2f78dd 100%);
+}
+
+.analytics-card--tenders {
+  background: linear-gradient(135deg, #164c93 0%, #2f78dd 100%);
+}
+
+.analytics-card--projects {
+  background: linear-gradient(135deg, #2a70cf 0%, #5ea3f5 100%);
+}
+
+.analytics-card--pending {
+  background: linear-gradient(135deg, #7d96b6 0%, #aab8cb 100%);
+}
+
+.analytics-card__icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 </style>

@@ -9,7 +9,7 @@
             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
               <i class="fas fa-chart-bar text-xl"></i>
             </div>
-            <h2 class="text-xl font-semibold">Submit Analysis</h2>
+            <h2 class="text-xl font-semibold">Submit Quatations</h2>
           </div>
           <router-link
             to="/user/analyses"
@@ -58,7 +58,7 @@
             <!-- File Upload -->
             <div>
               <label class="form-label">
-                Upload Analysis File (Excel .xlsx/.xls) <span class="text-red-500">*</span>
+                Upload Analysis File (Excel .xlsx/.xls or PDF) <span class="text-red-500">*</span>
               </label>
               <div
                 class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50"
@@ -69,21 +69,24 @@
                 <input
                   ref="fileInput"
                   type="file"
-                  accept=".xlsx,.xls"
+                  accept=".xlsx,.xls,.pdf"
                   class="hidden"
                   @change="handleFileUpload"
                 />
 
                 <div v-if="!analysisData.excel_file" class="space-y-2">
-                  <i class="fas fa-file-excel text-4xl text-gray-400"></i>
+                  <div class="flex items-center justify-center gap-3">
+                    <i class="fas fa-file-excel text-4xl text-gray-400"></i>
+                    <i class="fas fa-file-pdf text-4xl text-gray-400"></i>
+                  </div>
                   <p class="text-sm text-gray-600">
-                    Drag & drop Excel file here or <span class="text-blue-600 font-medium">browse</span>
+                    Drag & drop quotation file here or <span class="text-blue-600 font-medium">browse</span>
                   </p>
-                  <p class="text-xs text-gray-500">.xlsx or .xls only • Max 10MB</p>
+                  <p class="text-xs text-gray-500">.xlsx, .xls, or .pdf • Max 10MB</p>
                 </div>
 
                 <div v-else class="flex items-center justify-center gap-4 text-green-700">
-                  <i class="fas fa-file-excel text-4xl"></i>
+                  <i :class="analysisData.excel_file.type === 'application/pdf' ? 'fas fa-file-pdf text-4xl text-red-500' : 'fas fa-file-excel text-4xl'"></i>
                   <div class="text-left">
                     <p class="font-medium">{{ analysisData.excel_file.name }}</p>
                     <p class="text-xs text-gray-500">
@@ -101,134 +104,40 @@
               </div>
             </div>
 
-            <!-- Optional Fields Group -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-4">
               <div>
-                <label for="serial_number" class="form-label">Serial Number</label>
-                <input
-                  id="serial_number"
-                  v-model="analysisData.serial_number"
-                  type="text"
-                  class="form-input"
-                  placeholder="e.g. SN-001"
-                />
+                <h3 class="text-sm font-semibold text-gray-800">Quotation Summary</h3>
+                <p class="text-xs text-gray-500 mt-1">Required for PDF uploads so approvals can show the correct totals and profit values.</p>
               </div>
-
-              <div>
-                <label for="item_description" class="form-label">Item Description</label>
-                <input
-                  id="item_description"
-                  v-model="analysisData.item_description"
-                  type="text"
-                  class="form-input"
-                  placeholder="e.g. Concrete Grade 25"
-                />
-              </div>
-
-              <div>
-                <label for="quoted_quantity" class="form-label">Quoted Quantity</label>
-                <input
-                  id="quoted_quantity"
-                  v-model.number="analysisData.quoted_quantity"
-                  type="number"
-                  min="0"
-                  class="form-input"
-                  placeholder="e.g. 150"
-                />
-              </div>
-
-              <div>
-                <label for="quoted_unit" class="form-label">Quoted Unit</label>
-                <input
-                  id="quoted_unit"
-                  v-model="analysisData.quoted_unit"
-                  type="text"
-                  class="form-input"
-                  placeholder="e.g. m³, pcs, kg"
-                />
-              </div>
-
-              <div>
-                <label for="quoted_rate" class="form-label">Quoted Rate</label>
-                <input
-                  id="quoted_rate"
-                  v-model.number="analysisData.quoted_rate"
-                  type="number"
-                  step="0.01"
-                  class="form-input"
-                  placeholder="e.g. 120000.00"
-                />
-              </div>
-
-              <div>
-                <label for="quoted_amount" class="form-label">Quoted Amount</label>
-                <input
-                  id="quoted_amount"
-                  v-model.number="analysisData.quoted_amount"
-                  type="number"
-                  step="0.01"
-                  class="form-input"
-                  placeholder="Calculated or manual"
-                />
-              </div>
-
-              <div>
-                <label for="quantity" class="form-label">Quantity</label>
-                <input
-                  id="quantity"
-                  v-model.number="analysisData.quantity"
-                  type="number"
-                  min="0"
-                  class="form-input"
-                  placeholder="e.g. 120"
-                />
-              </div>
-
-              <div>
-                <label for="rate" class="form-label">Rate</label>
-                <input
-                  id="rate"
-                  v-model.number="analysisData.rate"
-                  type="number"
-                  step="0.01"
-                  class="form-input"
-                  placeholder="e.g. 115000.00"
-                />
-              </div>
-
-              <div>
-                <label for="amount" class="form-label">Amount</label>
-                <input
-                  id="amount"
-                  v-model.number="analysisData.amount"
-                  type="number"
-                  step="0.01"
-                  class="form-input"
-                  placeholder="Calculated or manual"
-                />
-              </div>
-
-              <div>
-                <label for="source" class="form-label">Source</label>
-                <input
-                  id="source"
-                  v-model="analysisData.source"
-                  type="text"
-                  class="form-input"
-                  placeholder="e.g. Supplier XYZ"
-                />
-              </div>
-
-              <div>
-                <label for="urgent_status" class="form-label">Urgent Status</label>
-                <select id="urgent_status" v-model="analysisData.urgent_status" class="form-select">
-                  <option value="">Not Specified</option>
-                  <option value="urgent">Urgent</option>
-                  <option value="normal">Normal</option>
-                  <option value="low">Low Priority</option>
-                </select>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="form-label">Total Amount VAT Excl</label>
+                  <input v-model="analysisData.total_amount_vat_excl" type="number" min="0" step="0.01" class="form-input" />
+                </div>
+                <div>
+                  <label class="form-label">Total Investment</label>
+                  <input v-model="analysisData.total_investment" type="number" min="0" step="0.01" class="form-input" />
+                </div>
+                <div>
+                  <label class="form-label">Projected Profit</label>
+                  <input v-model="analysisData.projected_profit" type="number" step="0.01" class="form-input" />
+                </div>
+                <div>
+                  <label class="form-label">Projected Profit %</label>
+                  <input :value="projectedProfitPercentage" type="number" step="0.01" class="form-input bg-gray-100" readonly />
+                </div>
+                <div>
+                  <label class="form-label">Total Amount Needed</label>
+                  <input v-model="analysisData.total_amount_needed" type="number" min="0" step="0.01" class="form-input" />
+                </div>
+                <div>
+                  <label class="form-label">Site Contingency</label>
+                  <input v-model="analysisData.site_contingency" type="number" min="0" step="0.01" class="form-input" />
+                </div>
               </div>
             </div>
+
+      
 
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
@@ -241,7 +150,7 @@
                   <i class="fas fa-spinner fa-spin"></i> Submitting........
                 </span>
                 <span v-else>
-                  <i class="fas fa-upload"></i> Submit Analysis 
+                  <i class="fas fa-upload"></i> Submit Quatations
                 </span>
               </button>
 
@@ -284,6 +193,11 @@ const analysisData = ref({
   amount: null,
   source: '',
   urgent_status: '',
+  total_amount_vat_excl: '',
+  total_investment: '',
+  projected_profit: '',
+  total_amount_needed: '',
+  site_contingency: '',
 })
 
 const projects = ref([])
@@ -321,6 +235,13 @@ const isFormValid = computed(() => {
   )
 })
 
+const projectedProfitPercentage = computed(() => {
+  const vatExcl = parseFloat(analysisData.value.total_amount_vat_excl || 0)
+  const projectedProfit = parseFloat(analysisData.value.projected_profit || 0)
+  if (!vatExcl) return 0
+  return ((projectedProfit / vatExcl) * 100).toFixed(2)
+})
+
 function handleFileUpload(e) {
   const file = e.target.files[0]
   validateAndSetFile(file)
@@ -337,11 +258,12 @@ function validateAndSetFile(file) {
 
   const validTypes = [
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-    'application/vnd.ms-excel' // .xls
+    'application/vnd.ms-excel', // .xls
+    'application/pdf'
   ]
 
   if (!validTypes.includes(file.type)) {
-    toast.error('Only Excel files (.xlsx or .xls) are allowed')
+    toast.error('Only Excel (.xlsx, .xls) or PDF files are allowed')
     return
   }
 
@@ -360,7 +282,7 @@ function clearFile() {
 
 async function storeAnalysis() {
   if (!isFormValid.value) {
-    toast.warning('Please select a project and upload an Excel file')
+    toast.warning('Please select a project and upload a file')
     return
   }
 
@@ -388,6 +310,12 @@ async function storeAnalysis() {
     if (analysisData.value.amount) formData.append('amount', analysisData.value.amount)
     if (analysisData.value.source) formData.append('source', analysisData.value.source)
     if (analysisData.value.urgent_status) formData.append('urgent_status', analysisData.value.urgent_status)
+    if (analysisData.value.total_amount_vat_excl !== '') formData.append('total_amount_vat_excl', analysisData.value.total_amount_vat_excl)
+    if (analysisData.value.total_investment !== '') formData.append('total_investment', analysisData.value.total_investment)
+    if (analysisData.value.projected_profit !== '') formData.append('projected_profit', analysisData.value.projected_profit)
+    if (analysisData.value.total_amount_needed !== '') formData.append('total_amount_needed', analysisData.value.total_amount_needed)
+    if (analysisData.value.site_contingency !== '') formData.append('site_contingency', analysisData.value.site_contingency)
+    if (parseFloat(projectedProfitPercentage.value)) formData.append('projected_profit_percentage', projectedProfitPercentage.value)
 
     const response = await axios.post('/api/analysis', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }

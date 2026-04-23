@@ -1,14 +1,17 @@
 <template>
-  <div class="analyses-page min-h-screen bg-gray-50 px-4 py-6 sm:px-6 lg:px-8">
+  <div class="analyses-page min-h-screen bg-[#edf4fb] px-4 py-8 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl space-y-6">
 
       <!-- Header + Filter + Export -->
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Project Analyses</h1>
-          <p class="mt-1.5 text-sm text-gray-600">
-            Review quoted vs actual costs and approve or reject project analyses
-          </p>
+        <div class="flex items-center gap-4">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] shadow-[0_4px_12px_rgba(25,79,146,0.25)]">
+            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+          </div>
+          <div>
+            <h1 class="text-[22px] font-bold tracking-tight text-[#183b63]">Project Analyses</h1>
+            <p class="mt-0.5 text-[13px] text-[#7a93af]">Review quoted vs actual costs and approve or reject project analyses</p>
+          </div>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3">
@@ -17,33 +20,31 @@
             <button
               @click="exportToExcel"
               :disabled="!allProjects.length || loading"
-              class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              class="inline-flex items-center gap-1.5 rounded-xl border border-[#d9e6f3] bg-white px-4 py-2 text-[13px] font-semibold text-[#1f9d8b] shadow-sm transition hover:bg-[#f0fdf9] hover:border-[#1f9d8b]/30 disabled:opacity-40 disabled:cursor-not-allowed"
               title="Export to Excel"
             >
-              <i class="fas fa-file-excel text-green-600"></i>
+              <i class="fas fa-file-excel"></i>
               <span class="hidden sm:inline">Excel</span>
             </button>
             <button
               @click="exportToPDF"
               :disabled="!allProjects.length || loading"
-              class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              class="inline-flex items-center gap-1.5 rounded-xl border border-[#d9e6f3] bg-white px-4 py-2 text-[13px] font-semibold text-[#d95f43] shadow-sm transition hover:bg-[#fef5f3] hover:border-[#d95f43]/30 disabled:opacity-40 disabled:cursor-not-allowed"
               title="Export to PDF"
             >
-              <i class="fas fa-file-pdf text-red-600"></i>
+              <i class="fas fa-file-pdf"></i>
               <span class="hidden sm:inline">PDF</span>
             </button>
           </div>
 
           <!-- Search -->
           <div class="relative w-full sm:w-80">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i class="fa fa-search text-gray-400"></i>
-            </div>
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7a93af]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             <input
               v-model.trim="filter"
               type="search"
               placeholder="Search project name..."
-              class="block w-full rounded-lg border border-gray-300 pl-10 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
+              class="block w-full rounded-xl border border-[#d9e6f3] bg-white/90 py-2.5 pl-10 pr-4 text-sm text-[#183b63] shadow-[0_2px_8px_rgba(18,58,99,0.04)] outline-none transition placeholder:text-[#a4b8cf] focus:border-[#2f78dd] focus:ring-2 focus:ring-[#2f78dd]/20"
             />
           </div>
         </div>
@@ -51,8 +52,8 @@
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-24">
-        <div class="flex items-center gap-3 text-gray-500">
-          <i class="fa fa-spinner fa-spin text-2xl"></i>
+        <div class="flex items-center gap-3 text-[#7a93af]">
+          <i class="fa fa-spinner fa-spin text-2xl text-[#2f78dd]"></i>
           <span class="text-lg">Loading project analyses...</span>
         </div>
       </div>
@@ -60,13 +61,15 @@
       <!-- Empty State -->
       <div
         v-else-if="!filteredProjects.length"
-        class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center"
+        class="rounded-2xl border border-[#dbe7f3] bg-white/95 shadow-[0_8px_18px_rgba(18,58,99,0.05)] p-12 text-center"
       >
-        <i class="fa fa-folder-open text-6xl text-gray-300 mb-6 block"></i>
-        <h3 class="text-xl font-medium text-gray-900 mb-2">
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#edf4fb]">
+          <svg class="h-7 w-7 text-[#7d94ac]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" /></svg>
+        </div>
+        <h3 class="text-[15px] font-semibold text-[#183b63] mb-2">
           {{ filter ? 'No matching projects found' : 'No analyses available' }}
         </h3>
-        <p class="text-gray-600">
+        <p class="text-[13px] text-[#7a93af]">
           {{ filter ? 'Try a different search term' : 'New analyses will appear here once submitted' }}
         </p>
       </div>
@@ -74,21 +77,21 @@
       <!-- ══════════════════════════════════════════════
            PROJECTS SUMMARY TABLE
       ══════════════════════════════════════════════ -->
-      <div v-else class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="bg-gradient-to-r from-slate-700 to-slate-800 px-6 py-4 flex items-center justify-between">
-          <h2 class="text-base font-semibold text-white flex items-center gap-2">
-            <i class="fas fa-table"></i>
+      <div v-else class="rounded-2xl border border-[#dbe7f3] bg-white/95 shadow-[0_8px_18px_rgba(18,58,99,0.05)] overflow-hidden">
+        <div class="bg-[#f7faff] border-b border-[#e4edf7] px-6 py-4 flex items-center justify-between">
+          <h2 class="text-[13px] font-semibold text-[#183b63] flex items-center gap-2">
+            <svg class="h-4 w-4 text-[#2f78dd]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
             All Project Analyses
           </h2>
-          <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">
+          <span class="rounded-full bg-[#edf4fb] px-3 py-1 text-[11px] font-semibold text-[#2f78dd]">
             {{ filteredProjects.length }} of {{ allProjects.length }} projects
           </span>
         </div>
 
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
+          <table class="min-w-full">
+            <thead>
+              <tr class="bg-[#f7faff] border-b border-[#e4edf7]">
                 <th class="th" style="min-width:50px;">#</th>
                 <th class="th" style="min-width:220px;">Project Name</th>
                 <th class="th text-center" style="min-width:130px;">Manager</th>
@@ -101,24 +104,24 @@
                 <th class="th text-center" style="min-width:130px;">Actions</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="divide-y divide-[#edf2fa]">
               <tr
                 v-for="(project, index) in filteredProjects"
                 :key="project.project_id"
-                class="hover:bg-blue-50/40 transition-colors duration-150"
+                class="transition-colors hover:bg-[#f7faff]"
               >
                 <!-- # -->
-                <td class="td text-center text-gray-400 font-medium text-xs">
+                <td class="td text-center text-[#7d94ac] font-medium text-xs">
                   {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                 </td>
 
                 <!-- Project Name -->
                 <td class="td">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <i class="fas fa-folder text-slate-500 text-sm"></i>
+                    <div class="w-8 h-8 bg-[#edf4fb] rounded-lg flex items-center justify-center flex-shrink-0">
+                      <i class="fas fa-folder text-[#2f78dd] text-sm"></i>
                     </div>
-                    <div class="font-semibold text-gray-900 leading-tight">
+                    <div class="font-semibold text-[#183b63] leading-tight">
                       {{ project.project?.project_name || 'Unnamed Project' }}
                     </div>
                   </div>
@@ -127,10 +130,10 @@
                 <!-- Manager -->
                 <td class="td text-center">
                   <div class="flex items-center justify-center gap-1.5">
-                    <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
-                      <i class="fas fa-user text-gray-500 text-xs"></i>
+                    <div class="w-6 h-6 bg-[#edf4fb] rounded-full flex items-center justify-center">
+                      <i class="fas fa-user text-[#7d94ac] text-xs"></i>
                     </div>
-                    <span class="text-sm text-gray-700">{{ project.user?.name || '—' }}</span>
+                    <span class="text-sm text-[#4a6a8a]">{{ project.user?.name || '—' }}</span>
                   </div>
                 </td>
 
@@ -144,31 +147,31 @@
 
                 <!-- Items -->
                 <td class="td text-center">
-                  <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">
+                  <span class="bg-[#edf4fb] text-[#2f78dd] text-xs font-semibold px-2.5 py-1 rounded-full">
                     {{ project.items?.length || 0 }}
                   </span>
                 </td>
 
                 <!-- VAT Excl -->
-                <td class="td text-right font-medium text-blue-700 tabular-nums">
+                <td class="td text-right font-medium text-[#2f78dd] tabular-nums">
                   {{ formatCurrency(project.total_amount_vat_excl) }}
                 </td>
 
                 <!-- VAT Incl -->
-                <td class="td text-right font-medium text-green-700 tabular-nums">
+                <td class="td text-right font-medium text-[#1f9d8b] tabular-nums">
                   {{ formatCurrency(project.total_amount_vat_incl) }}
                 </td>
 
                 <!-- Projected Profit -->
                 <td class="td text-right tabular-nums">
-                  <span :class="parseFloat(project.projected_profit || 0) >= 0 ? 'text-emerald-600' : 'text-red-600'" class="font-semibold">
+                  <span :class="parseFloat(project.projected_profit || 0) >= 0 ? 'text-[#1f9d8b]' : 'text-[#d95f43]'" class="font-semibold">
                     {{ formatCurrency(project.projected_profit) }}
                   </span>
-                  <div class="text-xs text-gray-400">({{ project.projected_profit_percentage || 0 }}%)</div>
+                  <div class="text-xs text-[#7d94ac]">({{ project.projected_profit_percentage || 0 }}%)</div>
                 </td>
 
                 <!-- Created -->
-                <td class="td text-center text-sm text-gray-600">
+                <td class="td text-center text-sm text-[#4a6a8a]">
                   {{ formatDate(project.created_at) }}
                 </td>
 
@@ -205,19 +208,19 @@
         <button
           :disabled="currentPage === 1"
           @click="changePage(currentPage - 1)"
-          class="px-6 py-2.5 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] shadow-sm transition hover:bg-[#f7faff] disabled:opacity-40"
         >
-          ← Previous
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
         </button>
-        <span class="text-sm text-gray-700 font-medium px-4">
-          Page <strong>{{ currentPage }}</strong> of {{ Math.ceil(allProjects.length / itemsPerPage) }}
+        <span class="text-[13px] font-semibold text-[#183b63]">
+          Page {{ currentPage }} of {{ Math.ceil(allProjects.length / itemsPerPage) }}
         </span>
         <button
           :disabled="currentPage * itemsPerPage >= allProjects.length"
           @click="changePage(currentPage + 1)"
-          class="px-6 py-2.5 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] shadow-sm transition hover:bg-[#f7faff] disabled:opacity-40"
         >
-          Next →
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
         </button>
       </div>
     </div>
@@ -229,19 +232,19 @@
       <Transition name="modal">
         <div
           v-if="showDetailModal && detailProject"
-          class="fixed inset-0 z-50 flex items-start justify-center p-4 pt-10 bg-black/50 backdrop-blur-sm"
+          class="fixed inset-0 z-50 flex items-start justify-center p-4 pt-10 bg-[#183b63]/40 backdrop-blur-[6px]"
           @click.self="closeDetailModal"
         >
-          <div class="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[88vh] flex flex-col overflow-hidden">
+          <div class="rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)] shadow-[0_30px_70px_rgba(18,58,99,0.24)] w-full max-w-6xl max-h-[88vh] flex flex-col overflow-hidden">
 
             <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-slate-700 to-slate-800 px-6 py-4 flex-shrink-0">
+            <div class="bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] px-6 py-4 flex-shrink-0">
               <div class="flex items-start justify-between gap-4">
                 <div class="flex-1 min-w-0">
                   <h2 class="text-lg font-semibold text-white truncate">
                     {{ detailProject.project?.project_name || 'Unnamed Project' }}
                   </h2>
-                  <div class="flex flex-wrap gap-4 text-sm text-gray-300 mt-1">
+                  <div class="flex flex-wrap gap-4 text-sm text-white/70 mt-1">
                     <div class="flex items-center gap-1.5">
                       <i class="fas fa-user-circle"></i>
                       <span>{{ detailProject.user?.name || '—' }}</span>
@@ -261,7 +264,7 @@
                   <button
                     v-if="detailProject.status === 'pending'"
                     @click="openApprovalDialog(detailProject.project_id)"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
                   >
                     <i class="fa fa-check-circle"></i>
                     Review
@@ -271,7 +274,7 @@
                     class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
                     title="Close"
                   >
-                    <i class="fas fa-times"></i>
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
               </div>
@@ -279,9 +282,9 @@
               <!-- Rejection Reason -->
               <div
                 v-if="detailProject.status === 'rejected' && detailProject.reason_for_reject"
-                class="mt-3 bg-red-900/20 border border-red-400/30 rounded-lg p-3"
+                class="mt-3 bg-[#d95f43]/10 border border-[#d95f43]/20 rounded-lg p-3"
               >
-                <p class="text-sm text-red-200">
+                <p class="text-sm text-white/90">
                   <i class="fas fa-exclamation-circle mr-2"></i>
                   <strong>Reason for rejection:</strong> {{ detailProject.reason_for_reject }}
                 </p>
@@ -293,29 +296,29 @@
 
               <!-- Financial Summary -->
               <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                <div class="fin-card bg-blue-50 border-blue-200">
-                  <p class="fin-label text-blue-600">VAT Excl</p>
-                  <p class="fin-value text-blue-900">{{ formatCurrency(detailProject.total_amount_vat_excl) }}</p>
+                <div class="fin-card bg-[#edf4fb] border-[#d9e6f3]">
+                  <p class="fin-label text-[#2f78dd]">VAT Excl</p>
+                  <p class="fin-value text-[#194f92]">{{ formatCurrency(detailProject.total_amount_vat_excl) }}</p>
                 </div>
-                <div class="fin-card bg-green-50 border-green-200">
-                  <p class="fin-label text-green-600">VAT Incl</p>
-                  <p class="fin-value text-green-900">{{ formatCurrency(detailProject.total_amount_vat_incl) }}</p>
+                <div class="fin-card bg-[#f0fdf9] border-[#a7f3d0]">
+                  <p class="fin-label text-[#1f9d8b]">VAT Incl</p>
+                  <p class="fin-value text-[#0f766e]">{{ formatCurrency(detailProject.total_amount_vat_incl) }}</p>
                 </div>
-                <div class="fin-card bg-purple-50 border-purple-200">
-                  <p class="fin-label text-purple-600">Amount Needed</p>
-                  <p class="fin-value text-purple-900">{{ formatCurrency(detailProject.total_amount_needed) }}</p>
+                <div class="fin-card bg-[#faf5ff] border-[#e9d5ff]">
+                  <p class="fin-label text-[#7c3aed]">Amount Needed</p>
+                  <p class="fin-value text-[#5b21b6]">{{ formatCurrency(detailProject.total_amount_needed) }}</p>
                 </div>
-                <div class="fin-card bg-orange-50 border-orange-200">
-                  <p class="fin-label text-orange-600">Contingency</p>
-                  <p class="fin-value text-orange-900">{{ formatCurrency(detailProject.site_contingency) }}</p>
+                <div class="fin-card bg-[#fdf8ee] border-[#f3e0a3]">
+                  <p class="fin-label text-[#d7a12c]">Contingency</p>
+                  <p class="fin-value text-[#92702a]">{{ formatCurrency(detailProject.site_contingency) }}</p>
                 </div>
-                <div class="fin-card bg-indigo-50 border-indigo-200">
-                  <p class="fin-label text-indigo-600">Total Investment</p>
-                  <p class="fin-value text-indigo-900">{{ formatCurrency(detailProject.total_investment) }}</p>
+                <div class="fin-card bg-[#edf4fb] border-[#d9e6f3]">
+                  <p class="fin-label text-[#194f92]">Total Investment</p>
+                  <p class="fin-value text-[#183b63]">{{ formatCurrency(detailProject.total_investment) }}</p>
                 </div>
-                <div class="fin-card bg-emerald-50 border-emerald-200">
-                  <p class="fin-label text-emerald-600">Projected Profit</p>
-                  <p class="fin-value" :class="detailProject.projected_profit >= 0 ? 'text-emerald-700' : 'text-red-600'">
+                <div class="fin-card bg-[#f0fdf9] border-[#a7f3d0]">
+                  <p class="fin-label text-[#1f9d8b]">Projected Profit</p>
+                  <p class="fin-value" :class="detailProject.projected_profit >= 0 ? 'text-[#1f9d8b]' : 'text-[#d95f43]'">
                     {{ formatCurrency(detailProject.projected_profit) }}
                     <span class="text-xs font-normal opacity-80 ml-1">({{ detailProject.projected_profit_percentage || '—' }}%)</span>
                   </p>
@@ -323,33 +326,33 @@
               </div>
 
               <!-- Analysis Items Table -->
-              <div class="border border-gray-200 rounded-lg overflow-hidden">
-                <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-                  <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <i class="fas fa-list"></i>
+              <div class="border border-[#dbe7f3] rounded-2xl overflow-hidden">
+                <div class="bg-[#f7faff] px-4 py-3 border-b border-[#e4edf7] flex items-center justify-between">
+                  <h3 class="text-[13px] font-semibold text-[#183b63] flex items-center gap-2">
+                    <svg class="h-4 w-4 text-[#2f78dd]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
                     Analysis Items
                   </h3>
-                  <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  <span class="bg-[#edf4fb] text-[#2f78dd] text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
                     {{ detailProject.items?.length || 0 }} items
                   </span>
                 </div>
 
                 <div v-if="detailProject.items?.length" class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-100">
-                      <tr>
+                  <table class="min-w-full">
+                    <thead>
+                      <tr class="bg-[#f7faff] border-b border-[#e4edf7]">
                         <th class="th" style="min-width:60px;">S/N</th>
                         <th class="th" style="min-width:260px;">Description</th>
                         <th class="th text-center" colspan="4">
-                          <div class="text-xs font-semibold text-blue-700 mb-1">QUOTED PRICES (VAT EXCL)</div>
+                          <div class="text-[10px] font-semibold text-[#2f78dd] uppercase tracking-[0.18em] mb-1">QUOTED PRICES (VAT EXCL)</div>
                         </th>
                         <th class="th text-center" colspan="3">
-                          <div class="text-xs font-semibold text-green-700 mb-1">BUYING PRICES (VAT INCL)</div>
+                          <div class="text-[10px] font-semibold text-[#1f9d8b] uppercase tracking-[0.18em] mb-1">BUYING PRICES (VAT INCL)</div>
                         </th>
                         <th class="th" style="min-width:110px;">Source</th>
                         <th class="th text-center" style="min-width:90px;">Urgent</th>
                       </tr>
-                      <tr class="bg-gray-50">
+                      <tr class="bg-[#f7faff]/60">
                         <th class="th-sub"></th>
                         <th class="th-sub"></th>
                         <th class="th-sub">Q. Qty</th>
@@ -363,53 +366,55 @@
                         <th class="th-sub"></th>
                       </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
+                    <tbody class="divide-y divide-[#edf2fa] text-sm text-[#4a6a8a]">
                       <tr
                         v-for="item in detailProject.items"
                         :key="item.analysis_id"
-                        class="hover:bg-gray-50/60 transition-colors"
-                        :class="item.serial_number === 'No' ? 'bg-blue-50/50 border-t-2 border-blue-200' : ''"
+                        class="hover:bg-[#f7faff] transition-colors"
+                        :class="item.serial_number === 'No' ? 'bg-[#edf4fb]/50 border-t-2 border-[#2f78dd]/20' : ''"
                       >
-                        <td class="td text-center font-medium" :class="item.serial_number === 'No' ? 'text-blue-900' : ''">
+                        <td class="td text-center font-medium" :class="item.serial_number === 'No' ? 'text-[#194f92]' : ''">
                           {{ item.serial_number || '—' }}
                         </td>
-                        <td class="td" :class="item.serial_number === 'No' ? 'font-semibold text-blue-900' : ''">
+                        <td class="td" :class="item.serial_number === 'No' ? 'font-semibold text-[#194f92]' : ''">
                           <div class="max-w-xs truncate" :title="item.item_description">
                             {{ item.item_description || '—' }}
                           </div>
                         </td>
                         <td class="td text-center">{{ item.quoted_quantity || '—' }}</td>
                         <td class="td text-center">
-                          <span v-if="item.quoted_unit" class="px-2 py-0.5 bg-gray-100 rounded text-xs">{{ item.quoted_unit }}</span>
-                          <span v-else class="text-gray-400">—</span>
+                          <span v-if="item.quoted_unit" class="px-2 py-0.5 bg-[#edf4fb] rounded text-xs text-[#4a6a8a]">{{ item.quoted_unit }}</span>
+                          <span v-else class="text-[#a4b8cf]">—</span>
                         </td>
                         <td class="td text-right tabular-nums">{{ formatCurrency(item.quoted_rate) }}</td>
-                        <td class="td text-right font-medium text-blue-700 tabular-nums">{{ formatCurrency(item.quoted_amount) }}</td>
+                        <td class="td text-right font-medium text-[#2f78dd] tabular-nums">{{ formatCurrency(item.quoted_amount) }}</td>
                         <td class="td text-center">{{ item.quantity || '—' }}</td>
                         <td class="td text-right tabular-nums">{{ formatCurrency(item.rate) }}</td>
-                        <td class="td text-right font-medium text-green-700 tabular-nums">{{ formatCurrency(item.amount) }}</td>
-                        <td class="td text-center text-xs text-gray-600">{{ item.source || '—' }}</td>
+                        <td class="td text-right font-medium text-[#1f9d8b] tabular-nums">{{ formatCurrency(item.amount) }}</td>
+                        <td class="td text-center text-xs text-[#67819d]">{{ item.source || '—' }}</td>
                         <td class="td text-center">
                           <span
                             v-if="item.urgent_status"
                             :class="{
-                              'bg-red-100 text-red-700 font-semibold': item.urgent_status.toLowerCase() === 'yes',
-                              'bg-gray-100 text-gray-600': item.urgent_status.toLowerCase() !== 'yes'
+                              'bg-[#d95f43]/10 text-[#d95f43] font-semibold': item.urgent_status.toLowerCase() === 'yes',
+                              'bg-[#edf4fb] text-[#7d94ac]': item.urgent_status.toLowerCase() !== 'yes'
                             }"
                             class="px-2 py-0.5 rounded-full text-xs"
                           >
                             {{ item.urgent_status }}
                           </span>
-                          <span v-else class="text-gray-400">—</span>
+                          <span v-else class="text-[#a4b8cf]">—</span>
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
 
-                <div v-else class="p-8 text-center bg-gray-50">
-                  <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
-                  <p class="text-gray-500 text-sm">No analysis items found for this project</p>
+                <div v-else class="p-8 text-center bg-[#f7faff]">
+                  <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#edf4fb]">
+                    <svg class="h-6 w-6 text-[#7d94ac]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
+                  </div>
+                  <p class="text-[13px] text-[#7a93af]">No analysis items found for this project</p>
                 </div>
               </div>
 
@@ -424,20 +429,20 @@
     ══════════════════════════════════════════════ -->
     <div
       v-if="showDialog"
-      class="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
+      class="fixed inset-0 z-[60] bg-[#183b63]/40 backdrop-blur-[6px] flex items-center justify-center p-4"
       @click.self="closeDialog"
     >
-      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
-        <div class="p-6 border-b">
-          <h2 class="text-xl font-semibold text-gray-900">Review Project Analysis</h2>
+      <div class="rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)] shadow-[0_30px_70px_rgba(18,58,99,0.24)] max-w-md w-full overflow-hidden">
+        <div class="px-6 py-5 border-b border-[#e4edf7]">
+          <h2 class="text-lg font-semibold text-[#183b63]">Review Project Analysis</h2>
         </div>
 
         <div class="p-6 space-y-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Decision</label>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac] mb-2">Decision</label>
             <select
               v-model="approvalStatus"
-              class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500 outline-none transition-colors"
+              class="block w-full rounded-xl border border-[#d9e6f3] bg-white px-4 py-2.5 text-[#183b63] focus:border-[#2f78dd] focus:ring-2 focus:ring-[#2f78dd]/20 outline-none transition"
             >
               <option value="approved">Approve</option>
               <option value="rejected">Reject</option>
@@ -445,33 +450,33 @@
           </div>
 
           <div v-if="approvalStatus === 'rejected'">
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">
-              Reason for Rejection <span class="text-red-500">*</span>
+            <label class="block text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac] mb-2">
+              Reason for Rejection <span class="text-[#d95f43]">*</span>
             </label>
             <textarea
               v-model.trim="rejectionReason"
               rows="4"
-              class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-red-500 focus:ring-red-500 outline-none resize-y transition-colors"
+              class="block w-full rounded-xl border border-[#d9e6f3] bg-white px-4 py-2.5 text-[#183b63] focus:border-[#d95f43] focus:ring-2 focus:ring-[#d95f43]/20 outline-none resize-y transition placeholder:text-[#a4b8cf]"
               placeholder="Please explain the reason clearly..."
             ></textarea>
           </div>
         </div>
 
-        <div class="flex justify-end gap-3 px-6 py-4 border-t bg-gray-50">
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-[#e4edf7] bg-[#f7faff]">
           <button
             @click="closeDialog"
-            class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+            class="px-5 py-2.5 text-[13px] font-semibold text-[#4a6a8a] bg-white border border-[#d9e6f3] rounded-xl hover:bg-[#f7faff] transition"
           >
             Cancel
           </button>
           <button
             @click="submitApproval"
             :disabled="approvalStatus === 'rejected' && !rejectionReason.trim()"
-            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white rounded-lg transition-colors"
+            class="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold text-white rounded-xl transition shadow-sm"
             :class="{
-              'bg-green-600 hover:bg-green-700': approvalStatus === 'approved',
-              'bg-red-600 hover:bg-red-700': approvalStatus === 'rejected',
-              'opacity-60 cursor-not-allowed': approvalStatus === 'rejected' && !rejectionReason.trim()
+              'bg-[linear-gradient(135deg,#1f9d8b_0%,#34d399_100%)] hover:shadow-md': approvalStatus === 'approved',
+              'bg-[linear-gradient(135deg,#d95f43_0%,#ef8a6e_100%)] hover:shadow-md': approvalStatus === 'rejected',
+              'opacity-40 cursor-not-allowed': approvalStatus === 'rejected' && !rejectionReason.trim()
             }"
           >
             <i class="fa fa-check" v-if="approvalStatus === 'approved'"></i>
@@ -605,11 +610,11 @@ function formatCurrency(value) {
 
 function statusBadgeClass(status) {
   const map = {
-    pending:  'bg-amber-100 text-amber-800 border-amber-200',
-    approved: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    rejected: 'bg-rose-100 text-rose-800 border-rose-200'
+    pending:  'bg-[#fdf8ee] text-[#d7a12c] border-[#f3e0a3]',
+    approved: 'bg-[#f0fdf9] text-[#1f9d8b] border-[#a7f3d0]',
+    rejected: 'bg-[#fef5f3] text-[#d95f43] border-[#fecaca]'
   }
-  return map[status] || 'bg-gray-100 text-gray-700 border-gray-200'
+  return map[status] || 'bg-[#edf4fb] text-[#7d94ac] border-[#d9e6f3]'
 }
 
 function statusIconClass(status) {
@@ -772,7 +777,7 @@ function exportToPDF() {
           body: tableData,
           startY: yPosition,
           theme: 'grid',
-          headStyles: { fillColor: [59, 130, 246], fontSize: 8, fontStyle: 'bold', cellPadding: 2 },
+          headStyles: { fillColor: [25, 79, 146], fontSize: 8, fontStyle: 'bold', cellPadding: 2 },
           styles: { fontSize: 7, cellPadding: 2, lineColor: [229, 231, 235], lineWidth: 0.1 },
           alternateRowStyles: { fillColor: [249, 250, 251] },
           columnStyles: {
@@ -804,34 +809,34 @@ function exportToPDF() {
 
 <style scoped>
 .th {
-  @apply px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider;
+  @apply px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac];
 }
 
 .th-sub {
-  @apply px-4 py-2 text-left text-xs font-medium text-gray-600;
+  @apply px-4 py-2 text-left text-[10px] font-medium text-[#7d94ac];
 }
 
 .td {
-  @apply px-4 py-3 text-sm text-gray-900 whitespace-nowrap;
+  @apply px-4 py-3 text-sm text-[#183b63] whitespace-nowrap;
 }
 
 /* View Button */
 .view-btn {
-  @apply inline-flex items-center px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-all duration-200 shadow-sm;
+  @apply inline-flex items-center px-3 py-1.5 text-xs font-semibold text-[#2f78dd] bg-[#edf4fb] border border-[#d9e6f3] rounded-lg hover:bg-[#194f92] hover:text-white hover:border-[#194f92] focus:outline-none focus:ring-2 focus:ring-[#2f78dd]/30 focus:ring-offset-1 transition-all duration-200 shadow-sm;
 }
 
 /* Review Button */
 .review-btn {
-  @apply inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 shadow-sm;
+  @apply inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] rounded-lg hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#2f78dd]/30 focus:ring-offset-1 transition-all duration-200 shadow-sm;
 }
 
 /* Financial card in modal */
 .fin-card {
-  @apply border rounded-lg p-4;
+  @apply border rounded-xl p-4;
 }
 
 .fin-label {
-  @apply text-xs font-semibold uppercase tracking-wide mb-1;
+  @apply text-[10px] font-semibold uppercase tracking-[0.18em] mb-1;
 }
 
 .fin-value {
@@ -844,11 +849,11 @@ function exportToPDF() {
 
 /* Scrollbars */
 .overflow-x-auto::-webkit-scrollbar { height: 8px; }
-.overflow-x-auto::-webkit-scrollbar-thumb { background-color: #cbd5e0; border-radius: 4px; }
-.overflow-x-auto::-webkit-scrollbar-track { background-color: #f7fafc; }
+.overflow-x-auto::-webkit-scrollbar-thumb { background-color: #d9e6f3; border-radius: 4px; }
+.overflow-x-auto::-webkit-scrollbar-track { background-color: #f7faff; }
 .overflow-y-auto::-webkit-scrollbar { width: 6px; }
-.overflow-y-auto::-webkit-scrollbar-thumb { background-color: #cbd5e0; border-radius: 4px; }
-.overflow-y-auto::-webkit-scrollbar-track { background-color: #f7fafc; }
+.overflow-y-auto::-webkit-scrollbar-thumb { background-color: #d9e6f3; border-radius: 4px; }
+.overflow-y-auto::-webkit-scrollbar-track { background-color: #f7faff; }
 
 /* Modal transition */
 .modal-enter-active,

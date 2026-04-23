@@ -1,15 +1,20 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+  <div class="min-h-screen font-['DM_Sans',sans-serif] p-6" style="background:radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%)">
     <div class="max-w-7xl mx-auto">
       <!-- Header Section -->
-      <div class="mb-8">
+      <div class="mb-8 rounded-2xl px-6 py-5 shadow-sm border border-[#dce7f3]" style="background:linear-gradient(135deg,#eef5ff 0%,#ffffff 46%,#f7fbff 100%)">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Insurance Bonds</h1>
-            <p class="text-gray-600">Manage and view all insurance bond records</p>
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-2xl bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] flex items-center justify-center text-white shadow-md">
+              <i class="fas fa-shield-alt text-lg"></i>
+            </div>
+            <div>
+              <h1 class="text-xl md:text-2xl font-bold text-[#183b63]">Insurance Bonds</h1>
+              <p class="text-[13px] text-[#7a93af]">Manage and view all insurance bond records</p>
+            </div>
           </div>
           <router-link to="/create/insurance-bond">
-            <button class="bg-slate-800 hover:bg-slate-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg shadow-slate-600/30 transition-all duration-200 flex items-center gap-2 hover:scale-105">
+            <button class="bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-[0_12px_24px_rgba(35,96,182,0.22)] hover:shadow-lg transition-all flex items-center gap-2">
               <i class="fas fa-plus"></i>
               <span>Create Insurance Bond</span>
             </button>
@@ -18,103 +23,88 @@
       </div>
 
       <!-- Search and Export Controls -->
-      <div class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-200">
+      <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm border border-[#dce7f3]">
         <div class="flex flex-col md:flex-row md:items-center gap-4">
-          <!-- Search Input -->
           <div class="flex-1 relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+              <i class="fas fa-search text-[#a4b8cf]"></i>
             </div>
             <input
               type="text"
               v-model="filter"
               placeholder="Search by tender, email, or date..."
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition"
+              class="w-full pl-10 pr-4 py-2.5 border border-[#d9e6f3] rounded-xl focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition text-[#183b63] placeholder:text-[#a4b8cf]"
             />
           </div>
-
-          <!-- Export Buttons -->
           <div class="flex gap-3">
             <button
               @click="exportToExcel"
-              class="bg-green-50 hover:bg-green-100 text-green-700 font-medium px-5 py-3 rounded-lg border border-green-200 transition-all duration-200 flex items-center gap-2 hover:shadow-md"
+              class="px-4 py-2.5 rounded-xl font-semibold text-sm border border-[#1f9d8b]/30 text-[#1f9d8b] bg-[#edfaf7] hover:bg-[#d4f3ec] transition-all flex items-center gap-2"
             >
-              <i class="fas fa-file-excel text-green-600"></i>
-              <span class="hidden sm:inline">Export Excel</span>
+              <i class="fas fa-file-excel"></i>
+              <span class="hidden sm:inline">Excel</span>
             </button>
             <button
               @click="exportToPDF"
-              class="bg-red-50 hover:bg-red-100 text-red-700 font-medium px-5 py-3 rounded-lg border border-red-200 transition-all duration-200 flex items-center gap-2 hover:shadow-md"
+              class="px-4 py-2.5 rounded-xl font-semibold text-sm border border-[#e87461]/30 text-[#e87461] bg-[#fef2f0] hover:bg-[#fde3df] transition-all flex items-center gap-2"
             >
-              <i class="fas fa-file-pdf text-red-600"></i>
-              <span class="hidden sm:inline">Export PDF</span>
+              <i class="fas fa-file-pdf"></i>
+              <span class="hidden sm:inline">PDF</span>
             </button>
           </div>
         </div>
-
-        <!-- Results Count -->
-        <div class="mt-4 text-sm text-gray-600">
-          Showing <span class="font-semibold text-gray-800">{{ paginatedData.length }}</span> of 
-          <span class="font-semibold text-gray-800">{{ filteredData.length }}</span> results
+        <div class="mt-4 text-[13px] text-[#7a93af]">
+          Showing <span class="font-semibold text-[#183b63]">{{ paginatedData.length }}</span> of 
+          <span class="font-semibold text-[#183b63]">{{ filteredData.length }}</span> results
         </div>
       </div>
 
       <!-- Table Section -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#dce7f3]">
         <div class="overflow-x-auto">
           <table class="w-full">
-            <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+            <thead class="bg-[#f7faff]">
               <tr>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  No
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Tender Title
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Bond File
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Receiver Email
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Created At
-                </th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">No</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Tender Title</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Bond File</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Receiver Email</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Created At</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-[#edf2fa]">
               <tr
                 v-for="(insuranceBond, index) in paginatedData"
                 :key="insuranceBond.insurance_id"
-                class="hover:bg-slate-50/50 transition-colors duration-150"
+                class="hover:bg-[#f7faff] transition-colors"
               >
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#67819d] font-medium">
                   {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-800">
+                <td class="px-6 py-4 text-sm text-[#183b63]">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 bg-slate-500 rounded-full"></div>
-                    <span class="font-medium">{{ insuranceBond.tender.title }}</span>
+                    <div class="w-2 h-2 bg-[#2f78dd] rounded-full"></div>
+                    <span class="font-semibold">{{ insuranceBond.tender.title }}</span>
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <button
                     @click="downloadInsuranceFile(insuranceBond.insurance_file)"
-                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm shadow-sm hover:shadow-md"
+                    class="bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] hover:shadow-md text-white font-semibold px-4 py-2 rounded-xl transition-all flex items-center gap-2 text-sm shadow-sm"
                   >
                     <i class="fas fa-download"></i>
                     <span>Download PDF</span>
                   </button>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700">
+                <td class="px-6 py-4 text-sm text-[#4a6a8a]">
                   <div class="flex items-center gap-2">
-                    <i class="fas fa-envelope text-gray-400 text-xs"></i>
+                    <i class="fas fa-envelope text-[#a4b8cf] text-xs"></i>
                     <span>{{ insuranceBond.receiver_email || 'N/A' }}</span>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4a6a8a]">
                   <div class="flex items-center gap-2">
-                    <i class="fas fa-calendar text-gray-400 text-xs"></i>
+                    <i class="fas fa-calendar text-[#a4b8cf] text-xs"></i>
                     <span>{{ formatDate(insuranceBond.created_at) }}</span>
                   </div>
                 </td>
@@ -122,11 +112,13 @@
 
               <!-- Empty State -->
               <tr v-if="paginatedData.length === 0">
-                <td colspan="5" class="px-6 py-12 text-center">
+                <td colspan="5" class="px-6 py-16 text-center">
                   <div class="flex flex-col items-center justify-center">
-                    <i class="fas fa-inbox text-gray-300 text-5xl mb-4"></i>
-                    <p class="text-gray-500 text-lg font-medium mb-1">No insurance bonds found</p>
-                    <p class="text-gray-400 text-sm">Try adjusting your search criteria</p>
+                    <div class="w-14 h-14 bg-[#edf4fb] rounded-2xl flex items-center justify-center mb-4">
+                      <i class="fas fa-inbox text-[#7d94ac] text-2xl"></i>
+                    </div>
+                    <p class="text-[#183b63] text-[15px] font-semibold mb-2">No insurance bonds found</p>
+                    <p class="text-[#7a93af] text-[13px]">Try adjusting your search criteria</p>
                   </div>
                 </td>
               </tr>
@@ -135,18 +127,18 @@
         </div>
 
         <!-- Pagination -->
-        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+        <div class="bg-[#f7faff] px-6 py-4 border-t border-[#e4edf7]">
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="text-sm text-gray-600">
-              Page <span class="font-semibold text-gray-800">{{ currentPage }}</span> of 
-              <span class="font-semibold text-gray-800">{{ totalPages }}</span>
+            <div class="text-[13px] text-[#7a93af]">
+              Page <span class="font-semibold text-[#183b63]">{{ currentPage }}</span> of 
+              <span class="font-semibold text-[#183b63]">{{ totalPages }}</span>
             </div>
             
             <div class="flex items-center gap-2">
               <button
                 @click="changePage(1)"
                 :disabled="currentPage === 1"
-                class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                class="px-3 py-2 rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 disabled:cursor-not-allowed transition"
                 title="First Page"
               >
                 <i class="fas fa-angle-double-left"></i>
@@ -155,7 +147,7 @@
               <button
                 @click="changePage(currentPage - 1)"
                 :disabled="currentPage === 1"
-                class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                class="px-4 py-2 rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-2"
               >
                 <i class="fas fa-chevron-left text-sm"></i>
                 <span class="hidden sm:inline">Previous</span>
@@ -168,10 +160,10 @@
                   :key="page"
                   @click="changePage(page)"
                   :class="[
-                    'px-4 py-2 rounded-lg border transition',
+                    'px-4 py-2 rounded-xl border transition',
                     page === currentPage
-                      ? 'bg-slate-800 text-white border-slate-600 font-semibold'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      ? 'bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white border-[#2f78dd] font-semibold shadow-md'
+                      : 'bg-white text-[#4a6a8a] border-[#d9e6f3] hover:bg-[#f7faff]'
                   ]"
                 >
                   {{ page }}
@@ -181,7 +173,7 @@
               <button
                 @click="changePage(currentPage + 1)"
                 :disabled="currentPage >= totalPages"
-                class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                class="px-4 py-2 rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-2"
               >
                 <span class="hidden sm:inline">Next</span>
                 <i class="fas fa-chevron-right text-sm"></i>
@@ -190,7 +182,7 @@
               <button
                 @click="changePage(totalPages)"
                 :disabled="currentPage >= totalPages"
-                class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                class="px-3 py-2 rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 disabled:cursor-not-allowed transition"
                 title="Last Page"
               >
                 <i class="fas fa-angle-double-right"></i>

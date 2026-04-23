@@ -1,6 +1,11 @@
 <template>
   <div class="view-minutes-container">
     <div class="page-header">
+      <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-bottom:0.5rem;">
+        <div style="width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-file-alt" style="font-size:18px;color:#fff;"></i>
+        </div>
+      </div>
       <h2 class="page-title">Tender Meeting Minutes</h2>
       <p class="page-subtitle">View and manage meeting minutes</p>
     </div>
@@ -396,7 +401,7 @@ const exportToPDF = () => {
       halign: 'left'
     },
     headStyles: {
-      fillColor: [59, 130, 246],
+      fillColor: [25, 79, 146],
       textColor: 255,
       fontStyle: 'bold'
     },
@@ -443,6 +448,9 @@ onMounted(() => {
   max-width: 1440px;
   margin: 0 auto;
   padding: 1.5rem 2rem;
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  background: radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%);
 }
 
 .page-header {
@@ -453,11 +461,11 @@ onMounted(() => {
 .page-title {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #183b63;
 }
 
 .page-subtitle {
-  color: #64748b;
+  color: #7a93af;
   font-size: 0.95rem;
 }
 
@@ -484,7 +492,7 @@ onMounted(() => {
 
 .filter-label {
   font-weight: 600;
-  color: #334155;
+  color: #183b63;
   margin-bottom: 0.4rem;
   display: flex;
   align-items: center;
@@ -494,15 +502,16 @@ onMounted(() => {
 .filter-input {
   width: 100%;
   padding: 0.6rem 0.9rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border: 1px solid #d9e6f3;
+  border-radius: 12px;
   font-size: 0.9rem;
+  color: #183b63;
 }
 
 .filter-input:focus {
-  border-color: #3b82f6;
+  border-color: #2f78dd;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 3px rgba(47, 120, 221, 0.12);
 }
 
 .export-buttons {
@@ -513,34 +522,39 @@ onMounted(() => {
 .btn-export {
   padding: 0.6rem 1.2rem;
   font-size: 0.9rem;
-  border-radius: 6px;
-  color: white;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.15s;
+  font-weight: 600;
 }
 
 .btn-export.pdf {
-  background: #dc2626;
+  background: #fef2f0;
+  color: #e87461;
+  border: 1px solid rgba(232, 116, 97, 0.3);
 }
 
 .btn-export.pdf:hover {
-  background: #b91c1c;
+  background: #fde3df;
 }
 
 .btn-export.excel {
-  background: #15803d;
+  background: #edfaf7;
+  color: #1f9d8b;
+  border: 1px solid rgba(31, 157, 139, 0.3);
 }
 
 .btn-export.excel:hover {
-  background: #166534;
+  background: #d4f3ec;
 }
 
 .table-container {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  border: 1px solid #dce7f3;
+  box-shadow: 0 4px 24px rgba(25, 79, 146, 0.06);
   overflow: hidden;
 }
 
@@ -558,13 +572,13 @@ onMounted(() => {
 .minutes-table td {
   padding: 1rem 1.1rem;
   text-align: left;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #edf2fa;
 }
 
 .minutes-table th {
-  background: #f8fafc;
+  background: #f7faff;
   font-weight: 600;
-  color: #1e293b;
+  color: #7d94ac;
   text-transform: uppercase;
   font-size: 0.78rem;
   letter-spacing: 0.4px;
@@ -578,28 +592,28 @@ onMounted(() => {
 .sortable i {
   margin-left: 0.5rem;
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: #a4b8cf;
 }
 
 .minutes-table td {
-  color: #475569;
+  color: #4a6a8a;
   vertical-align: top;
 }
 
 .table-row:nth-child(even) {
-  background: #f9fafb;
+  background: #fafcff;
 }
 
 .table-row:hover {
-  background: #f1f5f9;
+  background: #f7faff;
 }
 
 .title strong {
-  color: #1e293b;
+  color: #183b63;
 }
 
 .date {
-  color: #64748b;
+  color: #7a93af;
   white-space: nowrap;
 }
 
@@ -610,10 +624,10 @@ onMounted(() => {
 }
 
 .attendee-tag {
-  background: #e0f2fe;
-  color: #1e40af;
+  background: #edf4fb;
+  color: #194f92;
   padding: 0.25rem 0.6rem;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 0.78rem;
   white-space: nowrap;
 }
@@ -637,28 +651,28 @@ onMounted(() => {
 .btn {
   padding: 0.45rem 0.8rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .btn-view {
-  background: #6366f1;
+  background: linear-gradient(135deg, #194f92 0%, #2f78dd 100%);
   color: white;
 }
 
 .btn-view:hover {
-  background: #4f46e5;
+  box-shadow: 0 4px 12px rgba(35, 96, 182, 0.25);
 }
 
 .btn-edit {
-  background: #3b82f6;
-  color: white;
+  background: #edf4fb;
+  color: #2f78dd;
 }
 
 .btn-edit:hover {
-  background: #2563eb;
+  background: #dce7f3;
 }
 
 .btn-delete {
@@ -676,20 +690,22 @@ onMounted(() => {
   align-items: center;
   gap: 1rem;
   padding: 1.25rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #edf2fa;
 }
 
 .pagination-btn {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: white;
+  border: 1px solid #d9e6f3;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
+  color: #4a6a8a;
   transition: all 0.15s;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: #e2e8f0;
+  background: #f7faff;
+  border-color: #2f78dd;
 }
 
 .pagination-btn:disabled {
@@ -698,7 +714,7 @@ onMounted(() => {
 }
 
 .pagination-info {
-  color: #64748b;
+  color: #7a93af;
   font-size: 0.9rem;
 }
 
@@ -706,7 +722,7 @@ onMounted(() => {
 .loading-state {
   text-align: center;
   padding: 5rem 1rem;
-  color: #64748b;
+  color: #7a93af;
 }
 
 .empty-state i,
@@ -719,8 +735,8 @@ onMounted(() => {
 .loading-spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid #e2e8f0;
-  border-top-color: #3b82f6;
+  border: 4px solid #dce7f3;
+  border-top-color: #2f78dd;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -760,24 +776,25 @@ onMounted(() => {
 
 .modal-content {
   background: white;
-  border-radius: 10px;
+  border-radius: 16px;
   padding: 2rem;
   max-width: 600px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  border: 1px solid #dce7f3;
 }
 
 .modal-title {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  color: #1e293b;
+  color: #183b63;
 }
 
 .modal-body p {
   margin-bottom: 1rem;
-  color: #475569;
+  color: #4a6a8a;
 }
 
 .modal-body ul {
@@ -787,36 +804,28 @@ onMounted(() => {
 }
 
 .btn-close {
-  background: #6b7280;
+  background: linear-gradient(135deg, #194f92 0%, #2f78dd 100%);
   color: white;
   width: 100%;
   margin-top: 1.5rem;
   padding: 0.75rem;
+  border-radius: 12px;
 }
 
 .btn-close:hover {
-  background: #4b5563;
-}
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
+  box-shadow: 0 4px 12px rgba(35, 96, 182, 0.25);
 }
 
 .modal-content {
   background: white;
-  border-radius: 10px;
+  border-radius: 16px;
   padding: 2rem;
   max-width: 600px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  border: 1px solid #dce7f3;
 }
 
 .modal-header {
@@ -844,7 +853,7 @@ onMounted(() => {
 .modal-title {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  color: #1e293b;
+  color: #183b63;
 }
 
 .modal-body {
@@ -852,17 +861,17 @@ onMounted(() => {
 }
 
 .modal-message {
-  color: #475569;
+  color: #4a6a8a;
   margin-bottom: 1.5rem;
   text-align: center;
   font-size: 1rem;
 }
 
 .record-details {
-  background: #f8fafc;
+  background: #f7faff;
   padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  border: 1px solid #dce7f3;
   margin-bottom: 1.5rem;
 }
 
@@ -873,12 +882,12 @@ onMounted(() => {
 }
 
 .detail-label {
-  color: #64748b;
+  color: #7a93af;
   font-weight: 500;
 }
 
 .detail-value {
-  color: #1e293b;
+  color: #183b63;
   font-weight: 600;
 }
 
@@ -890,7 +899,7 @@ onMounted(() => {
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.15s;
@@ -898,12 +907,13 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  background: #6b7280;
-  color: white;
+  background: white;
+  color: #4a6a8a;
+  border: 1px solid #d9e6f3;
 }
 
 .btn-secondary:hover {
-  background: #4b5563;
+  background: #f7faff;
 }
 
 .btn-danger {

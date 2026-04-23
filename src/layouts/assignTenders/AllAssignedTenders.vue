@@ -1,130 +1,87 @@
 <template>
-  <div class="assigned-tenders py-8 md:py-10 bg-gray-50 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Header -->
-      <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Assigned Tenders</h1>
-          <p class="mt-1 text-gray-600">View and manage tenders assigned to engineers</p>
-        </div>
+  <div class="min-h-screen bg-[#edf4fb] px-4 py-4 lg:px-5">
+    <div class="mx-auto max-w-[1580px]">
 
+      <!-- Header -->
+      <div class="mb-5 flex items-start justify-between gap-4">
+        <div class="flex min-w-0 items-start gap-4">
+          <div class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white shadow-[0_16px_34px_rgba(35,96,182,0.26)]">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+          </div>
+          <div class="min-w-0">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#2d6aaf]">Engineer Portal</p>
+            <h1 class="mt-1 text-2xl font-bold tracking-tight text-[#183b63] lg:text-[28px]">Assigned Tenders</h1>
+            <p class="mt-1.5 max-w-2xl text-sm leading-6 text-[#67819d]">View and manage tenders assigned to engineers</p>
+          </div>
+        </div>
         <router-link to="/assign-tender">
-          <button class="btn-primary flex items-center gap-2">
-            <i class="fas fa-plus"></i>
+          <button class="inline-flex items-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(35,96,182,0.24)] transition-all hover:brightness-105">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
             Assign Tender
           </button>
         </router-link>
       </div>
 
-      <!-- Controls -->
-      <div class="mb-6 bg-white shadow rounded-lg p-4 border border-gray-200">
-        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div class="relative flex-1">
-            <input
-              v-model="filter"
-              type="text"
-              placeholder="Search by title, engineer, or tender number..."
-              class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-            />
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-          </div>
+      <!-- Search -->
+      <div class="mb-4 rounded-2xl border border-[#d9e6f3] bg-white/95 px-5 py-3 shadow-[0_8px_18px_rgba(18,58,99,0.05)]">
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#87a0bb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <input v-model="filter" type="text" placeholder="Search by title, engineer, or tender number..."
+            class="w-full rounded-xl border border-[#d7e4f1] bg-white px-4 py-2.5 pl-10 text-sm text-[#183b63] placeholder-[#99afc5] shadow-[inset_0_1px_2px_rgba(14,40,79,0.04)] focus:border-[#2b74d7] focus:outline-none focus:ring-4 focus:ring-[#2b74d7]/12" />
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="isLoading" class="bg-white shadow rounded-xl p-12 text-center">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-blue-600 border-gray-200"></div>
-        <p class="mt-4 text-gray-600">Loading assigned tenders...</p>
+      <!-- Loading -->
+      <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
+        <div class="h-10 w-10 animate-spin rounded-full border-[3px] border-[#2b74d7] border-t-transparent"></div>
+        <p class="mt-4 text-sm text-[#7a93af]">Loading assigned tenders...</p>
       </div>
 
-      <!-- Empty State -->
-      <div v-else-if="paginatedData.length === 0" class="bg-white shadow rounded-xl p-12 text-center">
-        <i class="fas fa-folder-open text-6xl text-gray-300 mb-4"></i>
-        <h3 class="text-xl font-medium text-gray-700">No assigned tenders found</h3>
-        <p class="mt-2 text-gray-500">
-          {{ filter ? 'Try adjusting your search.' : 'Get started by assigning a new tender.' }}
-        </p>
-        <router-link to="/assign-tender" class="mt-6 inline-block btn-primary">
-          Assign Tender
-        </router-link>
+      <!-- Empty -->
+      <div v-else-if="paginatedData.length === 0" class="rounded-[24px] border border-[#d9e6f3] bg-white p-12 text-center shadow-sm">
+        <div class="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-[#e9f2ff] shadow-inner">
+          <svg class="w-7 h-7 text-[#2b74d7]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </div>
+        <p class="text-sm font-semibold text-[#183b63]">No assigned tenders found</p>
+        <p class="mt-1 text-xs text-[#8aa0b7]">{{ filter ? 'Try adjusting your search.' : 'Get started by assigning a new tender.' }}</p>
       </div>
 
       <!-- Table -->
-      <div v-else class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
+      <div v-else class="overflow-hidden rounded-[24px] border border-[#d9e6f3] bg-white shadow-[0_14px_34px_rgba(18,58,99,0.08)]">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">No</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Title</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tender Type</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Procurement Entity</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tender Number</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Publication Date</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Submission Date</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Engineer</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Attachment</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-[#e6eef7] bg-[#f7faff]">
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">No</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Title</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Type</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Procurement Entity</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Number</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Published</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Submission</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Status</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Engineer</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">File</th>
+                <th class="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Action</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="(tender, index) in paginatedData"
-                :key="tender.assign_id"
-                class="hover:bg-gray-50 transition-colors"
-              >
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ (currentPage - 1) * itemsPerPage + index + 1 }}
+            <tbody class="divide-y divide-[#edf2f7]">
+              <tr v-for="(tender, index) in paginatedData" :key="tender.assign_id" class="transition-colors hover:bg-[#f7faff]">
+                <td class="px-5 py-3.5 text-[#7d94ac]">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                <td class="px-5 py-3.5 font-semibold text-[#183b63]">{{ tender.title || '—' }}</td>
+                <td class="px-5 py-3.5 capitalize text-[#4d6782]">{{ tender.tender_type || '—' }}</td>
+                <td class="px-5 py-3.5 text-[#4d6782]">{{ tender.procurement_entity || '—' }}</td>
+                <td class="px-5 py-3.5 text-[#4d6782]">{{ tender.tender_number || '—' }}</td>
+                <td class="px-5 py-3.5 text-[#6f86a0]">{{ formatDate(tender.date_of_Publication) }}</td>
+                <td class="px-5 py-3.5 text-[#6f86a0]">{{ formatDate(tender.bid_submission) }}</td>
+                <td class="px-5 py-3.5"><span :class="getStatusClass(tender)" class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold">{{ getStatusText(tender) }}</span></td>
+                <td class="px-5 py-3.5 text-[#4d6782]">{{ tender.user_name || '—' }}</td>
+                <td class="px-5 py-3.5">
+                  <button v-if="tender.attachment" @click="downloadFile(tender.attachment)" class="rounded-xl border border-[#d5e3f0] bg-[#f7faff] px-3 py-1 text-xs font-semibold text-[#1f5aa6] hover:bg-[#eef5ff]">Download</button>
+                  <span v-else class="text-[#a3b5c8]">—</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {{ tender.title || '—' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">
-                  {{ tender.tender_type || '—' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {{ tender.procurement_entity || '—' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {{ tender.tender_number || '—' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {{ formatDate(tender.date_of_Publication) || '—' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {{ formatDate(tender.bid_submission) || '—' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    class="inline-flex px-3 py-1 text-xs font-semibold rounded-full"
-                    :class="getStatusClass(tender)"
-                  >
-                    {{ getStatusText(tender) }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {{ tender.user_name || '—' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <button
-                    v-if="tender.attachment"
-                    @click="downloadFile(tender.attachment)"
-                    class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100 transition"
-                  >
-                    <i class="fas fa-download mr-1.5"></i>
-                    Download
-                  </button>
-                  <span v-else class="text-gray-400">—</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button
-                    @click="editAssignedTender(tender.assign_id)"
-                    class="text-indigo-600 hover:text-indigo-900 transition"
-                    title="Edit"
-                  >
-                    <i class="fas fa-edit text-lg"></i>
-                  </button>
+                <td class="px-5 py-3.5">
+                  <button @click="editAssignedTender(tender.assign_id)" class="rounded-xl border border-[#d5e3f0] bg-[#f7faff] px-3 py-1 text-xs font-semibold text-[#1f5aa6] hover:bg-[#eef5ff]" title="Edit">Edit</button>
                 </td>
               </tr>
             </tbody>
@@ -132,27 +89,15 @@
         </div>
 
         <!-- Pagination -->
-        <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200 bg-gray-50">
-          <div class="text-sm text-gray-700">
-            Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
-            <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredData.length) }}</span> of
-            <span class="font-medium">{{ filteredData.length }}</span> tenders
-          </div>
-
-          <div class="flex gap-2">
-            <button
-              :disabled="currentPage === 1"
-              @click="changePage(currentPage - 1)"
-              class="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
-            >
-              Previous
+        <div class="flex items-center justify-between border-t border-[#e6eef7] bg-[#f9fbff] px-5 py-3">
+          <p class="text-xs text-[#7a93af]">{{ (currentPage - 1) * itemsPerPage + 1 }}–{{ Math.min(currentPage * itemsPerPage, filteredData.length) }} of {{ filteredData.length }}</p>
+          <div class="flex items-center gap-1">
+            <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1" class="rounded-lg border border-[#d7e4f1] p-1.5 text-[#6f86a0] hover:bg-[#f3f8ff] disabled:opacity-40">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <button
-              :disabled="currentPage * itemsPerPage >= filteredData.length"
-              @click="changePage(currentPage + 1)"
-              class="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
-            >
-              Next
+            <span class="px-2 text-xs font-medium text-[#4d6782]">{{ currentPage }}</span>
+            <button @click="changePage(currentPage + 1)" :disabled="currentPage * itemsPerPage >= filteredData.length" class="rounded-lg border border-[#d7e4f1] p-1.5 text-[#6f86a0] hover:bg-[#f3f8ff] disabled:opacity-40">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
         </div>
@@ -227,29 +172,27 @@ function changePage(page) {
 
 function getStatusText(tender) {
   if (tender.is_assigned === 'submitted') return 'Submitted'
+  if (tender.is_assigned === 'awarded') return 'Awarded'
+  if (tender.is_assigned === 'approved') return 'Approved'
+  if (tender.is_assigned === 'rejected') return 'Rejected'
+  if (tender.is_assigned === 'quoted') return 'Quoted'
   return 'Due: ' + formatDate(tender.expired_at)
 }
 
 function getStatusClass(tender) {
-  if (tender.is_assigned === 'submitted') {
-    return 'bg-green-100 text-green-800 border border-green-200'
-  }
-
-  if (!tender.expired_at) return 'bg-gray-100 text-gray-800'
-
+  if (tender.is_assigned === 'submitted') return 'bg-emerald-100 text-emerald-700'
+  if (tender.is_assigned === 'awarded') return 'bg-[#e6f7f4] text-[#166d62]'
+  if (tender.is_assigned === 'approved') return 'bg-green-100 text-green-700'
+  if (tender.is_assigned === 'rejected') return 'bg-red-100 text-red-700'
+  if (tender.is_assigned === 'quoted') return 'bg-indigo-100 text-indigo-700'
+  if (!tender.expired_at) return 'bg-[#edf4ff] text-[#2d6aaf]'
   const now = new Date()
   const expiry = new Date(tender.expired_at)
   const diffDays = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24))
-
-  if (now > expiry) {
-    return 'bg-red-100 text-red-800 border border-red-200'
-  } else if (diffDays <= 3) {
-    return 'bg-orange-100 text-orange-800 border border-orange-200'
-  } else if (diffDays <= 7) {
-    return 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-  } else {
-    return 'bg-green-100 text-green-800 border border-green-200'
-  }
+  if (now > expiry) return 'bg-red-100 text-red-700'
+  if (diffDays <= 3) return 'bg-amber-100 text-amber-700'
+  if (diffDays <= 7) return 'bg-amber-50 text-amber-600'
+  return 'bg-green-100 text-green-700'
 }
 
 function formatDate(dateStr) {
@@ -274,49 +217,3 @@ function editAssignedTender(assignId) {
   router.push({ name: 'EditAssignedTender', params: { assign_id: assignId } })
 }
 </script>
-
-<style scoped>
-.btn-primary {
-  background-color: #1e293b;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary:hover {
-  background-color: #0f172a;
-}
-
-.btn-export {
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-  border: 1px solid;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn-export.excel {
-  border-color: #16a34a;
-  color: #166534;
-}
-
-.btn-export.excel:hover {
-  background-color: #f0fdf4;
-}
-
-.btn-export.pdf {
-  border-color: #dc2626;
-  color: #991b1b;
-}
-
-.btn-export.pdf:hover {
-  background-color: #fef2f2;
-}
-</style>

@@ -1,25 +1,30 @@
 <template>
-  <div class="page" style="font-family: 'cygre', sans-serif; background: var(--bg-page, #f5f6f7); min-height: 100vh;">
+  <div class="page" style="font-family: 'DM Sans', sans-serif; background: radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%); min-height: 100vh;">
     <!-- Header -->
-    <div style="background: #fff; border-bottom: 1px solid #e8e8e8; padding: 0.875rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; position: sticky; top: 0; z-index: 10;">
-      <button @click="goBack" style="width:32px;height:32px;border-radius:8px;border:1px solid #e0e0e0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#666;flex-shrink:0;">
+    <div style="background: linear-gradient(135deg,#eef5ff 0%,#ffffff 46%,#f7fbff 100%); border-bottom: 1px solid #dce7f3; padding: 0.875rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; position: sticky; top: 0; z-index: 10;">
+      <button @click="goBack" style="width:32px;height:32px;border-radius:8px;border:1px solid #d9e6f3;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#4a6a8a;flex-shrink:0;">
         <i class="fa fa-arrow-left" style="font-size:12px;"></i>
       </button>
-      <div>
-        <h1 style="font-size:15px;font-weight:600;color:#1a1a1a;margin:0;">Create Tender Update</h1>
-        <p style="font-size:12px;color:#888;margin:2px 0 0;">Submit updates for tender activities</p>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-edit" style="font-size:14px;color:#fff;"></i>
+        </div>
+        <div>
+          <h1 style="font-size:15px;font-weight:600;color:#183b63;margin:0;">Create Tender Update</h1>
+          <p style="font-size:12px;color:#7a93af;margin:2px 0 0;">Submit updates for tender activities</p>
+        </div>
       </div>
     </div>
 
     <!-- Form -->
     <div style="max-width: 600px; margin: 1.5rem auto; padding: 0 1.25rem 2rem;">
       <form @submit.prevent="submitUpdate">
-        <div style="background:#fff;border:1px solid #e8e8e8;border-radius:12px;overflow:hidden;">
+        <div style="background:#fff;border:1px solid #dce7f3;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(25,79,146,0.06);">
           <div style="padding:1.25rem;display:flex;flex-direction:column;gap:1rem;">
 
             <!-- Title -->
             <div>
-              <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">
+              <label style="display:block;font-size:11px;font-weight:600;color:#7d94ac;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.1em;">
                 Title <span style="color:#e53e3e;">*</span>
               </label>
               <input
@@ -33,7 +38,7 @@
 
             <!-- Description -->
             <div>
-              <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">
+              <label style="display:block;font-size:11px;font-weight:600;color:#7d94ac;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.1em;">
                 Description <span style="color:#e53e3e;">*</span>
               </label>
               <textarea
@@ -50,7 +55,7 @@
 
             <!-- Priority -->
             <div>
-              <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">Priority</label>
+              <label style="display:block;font-size:11px;font-weight:600;color:#7d94ac;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.1em;">Priority</label>
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;">
                 <div
                   v-for="p in priorities"
@@ -64,13 +69,13 @@
               </div>
             </div>
 
-            <div style="height:1px;background:#f0f0f0;margin:0 -1.25rem;"></div>
+            <div style="height:1px;background:#edf2fa;margin:0 -1.25rem;"></div>
 
             <!-- Attachments -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;">
               <!-- Photo -->
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">Photo</label>
+                <label style="display:block;font-size:11px;font-weight:600;color:#7d94ac;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.1em;">Photo</label>
                 <div
                   :style="uploadZoneStyle(!!photoPreview)"
                   style="position:relative;overflow:hidden;"
@@ -98,7 +103,7 @@
 
               <!-- File -->
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.04em;">Document</label>
+                <label style="display:block;font-size:11px;font-weight:600;color:#7d94ac;margin-bottom:0.375rem;text-transform:uppercase;letter-spacing:0.1em;">Document</label>
                 <div
                   :style="uploadZoneStyle(!!form.update_file)"
                   style="position:relative;overflow:hidden;"
@@ -125,19 +130,19 @@
           </div>
 
           <!-- Footer -->
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.875rem 1.25rem;background:#fafafa;border-top:1px solid #f0f0f0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.875rem 1.25rem;background:#f7faff;border-top:1px solid #edf2fa;">
             <button
               type="button"
               @click="goBack"
               :disabled="isSubmitting"
-              style="font-size:13px;font-weight:500;color:#666;background:transparent;border:1px solid #e0e0e0;border-radius:8px;padding:0.5rem 1rem;cursor:pointer;"
+              style="font-size:13px;font-weight:500;color:#4a6a8a;background:transparent;border:1px solid #d9e6f3;border-radius:8px;padding:0.5rem 1rem;cursor:pointer;"
             >
               Cancel
             </button>
             <button
               type="submit"
               :disabled="isSubmitting"
-              style="font-size:13px;font-weight:600;color:#fff;background:#2e4053;border:none;border-radius:8px;padding:0.5rem 1.25rem;cursor:pointer;display:flex;align-items:center;gap:0.5rem;opacity:1;"
+              style="font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);border:none;border-radius:8px;padding:0.5rem 1.25rem;cursor:pointer;display:flex;align-items:center;gap:0.5rem;opacity:1;box-shadow:0 4px 12px rgba(35,96,182,0.22);"
               :style="isSubmitting ? 'opacity:0.6;cursor:not-allowed;' : ''"
             >
               <i :class="isSubmitting ? 'fas fa-spinner fa-spin' : 'fas fa-paper-plane'" style="font-size:12px;"></i>
@@ -155,17 +160,17 @@
         style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,0.45);"
         @click.self="closeSuccessModal"
       >
-        <div style="background:#fff;border-radius:14px;width:100%;max-width:340px;padding:1.75rem;text-align:center;">
-          <div style="width:48px;height:48px;border-radius:50%;background:#d1fae5;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
-            <i class="fas fa-check" style="font-size:20px;color:#059669;"></i>
+        <div style="background:#fff;border-radius:14px;width:100%;max-width:340px;padding:1.75rem;text-align:center;border:1px solid #dce7f3;">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,rgba(25,79,146,0.12),rgba(47,120,221,0.12));display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+            <i class="fas fa-check" style="font-size:20px;color:#2f78dd;"></i>
           </div>
-          <h3 style="font-size:16px;font-weight:600;color:#1a1a1a;margin:0 0 0.375rem;">Update Submitted!</h3>
-          <p style="font-size:13px;color:#888;line-height:1.5;margin:0 0 1.25rem;">Visible to all team members now.</p>
+          <h3 style="font-size:16px;font-weight:600;color:#183b63;margin:0 0 0.375rem;">Update Submitted!</h3>
+          <p style="font-size:13px;color:#7a93af;line-height:1.5;margin:0 0 1.25rem;">Visible to all team members now.</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
-            <button @click="createAnother" style="font-size:13px;font-weight:500;color:#555;background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:0.625rem;cursor:pointer;">
+            <button @click="createAnother" style="font-size:13px;font-weight:500;color:#4a6a8a;background:#fff;border:1px solid #d9e6f3;border-radius:8px;padding:0.625rem;cursor:pointer;">
               + Create Another
             </button>
-            <button @click="viewUpdates" style="font-size:13px;font-weight:600;color:#fff;background:#2e4053;border:none;border-radius:8px;padding:0.625rem;cursor:pointer;">
+            <button @click="viewUpdates" style="font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,#194f92 0%,#2f78dd 100%);border:none;border-radius:8px;padding:0.625rem;cursor:pointer;box-shadow:0 4px 12px rgba(35,96,182,0.22);">
               View Updates
             </button>
           </div>
@@ -204,13 +209,13 @@ const photoPreview  = ref(null);
 const showSuccessModal = ref(false);
 
 const inputStyle = (hasError) =>
-  `width:100%;padding:0.6rem 0.75rem;font-size:14px;border:1px solid ${hasError ? '#e53e3e' : '#e0e0e0'};border-radius:8px;outline:none;color:#1a1a1a;background:#fff;transition:border-color .15s;box-sizing:border-box;`;
+  `width:100%;padding:0.6rem 0.75rem;font-size:14px;border:1px solid ${hasError ? '#e53e3e' : '#d9e6f3'};border-radius:10px;outline:none;color:#183b63;background:#fff;transition:border-color .15s;box-sizing:border-box;`;
 
 const uploadZoneStyle = (active) =>
-  `border:1.5px dashed ${active ? '#68d391' : '#d4d4d4'};border-radius:8px;background:${active ? '#f0fff4' : '#fafafa'};min-height:88px;cursor:pointer;transition:all .15s;`;
+  `border:1.5px dashed ${active ? '#2f78dd' : '#d9e6f3'};border-radius:10px;background:${active ? '#edf4fb' : '#f7faff'};min-height:88px;cursor:pointer;transition:all .15s;`;
 
 const priorityStyle = (val) =>
-  `display:flex;align-items:center;padding:0.5rem 0.75rem;border-radius:8px;border:1px solid ${form.value.priority === val ? '#2e4053' : '#e0e0e0'};background:${form.value.priority === val ? '#f0f4f8' : '#fff'};cursor:pointer;transition:all .15s;user-select:none;`;
+  `display:flex;align-items:center;padding:0.5rem 0.75rem;border-radius:10px;border:1px solid ${form.value.priority === val ? '#2f78dd' : '#d9e6f3'};background:${form.value.priority === val ? '#edf4fb' : '#fff'};cursor:pointer;transition:all .15s;user-select:none;`;
 
 const submitUpdate = async () => {
   showErrors.value = true;

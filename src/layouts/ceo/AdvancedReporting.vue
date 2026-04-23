@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 font-['DM_Sans',sans-serif]">
+  <div class="min-h-screen bg-white font-['DM_Sans',sans-serif]">
     <!-- ── Top Bar ─────────────────────────────────────────────── -->
     <div class="bg-white dark:bg-slate-900 shadow-sm border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
       <div class="max-w-7xl mx-auto px-6 py-4">
@@ -30,10 +30,10 @@
               </select>
             </div>
 
-            <button @click="openReportBuilder" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
+            <button @click="openReportBuilder" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
               + Create Report
             </button>
-            <button @click="showScheduleModal = true" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors">
+            <button @click="showScheduleModal = true" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
               Schedule Reports
             </button>
           </div>
@@ -44,7 +44,7 @@
     <div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
       <div v-if="loading" class="flex items-center justify-center py-20">
         <div class="text-center">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
           <p class="mt-4 text-slate-600 dark:text-slate-400">Loading reports…</p>
         </div>
       </div>
@@ -99,7 +99,7 @@
                   </div>
                 </div>
               </div>
-              <button @click="showScheduleModal = true" class="w-full mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
+              <button @click="showScheduleModal = true" class="w-full mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
                 + Schedule New Report
               </button>
             </div>
@@ -305,7 +305,7 @@
               <span v-else>Preview</span>
             </button>
             <button @click="generateReport" :disabled="!reportBuilder.name || !reportBuilder.metrics.length || generating"
-                    class="flex-1 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
+                    class="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
               <span v-if="generating">Creating…</span>
               <span v-else>Generate Report</span>
             </button>
@@ -347,7 +347,7 @@
             <button @click="showScheduleModal = false" class="flex-1 px-6 py-3 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">
               Cancel
             </button>
-            <button @click="scheduleReport" class="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
+            <button @click="scheduleReport" class="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
               Schedule
             </button>
           </div>

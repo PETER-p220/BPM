@@ -1,19 +1,19 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+  <div class="min-h-screen p-6" style="background:radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%);">
     <div class="max-w-7xl mx-auto">
       <!-- Header Section -->
       <div class="mb-8">
         <div class="flex items-center justify-between mb-2">
           <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+            <h1 class="text-3xl font-bold mb-1" style="color:#183b63;">
               Project Assignments
             </h1>
-            <p class="text-gray-600 dark:text-gray-400">
+            <p style="color:#67819d;">
               Manage and track your assigned projects
             </p>
           </div>
           <div class="flex items-center space-x-2">
-            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
+            <span class="px-3 py-1 rounded-full text-sm font-semibold" style="background:#deebfd;color:#174278;">
               {{ filteredProjects.length }} Projects
             </span>
           </div>
@@ -21,18 +21,19 @@
       </div>
 
       <!-- Controls Section -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+      <div class="rounded-[20px] bg-white p-4 mb-6" style="border:1px solid #d9e6f3;box-shadow:0 4px 16px rgba(18,58,99,0.07);">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <!-- Search Bar -->
           <div class="relative flex-1 max-w-md">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+              <i class="fas fa-search" style="color:#9ab8d8;"></i>
             </div>
             <input
               type="text"
               v-model="filter"
               placeholder="Search projects, assigners, status..."
-              class="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+              class="w-full pl-10 pr-4 py-2.5 rounded-[10px] outline-none transition-all text-sm"
+              style="border:1.5px solid #d6e4f2;background:#f8fbff;color:#183b63;"
             />
           </div>
 
@@ -40,16 +41,18 @@
           <div class="flex items-center gap-3">
             <button
               @click="exportToExcel"
-              class="inline-flex items-center px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+              class="inline-flex items-center px-4 py-2.5 text-sm font-semibold rounded-[10px] transition-all"
+              style="border:1px solid #d7e4f1;background:#fff;color:#183b63;"
             >
-              <i class="fas fa-file-excel mr-2"></i>
+              <i class="fas fa-file-excel mr-2" style="color:#2f78dd;"></i>
               Export Excel
             </button>
             <button
               @click="exportToPDF"
-              class="inline-flex items-center px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+              class="inline-flex items-center px-4 py-2.5 text-sm font-semibold rounded-[10px] transition-all"
+              style="border:1px solid #d7e4f1;background:#fff;color:#183b63;"
             >
-              <i class="fas fa-file-pdf mr-2"></i>
+              <i class="fas fa-file-pdf mr-2" style="color:#2f78dd;"></i>
               Export PDF
             </button>
           </div>
@@ -57,73 +60,73 @@
       </div>
 
       <!-- Table Section -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div class="rounded-[24px] bg-white overflow-hidden" style="border:1px solid #d9e6f3;box-shadow:0 28px 70px rgba(18,58,99,0.12);">
         <div class="overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 border-b border-gray-200 dark:border-gray-600">
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+              <tr style="background:#f3f8ff;border-bottom:1px solid #dce9f7;">
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">
                   #
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">
                   Project Name
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">
                   Assigned By
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">
                   Timeline
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">
                   Contract
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">
                   Status
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" style="color:#2d6aaf;">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody class="divide-y" style="border-color:#e8f0f8;">
               <tr
                 v-for="(project, index) in paginatedProjects"
                 :key="project.project_id"
-                class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                class="transition-colors duration-150 hover:bg-[#f8fbff]"
               >
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium" style="color:#7a93af;">
                   {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                 </td>
                 <td class="px-6 py-4">
                   <button
                     @click="openProjectModal(project.project_id)"
-                    class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium hover:underline transition-colors"
+                    class="font-semibold hover:underline transition-colors" style="color:#2f78dd;"
                   >
                     {{ project.project_name || 'NA' }}
                   </button>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <div class="text-xs mt-1" style="color:#7a93af;">
                     ID: {{ project.project_id }}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
-                    <div class="flex-shrink-0 h-8 w-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                    <div class="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center" style="background:linear-gradient(135deg,#194f92,#2f78dd);">
                       <span class="text-white text-xs font-bold">
                         {{ (project.created_by || 'NA').charAt(0).toUpperCase() }}
                       </span>
                     </div>
                     <div class="ml-3">
-                      <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <div class="text-sm font-semibold" style="color:#183b63;">
                         {{ project.created_by || 'NA' }}
                       </div>
-                      <div class="text-xs text-gray-500 dark:text-gray-400">
+                      <div class="text-xs" style="color:#7a93af;">
                         {{ formatDate(project.created_at) }}
                       </div>
                     </div>
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900 dark:text-gray-100">
+                  <div class="text-sm" style="color:#4e6781;">
                     <div class="flex items-center mb-1">
                       <i class="fas fa-play text-green-500 text-xs mr-2"></i>
                       {{ formatDate(project.start_date) }}
@@ -138,12 +141,13 @@
                   <button
                     v-if="project.contract?.pdf_file"
                     @click="downloadFile(project.contract.pdf_file)"
-                    class="inline-flex items-center px-3 py-1.5 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors text-sm"
+                    class="inline-flex items-center px-3 py-1.5 rounded-[8px] transition-colors text-sm font-semibold"
+                    style="background:#eef5ff;color:#2f78dd;border:1px solid #d9e6f3;"
                   >
                     <i class="fas fa-download mr-2 text-xs"></i>
                     Contract
                   </button>
-                  <span v-else class="text-gray-400 dark:text-gray-500 text-sm">No Contract</span>
+                  <span v-else class="text-sm" style="color:#9ab8d8;">No Contract</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span
@@ -170,7 +174,8 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <button
                     @click="editProject(project.project_id)"
-                    class="inline-flex items-center justify-center w-9 h-9 bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors"
+                    class="inline-flex items-center justify-center w-9 h-9 rounded-[8px] transition-colors"
+                    style="background:#eef5ff;color:#2f78dd;border:1px solid #d9e6f3;"
                     title="Edit Project"
                   >
                     <i class="fas fa-edit"></i>
@@ -180,9 +185,9 @@
               <tr v-if="paginatedProjects.length === 0">
                 <td colspan="7" class="px-6 py-12 text-center">
                   <div class="flex flex-col items-center justify-center">
-                    <i class="fas fa-inbox text-gray-300 dark:text-gray-600 text-5xl mb-4"></i>
-                    <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">No projects found</p>
-                    <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Try adjusting your search criteria</p>
+                    <i class="fas fa-inbox text-5xl mb-4" style="color:#c8daf0;"></i>
+                    <p class="text-lg font-semibold" style="color:#4e6781;">No projects found</p>
+                    <p class="text-sm mt-1" style="color:#7a93af;">Try adjusting your search criteria</p>
                   </div>
                 </td>
               </tr>
@@ -191,35 +196,37 @@
         </div>
 
         <!-- Pagination -->
-        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-200 dark:border-gray-600">
+        <div class="px-6 py-4" style="border-top:1px solid #e8f0f8;background:#f8fbff;">
           <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-700 dark:text-gray-300">
+            <div class="text-sm" style="color:#7a93af;">
               Showing
-              <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+              <span class="font-semibold" style="color:#183b63;">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
               to
-              <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredProjects.length) }}</span>
+              <span class="font-semibold" style="color:#183b63;">{{ Math.min(currentPage * itemsPerPage, filteredProjects.length) }}</span>
               of
-              <span class="font-medium">{{ filteredProjects.length }}</span>
+              <span class="font-semibold" style="color:#183b63;">{{ filteredProjects.length }}</span>
               results
             </div>
             <div class="flex items-center space-x-2">
               <button
                 :disabled="currentPage === 1"
                 @click="changePage(currentPage - 1)"
-                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                class="px-4 py-2 text-sm font-semibold rounded-[8px] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                style="border:1px solid #d9e6f3;background:#fff;color:#4e78ab;"
               >
                 <i class="fas fa-chevron-left mr-2"></i>
                 Previous
               </button>
-              <div class="hidden sm:flex items-center space-x-1">
-                <span class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-blue-50 dark:bg-blue-900 border border-blue-300 dark:border-blue-700 rounded-lg">
+              <div class="hidden sm:flex items-center">
+                <span class="px-4 py-2 text-sm font-semibold rounded-[8px]" style="background:#eef5ff;color:#2f78dd;border:1px solid #d9e6f3;">
                   Page {{ currentPage }} of {{ Math.ceil(filteredProjects.length / itemsPerPage) || 1 }}
                 </span>
               </div>
               <button
                 :disabled="currentPage * itemsPerPage >= filteredProjects.length"
                 @click="changePage(currentPage + 1)"
-                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                class="px-4 py-2 text-sm font-semibold rounded-[8px] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                style="border:1px solid #d9e6f3;background:#fff;color:#4e78ab;"
               >
                 Next
                 <i class="fas fa-chevron-right ml-2"></i>
@@ -239,25 +246,26 @@
       >
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
           <!-- Background overlay -->
-          <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-80"></div>
+          <div class="fixed inset-0 transition-opacity" style="background:rgba(10,30,66,0.65);"></div>
 
           <!-- Modal panel -->
-          <div class="relative inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-2xl rounded-2xl">
+          <div class="relative inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-[24px]">
             <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5">
+            <div class="px-6 py-5" style="background:linear-gradient(135deg,#194f92,#2f78dd);">
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                  <div class="flex-shrink-0 w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                  <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(255,255,255,0.18);">
                     <i class="fas fa-project-diagram text-white"></i>
                   </div>
                   <div>
                     <h2 class="text-xl font-bold text-white">Project Details</h2>
-                    <p class="text-blue-100 text-sm">Complete project information</p>
+                    <p class="text-sm" style="color:rgba(255,255,255,0.75);">Complete project information</p>
                   </div>
                 </div>
                 <button
                   @click="closeProjectModal"
-                  class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors"
+                  class="text-white rounded-lg p-2 transition-colors"
+                  style="background:rgba(255,255,255,0.12);"
                 >
                   <i class="fas fa-times text-xl"></i>
                 </button>
@@ -268,21 +276,21 @@
             <div v-if="selectedProject" class="px-6 py-6 max-h-[calc(100vh-200px)] overflow-y-auto">
               <!-- Project Overview -->
               <div class="mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 class="text-lg font-semibold mb-4 flex items-center" style="color:#183b63;">
                   <i class="fas fa-info-circle text-blue-500 mr-2"></i>
                   Project Overview
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project Name</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.project_name || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Project Name</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.project_name || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project ID</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.project_id || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Project ID</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.project_id || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</label>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Status</label>
                     <p class="mt-1">
                       <span
                         :class="{
@@ -296,27 +304,27 @@
                       </span>
                     </p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned By</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.created_by || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Assigned By</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.created_by || 'NA' }}</p>
                   </div>
                 </div>
               </div>
 
               <!-- Team Information -->
               <div class="mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 class="text-lg font-semibold mb-4 flex items-center" style="color:#183b63;">
                   <i class="fas fa-users text-blue-500 mr-2"></i>
                   Team Information
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Engineer</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.user?.name || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Engineer</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.user?.name || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Team Members</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Team Members</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">
                       {{ selectedProject.members?.length ? selectedProject.members.join(', ') : 'NA' }}
                     </p>
                   </div>
@@ -325,59 +333,59 @@
 
               <!-- Timeline -->
               <div class="mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 class="text-lg font-semibold mb-4 flex items-center" style="color:#183b63;">
                   <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
                   Timeline
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Start Date</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.start_date) || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Start Date</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ formatDate(selectedProject.start_date) || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">End Date</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.end_date) || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">End Date</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ formatDate(selectedProject.end_date) || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Extended Date</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.extended_date) || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Extended Date</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ formatDate(selectedProject.extended_date) || 'NA' }}</p>
                   </div>
                 </div>
               </div>
 
               <!-- Contract Details -->
               <div class="mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 class="text-lg font-semibold mb-4 flex items-center" style="color:#183b63;">
                   <i class="fas fa-file-contract text-blue-500 mr-2"></i>
                   Contract Details
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Title</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.contract?.title || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Contract Title</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.contract?.title || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Timeline Category</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.contract?.time_line_category || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Timeline Category</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.contract?.time_line_category || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Start</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.contract?.start_date) || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Contract Start</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ formatDate(selectedProject.contract?.start_date) || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract End</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.contract?.end_date) || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Contract End</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ formatDate(selectedProject.contract?.end_date) || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Status</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.contract?.status || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Contract Status</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.contract?.status || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Performance Guarantee</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.contract?.performance_guarantee || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Performance Guarantee</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.contract?.performance_guarantee || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 md:col-span-2">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract PDF</label>
+                  <div class="rounded-[10px] p-4 md:col-span-2" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Contract PDF</label>
                     <div class="mt-2">
                       <button
                         v-if="selectedProject.contract?.pdf_file"
@@ -387,7 +395,7 @@
                         <i class="fas fa-download mr-2"></i>
                         Download Contract
                       </button>
-                      <span v-else class="text-gray-400 dark:text-gray-500 text-sm">No contract available</span>
+                      <span v-else class="text-sm" style="color:#9ab8d8;">No contract available</span>
                     </div>
                   </div>
                 </div>
@@ -395,17 +403,17 @@
 
               <!-- Tender Information -->
               <div class="mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 class="text-lg font-semibold mb-4 flex items-center" style="color:#183b63;">
                   <i class="fas fa-gavel text-blue-500 mr-2"></i>
                   Tender Information
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tender Type</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.tender?.tender_type || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Tender Type</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.tender?.tender_type || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tender Attachment</label>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Tender Attachment</label>
                     <div class="mt-2">
                       <button
                         v-if="selectedProject.tender?.attachment"
@@ -415,7 +423,7 @@
                         <i class="fas fa-download mr-2"></i>
                         Download Attachment
                       </button>
-                      <span v-else class="text-gray-400 dark:text-gray-500 text-sm">No attachment available</span>
+                      <span v-else class="text-sm" style="color:#9ab8d8;">No attachment available</span>
                     </div>
                   </div>
                 </div>
@@ -423,38 +431,40 @@
 
               <!-- Additional Information -->
               <div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 class="text-lg font-semibold mb-4 flex items-center" style="color:#183b63;">
                   <i class="fas fa-clipboard-list text-blue-500 mr-2"></i>
                   Additional Information
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Follow Up</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedProject.follow_up || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Follow Up</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ selectedProject.follow_up || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created At</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.created_at) || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Created At</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ formatDate(selectedProject.created_at) || 'NA' }}</p>
                   </div>
-                  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Updated</label>
-                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(selectedProject.updated_at) || 'NA' }}</p>
+                  <div class="rounded-[10px] p-4" style="background:#f3f8ff;border:1px solid #dce9f7;">
+                    <label class="text-xs font-semibold uppercase tracking-wider" style="color:#7a93af;">Last Updated</label>
+                    <p class="mt-1 text-sm font-semibold" style="color:#183b63;">{{ formatDate(selectedProject.updated_at) || 'NA' }}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Modal Footer -->
-            <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3">
+            <div class="px-6 py-4 flex justify-end space-x-3" style="background:#f8fbff;border-top:1px solid #e8f0f8;">
               <button
                 @click="closeProjectModal"
-                class="px-6 py-2.5 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-500 font-medium transition-colors"
+                class="px-6 py-2.5 rounded-[10px] font-semibold transition-colors"
+                style="border:1px solid #d7e4f1;background:#fff;color:#183b63;"
               >
                 Close
               </button>
               <button
                 @click="editProject(selectedProject.project_id); closeProjectModal();"
-                class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                class="px-6 py-2.5 text-white rounded-[10px] font-semibold transition-colors"
+                style="background:linear-gradient(135deg,#194f92,#2f78dd);box-shadow:0 4px 14px rgba(35,96,182,0.22);"
               >
                 Edit Project
               </button>

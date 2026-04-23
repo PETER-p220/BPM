@@ -1,106 +1,107 @@
 <template>
-  <div class="at-root">
-    <div class="at-container">
+  <Teleport to="body">
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      @click.self="closeModal"
+    >
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col border border-gray-200" style="max-height: 92vh;">
 
-      <!-- Card -->
-      <div class="at-card">
-
-        <!-- Header -->
-        <div class="at-header">
-          <div class="at-header-left">
-            <div class="at-header-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="12" y1="18" x2="12" y2="12"/>
-                <line x1="9" y1="15" x2="15" y2="15"/>
-              </svg>
+        <!-- Modal Header -->
+        <div class="bg-white border-b border-gray-200 px-7 py-5 flex-shrink-0">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4 min-w-0">
+              <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="14 2 14 8 20 8"/>
+                  <line x1="12" y1="18" x2="12" y2="12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                  <line x1="9" y1="15" x2="15" y2="15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-xl font-bold text-gray-900">Register New Tender</h2>
+                <p class="mt-1 text-sm text-gray-500">Capture source, schedule, and attachment details in one step.</p>
+              </div>
             </div>
-            <div>
-              <h1 class="at-header-title">Register New Tender</h1>
-              <p class="at-header-sub">Fill in the details below to submit a new procurement tender</p>
+            <div class="flex items-center gap-2">
+              <button
+                @click="addTender"
+                :disabled="isLoading"
+                class="inline-flex h-10 items-center gap-2 rounded-lg bg-red-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:opacity-60"
+              >
+                <svg v-if="!isLoading" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 6 9 17l-5-5"/>
+                </svg>
+                <svg v-else class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <circle cx="12" cy="12" r="10" stroke-opacity=".25"/>
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1"/>
+                </svg>
+                {{ isLoading ? 'Saving…' : 'Save Tender' }}
+              </button>
+              <button
+                @click="closeModal"
+                class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
+              >
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+              </button>
             </div>
           </div>
-          <button class="at-close-btn" @click="closeModal" title="Close">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
         </div>
 
-        <!-- Body -->
-        <div class="at-body">
+        <!-- Modal Body -->
+        <div class="flex-1 overflow-y-auto px-7 py-6">
+          <div class="grid h-full grid-cols-[1.2fr_0.8fr] gap-6">
+            <!-- Form Card -->
+            <div class="grid grid-cols-2 gap-x-5 gap-y-4 rounded-xl border border-gray-200 bg-white p-5">
 
-          <!-- Section: Basic Info -->
-          <div class="at-section">
-            <div class="at-section-label">
-              <span class="at-section-num">01</span>
-              Basic Information
-            </div>
-
-            <div class="at-grid-2">
-              <div class="at-field">
-                <label class="at-label" for="tenderTitle">Tender Title</label>
+              <!-- Row 1: Title + Number -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-700">Tender Title</label>
                 <input
-                  id="tenderTitle"
                   type="text"
-                  class="at-input"
+                  class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/25"
                   placeholder="e.g. Supply of Office Equipment"
                   v-model="newTenderData.title"
                 />
               </div>
-              <div class="at-field">
-                <label class="at-label" for="tenderNumber">Tender Number</label>
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-700">Tender Number</label>
                 <input
-                  id="tenderNumber"
                   type="text"
-                  class="at-input"
+                  class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/25"
                   placeholder="e.g. TDR-2024-089"
                   v-model="newTenderData.tender_number"
                 />
               </div>
-            </div>
 
-            <div class="at-grid-2">
-              <div class="at-field">
-                <label class="at-label" for="tenderSource">Tender Source</label>
+              <!-- Row 2: Source + Entity -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-700">Tender Source</label>
                 <input
-                  id="tenderSource"
                   type="text"
-                  class="at-input"
+                  class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/25"
                   placeholder="e.g. Government Portal"
                   v-model="newTenderData.tender_source"
                 />
               </div>
-              <div class="at-field">
-                <label class="at-label" for="procurementEntity">Procurement Entity</label>
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-700">Procurement Entity</label>
                 <input
-                  id="procurementEntity"
                   type="text"
-                  class="at-input"
+                  class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/25"
                   placeholder="e.g. Ministry of Finance"
                   v-model="newTenderData.procurement_entity"
                 />
               </div>
-            </div>
-          </div>
 
-          <div class="at-divider"></div>
-
-          <!-- Section: Classification -->
-          <div class="at-section">
-            <div class="at-section-label">
-              <span class="at-section-num">02</span>
-              Classification &amp; Dates
-            </div>
-
-            <div class="at-grid-2">
-              <div class="at-field">
-                <label class="at-label" for="tenderType">Tender Type</label>
-                <div class="at-select-wrap">
+              <!-- Row 3: Type + Publication Date -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-500">Tender Type</label>
+                <div class="relative">
                   <select
-                    id="tenderType"
-                    class="at-select"
+                    class="h-10 w-full cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 pr-9 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                     v-model="newTenderData.tender_type"
                   >
                     <option value="" disabled>Select a type…</option>
@@ -109,136 +110,104 @@
                     <option value="consultancy">Consultancy</option>
                     <option value="non-consultancy">Non-Consultancy</option>
                   </select>
-                  <span class="at-select-arrow">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13">
-                      <polyline points="6 9 12 15 18 9"/>
-                    </svg>
-                  </span>
+                  <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m6 9 6 6 6-6"/>
+                  </svg>
                 </div>
               </div>
-              <div class="at-field">
-                <label class="at-label" for="dateOfPublication">Date of Publication</label>
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-700">Date of Publication</label>
                 <input
-                  id="dateOfPublication"
                   type="date"
-                  class="at-input"
+                  style="color-scheme: light;"
+                  class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/25"
                   v-model="newTenderData.date_of_Publication"
                 />
               </div>
-            </div>
 
-            <div class="at-grid-2">
-              <div class="at-field">
-                <label class="at-label" for="bidSubmission">Bid Submission Date</label>
+              <!-- Row 4: Bid Submission + Expiration -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-700">Bid Submission Date</label>
                 <input
-                  id="bidSubmission"
                   type="date"
-                  class="at-input"
+                  style="color-scheme: light;"
+                  class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/25"
                   v-model="newTenderData.bid_submission"
                 />
               </div>
-              <div class="at-field">
-                <label class="at-label" for="expiredAt">Expiration Date</label>
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-700">Expiration Date</label>
                 <input
-                  id="expiredAt"
                   type="date"
-                  class="at-input"
+                  style="color-scheme: light;"
+                  class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/25"
                   v-model="newTenderData.expired_at"
                 />
               </div>
             </div>
-          </div>
 
-          <div class="at-divider"></div>
-
-          <!-- Section: Attachment -->
-          <div class="at-section">
-            <div class="at-section-label">
-              <span class="at-section-num">03</span>
-              Attachment
-            </div>
-
-            <div
-              class="at-dropzone"
-              :class="{ 'at-dropzone--has-file': selectedFileName }"
-              @dragover.prevent="dragover = true"
-              @dragleave.prevent="dragover = false"
-              @drop.prevent="handleDrop"
-              :style="dragover ? 'border-color: var(--sage); background: var(--sage-pale);' : ''"
-              @click="triggerFileInput"
-            >
-              <input
-                ref="fileInput"
-                type="file"
-                id="attachment"
-                style="display:none"
-                @change="handleFileUpload"
-              />
-              <div v-if="!selectedFileName" class="at-dropzone-empty">
-                <div class="at-drop-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                </div>
-                <p class="at-drop-title">Drag &amp; drop a file here, or <span class="at-drop-link">browse</span></p>
-                <p class="at-drop-hint">PDF, DOC, DOCX, XLS up to 10 MB</p>
+            <!-- Attachment Panel -->
+            <div class="flex min-h-0 flex-col rounded-xl border border-gray-200 bg-white p-5">
+              <div>
+                <h3 class="text-base font-bold text-gray-900">Attachment</h3>
+                <p class="mt-1 text-xs text-gray-600">Drop the tender document here or browse from your computer.</p>
               </div>
-              <div v-else class="at-dropzone-file">
-                <div class="at-file-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                  </svg>
+
+              <div
+                class="mt-4 flex min-h-0 flex-1 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-5 py-5 text-center transition-all"
+                :class="dragover ? 'border-blue-600 bg-blue-50' : selectedFileName ? 'border-blue-500 bg-white' : 'border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50'"
+                @dragover.prevent="dragover = true"
+                @dragleave.prevent="dragover = false"
+                @drop.prevent="handleDrop"
+                @click="triggerFileInput"
+              >
+                <input ref="fileInput" type="file" style="display:none" @change="handleFileUpload" />
+
+                <div v-if="!selectedFileName" class="flex flex-col items-center">
+                  <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-white">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                  </div>
+                  <p class="mt-4 text-sm font-semibold text-gray-900">Drag and drop your tender file</p>
+                  <p class="mt-1 text-xs text-gray-600">or <span class="font-semibold text-blue-600 underline underline-offset-2">browse from device</span></p>
+                  <p class="mt-4 rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-[11px] font-medium text-blue-700">PDF, DOC, DOCX, XLS up to 10 MB</p>
                 </div>
-                <div class="at-file-info">
-                  <span class="at-file-name">{{ selectedFileName }}</span>
-                  <span class="at-file-size">{{ selectedFileSize }}</span>
+
+                <div v-else class="flex w-full flex-col items-start rounded-lg border border-gray-200 bg-white p-4 text-left" @click.stop>
+                  <div class="flex w-full items-center gap-3">
+                    <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                      </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="truncate text-sm font-semibold text-gray-900">{{ selectedFileName }}</p>
+                      <p class="mt-0.5 text-xs text-gray-500">{{ selectedFileSize }}</p>
+                    </div>
+                    <button
+                      @click.stop="removeFile"
+                      class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-500 transition-colors hover:bg-red-100"
+                    >
+                      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6 6 18M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="mt-3 flex w-full items-center justify-between rounded-lg bg-green-50 px-3 py-2">
+                    <span class="text-xs font-medium text-green-700">Ready for upload</span>
+                    <span class="text-xs font-semibold text-green-600">Attached</span>
+                  </div>
                 </div>
-                <button class="at-file-remove" @click.stop="removeFile" title="Remove file">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
               </div>
             </div>
           </div>
-
-          <!-- Footer actions -->
-          <div class="at-actions">
-            <router-link to="/tenders" class="at-btn-cancel">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-              Cancel
-            </router-link>
-            <button
-              class="at-btn-submit"
-              @click="addTender"
-              :disabled="isLoading"
-            >
-              <span v-if="!isLoading" class="at-btn-submit-inner">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                Save Tender
-              </span>
-              <span v-else class="at-btn-submit-inner">
-                <svg class="at-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
-                  <circle cx="12" cy="12" r="10" stroke-opacity=".25"/>
-                  <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="1"/>
-                </svg>
-                Saving…
-              </span>
-            </button>
-          </div>
-
         </div>
-      </div>
 
+      </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 
@@ -246,8 +215,10 @@
 import { ref } from 'vue'
 import axios from '@/axios'
 import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
 
 const toast = useToast()
+const router = useRouter()
 const fileInput = ref(null)
 const dragover = ref(false)
 const selectedFileName = ref('')
@@ -343,263 +314,6 @@ function resetForm() {
 }
 
 function closeModal() {
-  window.location.href = '/tenders'
+  router.back()
 }
 </script>
-
-
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap');
-
-.at-root {
-  /* ── Palette: Slate / Sage / Terracotta / Cream ── */
-  --slate-900: #1c1917;
-  --slate-800: #292524;
-  --slate-700: #44403c;
-  --slate-500: #78716c;
-  --slate-300: #d6d3d1;
-  --slate-100: #f5f5f4;
-  --slate-50:  #fafaf9;
-
-  --sage:      #4d7c6f;
-  --sage-deep: #2d5a4e;
-  --sage-mid:  #3d6e60;
-  --sage-lt:   #6b9e8e;
-  --sage-pale: #edf5f2;
-  --sage-soft: #c4ddd7;
-
-  --terra:     #c2674a;
-  --terra-pale:#fdf0eb;
-
-  --cream:     #fefcf8;
-  --cream-2:   #f7f3ed;
-
-  --border:    rgba(28,25,23,.1);
-  --border-md: rgba(28,25,23,.16);
-  --shadow-sm: 0 1px 3px rgba(28,25,23,.07), 0 1px 2px rgba(28,25,23,.04);
-  --shadow-lg: 0 12px 40px rgba(28,25,23,.1), 0 4px 16px rgba(28,25,23,.06);
-
-  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
-  background: var(--cream-2);
-  min-height: 100vh;
-  padding: 48px 20px;
-  -webkit-font-smoothing: antialiased;
-}
-
-.at-container {
-  max-width: 820px;
-  margin: 0 auto;
-}
-
-/* ── Card ── */
-.at-card {
-  background: #fff;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-}
-
-/* ── Header ── */
-.at-header {
-  background: var(--sage-deep);
-  padding: 22px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.at-header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.at-header-icon {
-  width: 42px; height: 42px; border-radius: 11px;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.18);
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,.9); flex-shrink: 0;
-}
-.at-header-title {
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 20px; font-weight: 400;
-  color: #fff; margin: 0; line-height: 1.2;
-}
-.at-header-sub {
-  font-size: 12px; color: rgba(255,255,255,.5);
-  margin: 3px 0 0; font-weight: 400; line-height: 1.4;
-}
-.at-close-btn {
-  width: 34px; height: 34px; border-radius: 8px; cursor: pointer;
-  border: 1px solid rgba(255,255,255,.22);
-  background: rgba(255,255,255,.1); color: rgba(255,255,255,.7);
-  display: flex; align-items: center; justify-content: center;
-  transition: background .15s, color .15s; flex-shrink: 0;
-}
-.at-close-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
-
-/* ── Body ── */
-.at-body { padding: 32px; display: flex; flex-direction: column; gap: 0; }
-
-/* ── Section ── */
-.at-section { margin-bottom: 8px; }
-.at-section-label {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 11px; font-weight: 700; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--slate-500);
-  margin-bottom: 20px;
-}
-.at-section-num {
-  font-family: 'DM Serif Display', serif;
-  font-size: 20px; color: var(--cream-2);
-  line-height: 1; font-weight: 400;
-}
-
-.at-divider {
-  height: 1px; background: var(--border);
-  margin: 24px 0;
-}
-
-/* ── Grid ── */
-.at-grid-2 {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-  margin-bottom: 20px;
-}
-.at-grid-2:last-child { margin-bottom: 0; }
-
-/* ── Field ── */
-.at-field { display: flex; flex-direction: column; gap: 7px; }
-.at-label {
-  font-size: 13px; font-weight: 600; color: var(--slate-700);
-  letter-spacing: .01em;
-}
-
-/* ── Inputs ── */
-.at-input {
-  width: 100%; padding: 10px 14px;
-  border: 1.5px solid var(--border-md);
-  border-radius: 9px;
-  background: var(--cream);
-  color: var(--slate-900);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px; font-weight: 400;
-  outline: none;
-  transition: border-color .15s, box-shadow .15s, background .15s;
-}
-.at-input::placeholder { color: var(--slate-300); }
-.at-input:hover  { border-color: var(--sage-soft); }
-.at-input:focus  {
-  border-color: var(--sage);
-  box-shadow: 0 0 0 3px rgba(77,124,111,.15);
-  background: #fff;
-}
-input[type="date"].at-input { color-scheme: light; }
-
-/* ── Select ── */
-.at-select-wrap { position: relative; }
-.at-select {
-  width: 100%; padding: 10px 36px 10px 14px;
-  border: 1.5px solid var(--border-md);
-  border-radius: 9px;
-  background: var(--cream);
-  color: var(--slate-900);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px; font-weight: 400;
-  appearance: none; outline: none; cursor: pointer;
-  transition: border-color .15s, box-shadow .15s, background .15s;
-}
-.at-select:hover  { border-color: var(--sage-soft); }
-.at-select:focus  {
-  border-color: var(--sage);
-  box-shadow: 0 0 0 3px rgba(77,124,111,.15);
-  background: #fff;
-}
-.at-select-arrow {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  pointer-events: none; color: var(--slate-500);
-}
-
-/* ── Dropzone ── */
-.at-dropzone {
-  border: 2px dashed var(--border-md);
-  border-radius: 14px;
-  background: var(--cream);
-  padding: 32px 24px;
-  text-align: center; cursor: pointer;
-  transition: border-color .2s, background .2s;
-}
-.at-dropzone:hover { border-color: var(--sage-soft); background: var(--sage-pale); }
-.at-dropzone--has-file { border-style: solid; border-color: var(--sage-soft); background: var(--sage-pale); }
-
-.at-dropzone-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.at-drop-icon { color: var(--slate-300); }
-.at-drop-title { font-size: 14px; color: var(--slate-700); font-weight: 500; }
-.at-drop-link  { color: var(--sage); text-decoration: underline; cursor: pointer; }
-.at-drop-hint  { font-size: 12px; color: var(--slate-500); }
-
-.at-dropzone-file { display: flex; align-items: center; gap: 14px; text-align: left; }
-.at-file-icon {
-  width: 44px; height: 44px; border-radius: 10px;
-  background: var(--sage-pale); color: var(--sage);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; border: 1px solid var(--sage-soft);
-}
-.at-file-info { flex: 1; min-width: 0; }
-.at-file-name { display: block; font-size: 13.5px; font-weight: 600; color: var(--slate-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.at-file-size { display: block; font-size: 12px; color: var(--slate-500); margin-top: 3px; }
-.at-file-remove {
-  width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
-  background: rgba(194,103,74,.1); border: 1px solid rgba(194,103,74,.2);
-  color: var(--terra); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .15s;
-}
-.at-file-remove:hover { background: rgba(194,103,74,.2); }
-
-/* ── Actions ── */
-.at-actions {
-  display: flex; align-items: center; gap: 12px;
-  margin-top: 32px; padding-top: 24px;
-  border-top: 1px solid var(--border);
-}
-.at-btn-cancel {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 10px 22px; border-radius: 9px;
-  border: 1.5px solid var(--border-md);
-  background: transparent; color: var(--slate-700);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13.5px; font-weight: 600;
-  text-decoration: none; cursor: pointer;
-  transition: border-color .15s, background .15s, color .15s;
-}
-.at-btn-cancel:hover { border-color: var(--slate-300); background: var(--slate-50); color: var(--slate-900); }
-
-.at-btn-submit {
-  display: inline-flex; align-items: center;
-  padding: 10px 26px; border-radius: 9px;
-  border: none; background: var(--sage);
-  color: #fff; font-family: 'DM Sans', sans-serif;
-  font-size: 13.5px; font-weight: 600; cursor: pointer;
-  transition: background .15s, transform .12s, opacity .15s;
-  margin-left: auto;
-}
-.at-btn-submit:hover:not(:disabled) { background: var(--sage-mid); transform: translateY(-1px); }
-.at-btn-submit:active:not(:disabled) { transform: scale(.97); }
-.at-btn-submit:disabled { opacity: .65; cursor: not-allowed; }
-.at-btn-submit-inner { display: flex; align-items: center; gap: 8px; }
-
-/* Spinner */
-@keyframes spin { to { transform: rotate(360deg); } }
-.at-spin { animation: spin .7s linear infinite; }
-
-/* ── Responsive ── */
-@media (max-width: 600px) {
-  .at-root     { padding: 20px 12px; }
-  .at-body     { padding: 20px; }
-  .at-header   { padding: 18px 20px; }
-  .at-grid-2   { grid-template-columns: 1fr; }
-  .at-actions  { flex-direction: column-reverse; }
-  .at-btn-cancel, .at-btn-submit { width: 100%; justify-content: center; margin: 0; }
-}
-</style>

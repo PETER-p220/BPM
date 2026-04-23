@@ -197,13 +197,6 @@ const navigations = ref([
         name: "Myreceipts",
         path: "Myreceipts",
         active: false,
-      },
-      {
-        icon: "fas fa-plus-circle text-green-500",
-        label: "Submit Receipt",
-        name: "SubmitReceipt",
-        path: "SubmitReceipt",
-        active: false,
       }
     ]
   },

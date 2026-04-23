@@ -1,1585 +1,365 @@
 <template>
+  <div class="acc-root">
 
-  <div class="sidebar-container">
-
-    <!-- Sidebar Header -->
-
-    <div class="sidebar-header">
-
-      <div class="header-content">
-
-        <div class="logo-wrapper">
-
-          <div class="logo-icon">
-
-            <i class="fas fa-calculator"></i>
-
-          </div>
-
-          <div class="logo-text">
-
-            <h3 class="logo-title">Accountant</h3>
-
-            <p class="logo-subtitle">Finance Portal</p>
-
-          </div>
-
-        </div>
-
+    <!-- ── LOGO / BRAND ── -->
+    <div class="acc-brand">
+      <div class="acc-brand-icon">
+        <i class="fas fa-calculator"></i>
       </div>
-
+      <div class="acc-brand-text">
+        <span class="acc-brand-name">TERA BPM</span>
+        <span class="acc-brand-role">Finance Portal</span>
+      </div>
     </div>
 
-
-
-    <!-- Navigation Menu -->
-
-    <nav class="nav-menu">
-
-      <ul class="nav-list">
-
+    <!-- ── NAV ── -->
+    <nav class="acc-nav" role="navigation">
+      <ul class="acc-list">
         <li
-
-          v-for="(navigation, index) in navigations"
-
-          :key="navigation.name || index"
-
-          class="nav-item"
-
-          :class="{ 'is-empty': !navigation.name }"
-
+          v-for="(item, index) in navigations"
+          :key="item.name || index"
+          class="acc-item"
+          :style="{ animationDelay: `${index * 0.04}s` }"
         >
-
-          <!-- Separator for empty items -->
-
-          <div v-if="!navigation.name" class="nav-separator"></div>
-
-
-
-          <!-- Navigation Item -->
-
-          <div v-else>
-
-            <div
-
-              class="nav-link"
-
-              :class="{ 
-
-                'is-active': !hasChild(navigation) && isCurrentRoute(navigation.path),
-
-                'is-expanded': hasChild(navigation) && navigation.active
-
-              }"
-
-              @click="clickNavigation(navigation, index)"
-
-            >
-
-              <div class="nav-link-content">
-
-                <!-- Icon and Label -->
-
-                <div class="nav-link-left">
-
-                  <div class="nav-icon-wrapper" :class="getIconWrapperClass(navigation)">
-
-                    <i class="nav-icon" :class="navigation.icon"></i>
-
-                  </div>
-
-                  <span class="nav-label">{{ navigation.label }}</span>
-
-                </div>
-
-
-
-                <!-- Expand indicator or active dot -->
-
-                <div class="nav-link-right">
-
-                  <div 
-
-                    v-if="!hasChild(navigation) && isCurrentRoute(navigation.path)" 
-
-                    class="active-dot"
-
-                  ></div>
-
-                  <i
-
-                    v-if="hasChild(navigation)"
-
-                    class="expand-icon fas"
-
-                    :class="navigation.active ? 'fa-chevron-up' : 'fa-chevron-down'"
-
-                  ></i>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- Hover effect overlay -->
-
-              <div class="nav-link-overlay"></div>
-
-            </div>
-
-
-
-            <!-- Child Navigation -->
-
-            <transition
-
-              enter-active-class="transition-all duration-300 ease-out"
-
-              enter-from-class="opacity-0 max-h-0"
-
-              enter-to-class="opacity-100 max-h-[1000px]"
-
-              leave-active-class="transition-all duration-200 ease-in"
-
-              leave-from-class="opacity-100 max-h-[1000px]"
-
-              leave-to-class="opacity-0 max-h-0"
-
-            >
-
-              <ul v-if="hasChild(navigation) && navigation.active" class="child-list">
-
-                <li
-
-                  v-for="child in navigation.children"
-
-                  :key="child.name"
-
-                  class="child-item"
-
-                >
-
-                  <div
-
-                    class="child-link"
-
-                    :class="{ 'is-active': isCurrentRoute(child.path) }"
-
-                    @click.stop="navigateToChild(child)"
-
-                  >
-
-                    <div class="child-link-content">
-
-                      <div class="child-icon-wrapper">
-
-                        <i class="child-icon" :class="child.icon"></i>
-
-                      </div>
-
-                      <span class="child-label">{{ child.label }}</span>
-
-                      <div 
-
-                        v-if="isCurrentRoute(child.path)" 
-
-                        class="child-active-dot"
-
-                      ></div>
-
-                    </div>
-
-                    <div class="child-link-overlay"></div>
-
-                  </div>
-
-                </li>
-
-              </ul>
-
-            </transition>
-
+          <!-- Section divider label -->
+          <div v-if="item.divider" class="acc-divider">
+            <span>{{ item.divider }}</span>
           </div>
 
+          <!-- Dropdown parent -->
+          <template v-else-if="item.children && item.children.length">
+            <div
+              class="acc-parent"
+              :class="{ 'acc-parent-active': isChildActive(item) }"
+              @click="toggleDropdown(item, index)"
+            >
+              <div class="acc-parent-left">
+                <span class="acc-icon-wrap"><i :class="item.icon"></i></span>
+                <span class="acc-label">{{ item.label }}</span>
+              </div>
+              <svg
+                class="acc-chevron"
+                :class="{ 'acc-chevron-open': item.active }"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+            <transition
+              enter-active-class="acc-dropdown-enter-active"
+              enter-from-class="acc-dropdown-enter-from"
+              enter-to-class="acc-dropdown-enter-to"
+              leave-active-class="acc-dropdown-leave-active"
+              leave-from-class="acc-dropdown-leave-from"
+              leave-to-class="acc-dropdown-leave-to"
+            >
+              <ul v-if="item.active" class="acc-children">
+                <li v-for="child in item.children" :key="child.name">
+                  <router-link
+                    :to="{ name: child.path }"
+                    class="acc-child"
+                    :class="{ 'acc-child-active': isActive(child) }"
+                  >
+                    <i :class="child.icon" class="acc-child-icon"></i>
+                    <span class="acc-child-label">{{ child.label }}</span>
+                  </router-link>
+                </li>
+              </ul>
+            </transition>
+          </template>
+
+          <!-- Flat nav link -->
+          <router-link
+            v-else
+            :to="{ name: item.path }"
+            class="acc-parent"
+            :class="{ 'acc-parent-active': isActive(item) }"
+          >
+            <div class="acc-parent-left">
+              <span class="acc-icon-wrap"><i :class="item.icon"></i></span>
+              <span class="acc-label">{{ item.label }}</span>
+            </div>
+          </router-link>
         </li>
-
       </ul>
-
     </nav>
 
-
-
-    <!-- Footer -->
-
-    <div class="sidebar-footer">
-
-      <div class="footer-content">
-
-        <div class="user-info">
-
-          <div class="user-avatar">
-
-            <i class="fas fa-user"></i>
-
-          </div>
-
-          <div class="user-details">
-
-            <p class="user-name">Accountant</p>
-
-            <p class="user-role">Finance Officer</p>
-
-          </div>
-
+    <!-- ── FOOTER ── -->
+    <div class="acc-footer">
+      <div class="acc-footer-user">
+        <div class="acc-footer-avatar">
+          <i class="fas fa-user-tie"></i>
         </div>
-
+        <div class="acc-footer-info">
+          <span class="acc-footer-name">Accountant</span>
+          <span class="acc-footer-year">© {{ new Date().getFullYear() }} TERA</span>
+        </div>
       </div>
-
     </div>
 
   </div>
-
 </template>
 
-
-
 <script setup>
+import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
-import { useRouter, useRoute } from 'vue-router';
-
-import { ref } from 'vue';
-
-
-
-const router = useRouter();
-
-const currentRoute = useRoute();
-
-
+const router = useRouter()
+const route = useRoute()
 
 const navigations = ref([
+  { icon: 'fas fa-chart-line', label: 'Dashboard', name: 'AccountantDashbaord', path: 'AccountantDashbaord' },
 
-  {},
+  // { divider: 'Projects & Requests' },
 
+  // {
+  //   icon: 'fas fa-project-diagram', label: 'Projects', name: 'Projects', active: false,
+  //   children: [
+  //     { icon: 'fas fa-chart-bar', label: 'Analysis', name: 'AccViewAnalysis', path: 'AccViewAnalysis' },
+  //     { icon: 'fas fa-folder-open', label: 'Project Portfolio', name: 'AccViewPortfolio', path: 'AccViewPortofolio' },
+  //     { icon: 'fas fa-money-check-alt', label: 'Payment Follow-Up', name: 'AccFollowUp', path: 'Followup' },
+  //   ]
+  // },
   
 
+  { icon: 'fas fa-coins', label: 'Financial Records', name: 'FinancialRecords', path: 'FinancialRecords' },
+  { icon: 'fas fa-calculator', label: 'Budget Management', name: 'BudgetManagement', path: 'AccMyBudgets' },
+  { icon: 'fas fa-receipt', label: 'Receipts', name: 'AccntntGetALlReceipts', path: 'AccntntGetALlReceipts' },
+  { icon: 'fas fa-file-invoice-dollar', label: 'Invoices', name: 'AccManageInvoices', path: 'AccManageInvoices' },
+  
+  
+
+ 
+
+  // { icon: 'fas fa-shield-alt', label: 'Compliance', name: 'accountantComplianceSubmission', path: 'accountantComplianceSubmission' },
   {
-
-    icon: "fas fa-chart-line",
-
-    label: "Dashboard",
-
-    name: "AccountantDashbaord",
-
-    path: "AccountantDashbaord",
-
-    active: false,
-
-  },
-
-  {},
-
-  {
-
-    icon: "fas fa-project-diagram",
-
-    label: "Projects",
-
-    name: "Projects",
-
-    active: false,
-
+    icon: 'fas fa-inbox', label: 'Requests', name: 'RequestsManagement', active: false,
     children: [
-
-      {
-
-        icon: "fas fa-chart-bar",
-
-        label: "Analysis",
-
-        name: "AccViewAnalysis",
-
-        path: "AccViewAnalysis",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-folder-open",
-
-        label: "Project Portfolio",
-
-        name: "AccViewPortfolio",
-
-        path: "AccViewPortofolio",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-money-check-alt",
-
-        label: "Payment Follow-Up",
-
-        name: "AccFollowUp",
-
-        path: "Followup",
-
-        active: false
-
-      }
-
+      { icon: 'fas fa-check-circle', label: 'Approve Requests', name: 'AccManageRequests', path: 'AccManageRequests' },
+      { icon: 'fas fa-clock', label: 'Extension Requests', name: 'AccManageExtendedRequests', path: 'AccManageExtendedRequests' },
     ]
-
   },
-
-  {
-
-    icon: "fas fa-inbox",
-
-    label: "Requests",
-
-    name: "RequestsManagement",
-
-    active: false,
-
-    children: [
-
-      {
-
-        icon: "fas fa-check-circle",
-
-        label: "Approve Requests",
-
-        name: "AccManageRequests",
-
-        path: "AccManageRequests",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-clock",
-
-        label: "Approve Extension Requests",
-
-        name: "AccManageExtendedRequests",
-
-        path: "AccManageExtendedRequests",
-
-        active: false
-
-      }
-
-    ]
-
-  },
-
-  {
-
-    icon: "fas fa-receipt",
-
-    label: "Receipts",
-
-    name: "ReceiptsManagement",
-
-    active: false,
-
-    children: [
-
-      {
-
-        icon: "fas fa-file-invoice",
-
-        label: "View Receipts",
-
-        name: "AccntntGetALlReceipts",
-
-        path: "AccntntGetALlReceipts",
-
-        active: false
-
-      }
-
-    ]
-
-  },
-
-  {
-
-    icon: "fas fa-file-invoice-dollar",
-
-    label: "Invoices",
-
-    name: "InvoicesManagement",
-
-    active: false,
-
-    children: [
-
-      {
-
-        icon: "fas fa-plus-circle",
-
-        label: "Manage Invoices",
-
-        name: "AccManageInvoices",
-
-        path: "AccManageInvoices",
-
-        active: false
-
-      }
-
-    ]
-
-  },
-
-  {
-
-    icon: "fas fa-calculator",
-
-    label: "Budget Management",
-
-    name: "BudgetManagement",
-
-    active: false,
-
-    children: [
-
-      {
-
-        icon: "fas fa-plus-circle",
-
-        label: "Create Budget",
-
-        name: "AccCreateBudget",
-
-        path: "AccCreateBudget",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-list",
-
-        label: "My Budgets",
-
-        name: "AccMyBudgets",
-
-        path: "AccMyBudgets",
-
-        active: false
-
-      }
-
-    ]
-
-  },
-
-  {
-
-    icon: "fas fa-coins",
-
-    label: "Financial Management",
-
-    name: "FinancialManagement",
-
-    active: false,
-
-    children: [
-
-      {
-
-        icon: "fas fa-file-invoice-dollar",
-
-        label: "Financial Records",
-
-        name: "FinancialRecords",
-
-        path: "FinancialRecords",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-tools",
-
-        label: "Financial Maintenance",
-
-        name: "FinancialMaintenance",
-
-        path: "FinancialMaintenance",
-
-        active: false
-
-      }
-
-    ]
-
-  },
-
-  {
-
-    icon: 'mdi-shield-check',
-
-    label: 'Compliance Submission',
-
-    name: 'accountantComplianceSubmission',
-
-    path: 'accountantComplianceSubmission',
-
-    active: false
-
-  },
-
-  {
-
-    icon: "fas fa-calendar-alt",
-
-    label: "Leave Management",
-
-    name: "LeaveManagement",
-
-    path: "AccLeaveManagement",
-
-    active: false
-
-  },
-
-  {
-
-    icon: "fas fa-user",
-
-    label: "Profile",
-
-    name: "UserProfile4",
-
-    path: "UserProfile4",
-
-    active: false
-
-  },
-
-  {
-
-    icon: "fas fa-upload",
-
-    label: "Updates",
-
-    name: "UpdatesManagement",
-
-    active: false,
-
-    children: [
-
-      {
-
-        icon: "fas fa-plus-circle",
-
-        label: "Submit Update",
-
-        name: "AccntantCreateUpdate",
-
-        path: "AccntantCreateUpdate",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-list",
-
-        label: "Manage Updates",
-
-        name: "AccntantViewUpdate",
-
-        path: "AccntantViewUpdate",
-
-        active: false
-
-      },
-
-      
-
-    ]
-
-  },
-
-]);
-
-
-
-const clickNavigation = (navigation, index) => {
-
-  if (hasChild(navigation)) {
-
-    // Close all other navigation menus
-
-    navigations.value.forEach((item, idx) => {
-
-      if (idx !== index && item.name) item.active = false;
-
-    });
-
-    navigations.value[index].active = !navigations.value[index].active;
-
-  } else {
-
-    navigateToPath(navigation);
-
-  }
-
-};
-
-
-
-const navigateToPath = (navigation) => {
-
-  if (hasPath(navigation)) {
-
-    router.push({ name: navigation.path });
-
-  }
-
-};
-
-
-
-const navigateToChild = (child) => {
-
-  if (hasPath(child)) {
-
-    router.push({ name: child.path });
-
-  }
-
-};
-
-
-
-const hasPath = (navigation) => navigation.hasOwnProperty('path');
-
-const hasChild = (navigation) => navigation.children && navigation.children.length > 0;
-
-
-
-const isCurrentRoute = (path) => {
-
-  return currentRoute.name === path;
-
-};
-
-
-
-const getIconWrapperClass = (navigation) => {
-
-  if (!hasChild(navigation) && isCurrentRoute(navigation.path)) {
-
-    return 'is-active';
-
-  }
-
-  return '';
-
-};
-
-
-
+  { icon: 'fas fa-paper-plane', label: 'My Requests', name: 'AccMyRequests', path: 'AccMyRequests' },
+  { icon: 'fas fa-user-circle', label: 'My Profile', name: 'UserProfile4', path: 'UserProfile4' },
+  { icon: 'fas fa-list', label: 'My Updates', name: 'AccntantViewUpdate', path: 'AccntantViewUpdate' },
+])
+
+function isActive(item) {
+  return item.path && route.name === item.path
+}
+
+function isChildActive(item) {
+  return item.children?.some(child => route.name === child.path)
+}
+
+function toggleDropdown(item, index) {
+  navigations.value.forEach((nav, idx) => {
+    if (idx !== index && nav.children) nav.active = false
+  })
+  item.active = !item.active
+}
 </script>
 
-
-
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&display=swap');
 
-.sidebar-container {
-
-  height: 100vh;
+/* ── Root ── */
+.acc-root {
+  --navy:       #1f5aa5;
+  --navy-deep:  #174278;
+  --navy-mid:   #1b4f94;
+  --navy-light: #2468b8;
+  --blue:       #2c6cc0;
+  --blue-lt:    #4a8ce3;
+  --blue-glow:  rgba(44,108,192,.35);
+  --blue-dim:   rgba(44,108,192,.15);
+  --white:      #ffffff;
+  --text-muted: rgba(255,255,255,.90);
+  --text-dim:   rgba(255,255,255,.40);
+  --border:     rgba(255,255,255,.08);
 
   display: flex;
-
   flex-direction: column;
-
-  background: linear-gradient(to bottom, #1e293b, #0f172a);
-
-  color: white;
-
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-
+  height: 100%;
+  width: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(124, 181, 255, 0.24), transparent 22%),
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 58%, #163d71 100%);
+  font-family: 'Nunito Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
   overflow: hidden;
-
-  position: fixed;
-
-  width: 280px;
-
-  top: 0;
-
-  left: 0;
-
-  z-index: 1000;
-
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04);
 }
 
+/* subtle background dot-grid */
+.acc-root::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(180deg, transparent 0%, black 20%, black 80%, transparent 100%);
+}
 
-
-/* Header */
-
-.sidebar-header {
-
-  padding: 1rem 0.75rem;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-
+/* ── BRAND ── */
+.acc-brand {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 18px 18px;
+  border-bottom: 1px solid var(--border);
+  position: relative; z-index: 1;
   flex-shrink: 0;
-
-  min-height: auto;
-
+}
+.acc-brand-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-lt) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: #fff; flex-shrink: 0;
+  box-shadow: 0 4px 14px var(--blue-glow);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.acc-brand-text { display: flex; flex-direction: column; gap: 1px; }
+.acc-brand-name {
+  font-size: 14px; font-weight: 800; color: #fff;
+  letter-spacing: .04em; line-height: 1;
+}
+.acc-brand-role {
+  font-size: 10.5px; color: var(--text-muted);
+  font-weight: 500; letter-spacing: .04em;
 }
 
-
-
-.header-content {
-
-  display: flex;
-
-  align-items: center;
-
+/* ── NAV ── */
+.acc-nav {
+  flex: 1; overflow-y: auto; padding: 12px 10px 8px;
+  position: relative; z-index: 1;
 }
+.acc-nav::-webkit-scrollbar { width: 4px; }
+.acc-nav::-webkit-scrollbar-track { background: transparent; }
+.acc-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 999px; }
 
+.acc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 
+.acc-item { animation: accSlideIn .35s ease both; }
 
-.logo-wrapper {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 0.75rem;
-
+/* Section divider */
+.acc-divider {
+  display: flex; align-items: center; gap: 8px;
+  padding: 16px 8px 6px;
 }
-
-
-
-.logo-icon {
-
-  width: 36px;
-
-  height: 36px;
-
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-
-  border-radius: 8px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 1rem;
-
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-
-}
-
-
-
-.logo-text {
-
-  flex: 1;
-
-}
-
-
-
-.logo-title {
-
-  font-size: 1rem;
-
-  font-weight: 700;
-
-  color: white;
-
-  margin: 0;
-
-  letter-spacing: -0.01em;
-
-}
-
-
-
-.logo-subtitle {
-
-  font-size: 0.625rem;
-
-  color: #94a3b8;
-
-  margin: 0;
-
-  font-weight: 500;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.05em;
-
-}
-
-
-
-/* Navigation Menu */
-
-.nav-menu {
-
-  flex: 1;
-
-  overflow-y: auto;
-
-  overflow-x: hidden;
-
-  padding: 0.5rem 0.5rem;
-
-  min-height: 0;
-
-}
-
-
-
-.nav-menu::-webkit-scrollbar {
-
-  width: 6px;
-
-}
-
-
-
-.nav-menu::-webkit-scrollbar-track {
-
-  background: transparent;
-
-}
-
-
-
-.nav-menu::-webkit-scrollbar-thumb {
-
-  background: rgba(148, 163, 184, 0.3);
-
-}
-
-
-
-.nav-menu::-webkit-scrollbar-thumb:hover {
-
-  background: rgba(148, 163, 184, 0.5);
-
-}
-
-
-
-.nav-list {
-
-  list-style: none;
-
-  margin: 0;
-
-  padding: 0;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 0.125rem;
-
-}
-
-
-
-.nav-item {
-
-  position: relative;
-
-}
-
-
-
-.nav-item.is-empty {
-
-  padding: 0;
-
-}
-
-
-
-.nav-separator {
-
-  height: 1px;
-
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
-
-  margin: 0.5rem 0;
-
-}
-
-
-
-/* Navigation Link */
-
-.nav-link {
-
-  position: relative;
-
-  padding: 0.625rem 0.875rem;
-
-  border-radius: 8px;
-
-  cursor: pointer;
-
-  transition: all 0.2s ease;
-
-  overflow: hidden;
-
-  min-height: 44px;
-
-  display: flex;
-
-  align-items: center;
-
-}
-
-
-
-.nav-link:hover .nav-link-overlay {
-
-  background: rgba(255, 255, 255, 0.05);
-
-}
-
-
-
-.nav-link.is-active {
-
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
-
-  border: 1px solid rgba(16, 185, 129, 0.3);
-
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
-
-}
-
-
-
-.nav-link.is-expanded {
-
-  background: rgba(255, 255, 255, 0.05);
-
-}
-
-
-
-.nav-link-content {
-
-  position: relative;
-
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-  z-index: 1;
-
-}
-
-
-
-.nav-link-left {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 0.75rem;
-
-  flex: 1;
-
-  min-width: 0;
-
-}
-
-
-
-.nav-icon-wrapper {
-
-  width: 32px;
-
-  height: 32px;
-
-  border-radius: 6px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  background: rgba(255, 255, 255, 0.05);
-
-  flex-shrink: 0;
-
-  transition: all 0.2s ease;
-
-}
-
-
-
-.nav-icon-wrapper.is-active {
-
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-
-}
-
-
-
-.nav-icon {
-
-  font-size: 0.875rem;
-
-  color: #94a3b8;
-
-  transition: color 0.2s ease;
-
-}
-
-
-
-.nav-link:hover .nav-icon,
-
-.nav-link.is-active .nav-icon,
-
-.nav-link.is-expanded .nav-icon {
-
-  color: white;
-
-}
-
-
-
-.nav-label {
-
-  font-size: 0.875rem;
-
-  font-weight: 500;
-
-  color: #cbd5e1;
-
-  transition: color 0.2s ease;
-
+.acc-divider span {
+  font-size: 9.5px; font-weight: 800; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--text-dim);
   white-space: nowrap;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
+}
+.acc-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
 }
 
-
-
-.nav-link:hover .nav-label,
-
-.nav-link.is-active .nav-label,
-
-.nav-link.is-expanded .nav-label {
-
-  color: white;
-
+/* ── PARENT ROW ── */
+.acc-parent {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 12px; border-radius: 9px; cursor: pointer;
+  transition: background .18s, color .18s;
+  position: relative; overflow: hidden;
+  border: 1px solid transparent;
+  text-decoration: none; color: inherit;
+}
+.acc-parent:hover {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.06);
 }
 
+/* Active link */
+.acc-parent-active {
+  background: var(--blue-dim) !important;
+  border-color: rgba(26,86,219,.3) !important;
+}
+.acc-parent-active::before {
+  content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 3px; border-radius: 0 3px 3px 0;
+  background: var(--blue-lt);
+  box-shadow: 0 0 8px var(--blue-glow);
+}
+.acc-parent-active .acc-icon-wrap { color: var(--blue-lt); }
+.acc-parent-active .acc-label     { color: #fff; font-weight: 700; }
 
+.acc-parent-left { display: flex; align-items: center; gap: 11px; }
 
-.nav-link-right {
+.acc-icon-wrap {
+  width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: rgba(255,255,255,.72);
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.08);
+  transition: color .18s, background .18s;
+}
+.acc-parent:hover .acc-icon-wrap { color: #fff; background: rgba(255,255,255,.16); }
 
-  display: flex;
+.acc-label {
+  font-size: 13px; font-weight: 600; color: rgba(255,255,255,.90);
+  transition: color .18s; white-space: nowrap;
+}
+.acc-parent:hover .acc-label { color: #fff; }
 
-  align-items: center;
-
-  gap: 0.5rem;
-
+/* Chevron */
+.acc-chevron {
+  width: 16px; height: 16px; color: rgba(255,255,255,.40);
+  transition: transform .25s ease, color .18s;
   flex-shrink: 0;
-
 }
+.acc-chevron-open { transform: rotate(180deg); }
+.acc-parent:hover .acc-chevron { color: rgba(255,255,255,.72); }
 
-
-
-.active-dot {
-
-  width: 6px;
-
-  height: 6px;
-
-  background: #10b981;
-
-  border-radius: 50%;
-
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-
-  animation: pulse 2s infinite;
-
+/* ── CHILDREN ── */
+.acc-children {
+  list-style: none; margin: 2px 0 0; padding: 0 0 0 14px;
+  border-left: 2px solid rgba(255,255,255,.08);
+  margin-left: 20px;
+  display: flex; flex-direction: column; gap: 1px;
 }
-
-
-
-@keyframes pulse {
-
-  0%, 100% {
-
-    opacity: 1;
-
-  }
-
-  50% {
-
-    opacity: 0.5;
-
-  }
-
+.acc-child {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 7px;
+  text-decoration: none; color: rgba(255,255,255,.72);
+  transition: background .18s, color .18s;
+  font-size: 12.5px; font-weight: 500;
 }
-
-
-
-.expand-icon {
-
-  font-size: 0.75rem;
-
-  color: #64748b;
-
-  transition: all 0.3s ease;
-
+.acc-child:hover { background: rgba(255,255,255,.06); color: #fff; }
+.acc-child-active {
+  background: var(--blue-dim) !important;
+  color: #fff !important;
+  border-left: 2px solid var(--blue-lt);
 }
-
-
-
-.nav-link:hover .expand-icon,
-
-.nav-link.is-expanded .expand-icon {
-
-  color: #94a3b8;
-
-}
-
-
-
-.nav-link-overlay {
-
-  position: absolute;
-
-  inset: 0;
-
-  background: transparent;
-
-  transition: background 0.2s ease;
-
-  pointer-events: none;
-
-}
-
-
-
-/* Child List */
-
-.child-list {
-
-  list-style: none;
-
-  margin: 0.125rem 0 0 0;
-
-  padding: 0 0 0 0.5rem;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 0.0625rem;
-
-  border-left: 2px solid rgba(255, 255, 255, 0.1);
-
-  margin-left: 1rem;
-
-}
-
-
-
-.child-item {
-
-  position: relative;
-
-}
-
-
-
-.child-link {
-
-  position: relative;
-
-  padding: 0.625rem 0.875rem;
-
-  border-radius: 6px;
-
-  cursor: pointer;
-
-  transition: all 0.2s ease;
-
-  overflow: hidden;
-
-}
-
-
-
-.child-link:hover .child-link-overlay {
-
-  background: rgba(255, 255, 255, 0.05);
-
-}
-
-
-
-.child-link.is-active {
-
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
-
-  border-left: 2px solid #10b981;
-
-}
-
-
-
-.child-link-content {
-
-  position: relative;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 0.625rem;
-
-  z-index: 1;
-
-}
-
-
-
-.child-icon-wrapper {
-
-  width: 24px;
-
-  height: 24px;
-
-  border-radius: 4px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  background: rgba(255, 255, 255, 0.05);
-
-  flex-shrink: 0;
-
-}
-
-
-
-.child-icon {
-
-  font-size: 0.75rem;
-
-  color: #64748b;
-
-  transition: color 0.2s ease;
-
-}
-
-
-
-.child-link:hover .child-icon,
-
-.child-link.is-active .child-icon {
-
-  color: #94a3b8;
-
-}
-
-
-
-.child-label {
-
-  font-size: 0.8125rem;
-
-  font-weight: 500;
-
-  color: #94a3b8;
-
-  transition: color 0.2s ease;
-
-  flex: 1;
-
-  white-space: nowrap;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-}
-
-
-
-.child-link:hover .child-label,
-
-.child-link.is-active .child-label {
-
-  color: #cbd5e1;
-
-}
-
-
-
-.child-active-dot {
-
-  width: 5px;
-
-  height: 5px;
-
-  background: #10b981;
-
-  border-radius: 50%;
-
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
-
-  flex-shrink: 0;
-
-}
-
-
-
-.child-link-overlay {
-
-  position: absolute;
-
-  inset: 0;
-
-  background: transparent;
-
-  transition: background 0.2s ease;
-
-  pointer-events: none;
-
-}
-
-
-
-/* Footer */
-
-.sidebar-footer {
-
-  padding: 0.75rem;
-
+.acc-child-icon { font-size: 11px; width: 16px; text-align: center; }
+.acc-child-label { white-space: nowrap; }
+
+/* Dropdown transitions */
+.acc-dropdown-enter-active { transition: all .25s ease-out; }
+.acc-dropdown-leave-active { transition: all .18s ease-in; }
+.acc-dropdown-enter-from, .acc-dropdown-leave-to { opacity: 0; max-height: 0; overflow: hidden; }
+.acc-dropdown-enter-to, .acc-dropdown-leave-from { opacity: 1; max-height: 500px; }
+
+/* ── FOOTER ── */
+.acc-footer {
+  padding: 12px 14px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-
+  position: relative; z-index: 1;
   flex-shrink: 0;
-
-  min-height: auto;
-
+  background: linear-gradient(180deg, rgba(69, 126, 205, 0.15), rgba(34, 86, 157, 0.2));
 }
-
-
-
-.footer-content {
-
-  background: rgba(255, 255, 255, 0.05);
-
-  border-radius: 8px;
-
-  padding: 0.625rem;
-
+.acc-footer-user { display: flex; align-items: center; gap: 10px; }
+.acc-footer-avatar {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: rgba(255,255,255,.72);
 }
+.acc-footer-info { display: flex; flex-direction: column; gap: 1px; }
+.acc-footer-name { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.85); }
+.acc-footer-year { font-size: 10px; color: rgba(255,255,255,.45); }
 
-
-
-.user-info {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 0.75rem;
-
+@keyframes accSlideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-
-
-
-.user-avatar {
-
-  width: 36px;
-
-  height: 36px;
-
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-
-  border-radius: 50%;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 0.875rem;
-
-  flex-shrink: 0;
-
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-
-}
-
-
-
-.user-details {
-
-  flex: 1;
-
-  min-width: 0;
-
-}
-
-
-
-.user-name {
-
-  font-size: 0.875rem;
-
-  font-weight: 600;
-
-  color: white;
-
-  margin: 0;
-
-  white-space: nowrap;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-}
-
-
-
-.user-role {
-
-  font-size: 0.6875rem;
-
-  color: #94a3b8;
-
-  margin: 0;
-
-  font-weight: 500;
-
-  white-space: nowrap;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-}
-
-
-
-/* Transitions */
-
-.transition-all {
-
-  transition-property: all;
-
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-
-}
-
-
-
-.duration-300 {
-
-  transition-duration: 300ms;
-
-}
-
-
-
-.duration-200 {
-
-  transition-duration: 200ms;
-
-}
-
-
-
-.ease-out {
-
-  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
-
-}
-
-
-
-.ease-in {
-
-  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
-
-}
-
-
-
-.opacity-0 {
-
-  opacity: 0;
-
-}
-
-
-
-.opacity-100 {
-
-  opacity: 1;
-
-}
-
-
-
-.max-h-0 {
-
-  max-height: 0;
-
-}
-
-
-
-.max-h-\[1000px\] {
-
-  max-height: 1000px;
-
-}
-
 </style>

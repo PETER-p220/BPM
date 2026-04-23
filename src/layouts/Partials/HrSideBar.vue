@@ -294,165 +294,6 @@ const navigations = ref([
 
   {},
 
-  {
-
-    icon: "fas fa-file-contract",
-
-    label: "Tenders",
-
-    name: "TendersManagement",
-
-    active: false,
-
-    children: [
-
-      {
-
-        icon: "fas fa-list",
-
-        label: "View Registered Tenders",
-
-        name: "HrViewRegisteredTenders",
-
-        path: "HrViewReisteredTenders",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-paper-plane",
-
-        label: "View Submitted Tenders",
-
-        name: "HrViewSubmittedTenders",
-
-        path: "HrViewSubmittedTenders",
-
-        active: false
-
-      }
-
-    ]
-
-  },
-
-  {
-
-    icon: "fas fa-file-signature",
-
-    label: "Contracts",
-
-    name: "ContractsManagement",
-
-    active: false,
-
-    children: [
-
-      {
-
-        icon: "fas fa-layer-group",
-
-        label: "Manage Contracts",
-
-        name: "HrManageContracts",
-
-        path: "ManageContracts",
-
-        active: false
-
-      }
-
-    ]
-
-  },
-
-  {
-
-    icon: "fas fa-project-diagram",
-
-    label: "Projects",
-
-    name: "ProjectsManagement",
-
-    active: false,
-
-    children: [
-
-      {
-
-        icon: "fas fa-plus-circle",
-
-        label: "Assign Projects",
-
-        name: "HrAssignProjects",
-
-        path: "HrAssignProject",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-tasks",
-
-        label: "Manage Projects",
-
-        name: "HrManageProjects",
-
-        path: "HrManageProject",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-folder-open",
-
-        label: "Project Portfolio",
-
-        name: "HrProjectPortfolio",
-
-        path: "ProjectPortofolio",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-envelope",
-
-        label: "View Requests",
-
-        name: "HrViewProjectRequests",
-
-        path: "HrViewProjectRequests",
-
-        active: false
-
-      },
-
-      {
-
-        icon: "fas fa-clock",
-
-        label: "View Extension Requests",
-
-        name: "HrViewExtensionRequests",
-
-        path: "HrViewExtentions",
-
-        active: false
-
-      }
-
-    ]
-
-  },
 
   {
 
@@ -468,23 +309,9 @@ const navigations = ref([
 
       {
 
-        icon: "fas fa-plus-circle",
-
-        label: "Submit Update",
-
-        name: "HrCreateUpdate",
-
-        path: "HrCreateUpdate",
-
-        active: false
-
-      },
-
-      {
-
         icon: "fas fa-list",
 
-        label: "Manage Updates",
+        label: "My Updates",
 
         name: "HrViewUpdates",
 
@@ -685,6 +512,20 @@ const navigations = ref([
       }
 
     ]
+
+  },
+
+  {
+
+    icon: "fas fa-paper-plane",
+
+    label: "My Requests",
+
+    name: "HrMyRequests",
+
+    path: "HrMyRequests",
+
+    active: false
 
   },
 

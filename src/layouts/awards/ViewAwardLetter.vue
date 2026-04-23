@@ -1,36 +1,43 @@
 <template>
-  <div class="award-letters py-8 md:py-10 bg-gray-50 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="award-letters min-h-screen font-['DM_Sans',sans-serif]" style="background:radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%)">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
       <!-- Header -->
-      <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Award Letters</h1>
-          <p class="mt-1 text-gray-600">Manage and track awarded tender letters</p>
-        </div>
+      <div class="mb-8 rounded-2xl px-6 py-5 shadow-sm border border-[#dce7f3]" style="background:linear-gradient(135deg,#eef5ff 0%,#ffffff 46%,#f7fbff 100%)">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-2xl bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] flex items-center justify-center text-white shadow-md">
+              <i class="fas fa-file-contract text-lg"></i>
+            </div>
+            <div>
+              <h1 class="text-xl md:text-2xl font-bold text-[#183b63]">Award Letters</h1>
+              <p class="text-[13px] text-[#7a93af]">Manage and track awarded tender letters</p>
+            </div>
+          </div>
 
-        <router-link to="/create/awarding-letter">
-          <button class="btn-primary flex items-center gap-2">
-            <i class="fas fa-plus"></i>
-            Create Award Letter
-          </button>
-        </router-link>
+          <router-link to="/create/awarding-letter">
+            <button class="bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-[0_12px_24px_rgba(35,96,182,0.22)] hover:shadow-lg transition-all flex items-center gap-2">
+              <i class="fas fa-plus"></i>
+              Create Award Letter
+            </button>
+          </router-link>
+        </div>
       </div>
 
       <!-- Controls -->
-      <div class="mb-6 bg-white shadow rounded-lg p-4 border border-gray-200">
+      <div class="mb-6 bg-white rounded-2xl p-4 shadow-sm border border-[#dce7f3]">
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="relative flex-1">
             <input
               v-model="filter"
               type="text"
               placeholder="Search by tender title..."
-              class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              class="w-full pl-10 pr-10 py-2.5 border border-[#d9e6f3] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2f78dd]/30 focus:border-[#2f78dd] transition text-[#183b63] placeholder:text-[#a4b8cf]"
             />
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-[#a4b8cf]"></i>
             <button
               v-if="filter"
               @click="filter = ''"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#a4b8cf] hover:text-[#183b63]"
             >
               <i class="fas fa-times"></i>
             </button>
@@ -39,61 +46,63 @@
       </div>
 
       <!-- Loading -->
-      <div v-if="isLoading" class="bg-white shadow rounded-xl p-12 text-center">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-blue-600 border-gray-200"></div>
-        <p class="mt-4 text-gray-600">Loading award letters...</p>
+      <div v-if="isLoading" class="bg-white rounded-2xl p-12 text-center shadow-sm border border-[#dce7f3]">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-t-[#2f78dd] border-[#edf4fb]"></div>
+        <p class="mt-4 text-[#7a93af]">Loading award letters...</p>
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="paginatedData.length === 0" class="bg-white shadow rounded-xl p-12 text-center">
-        <i class="fas fa-file-contract text-6xl text-gray-300 mb-4"></i>
-        <h3 class="text-xl font-medium text-gray-700">
+      <div v-else-if="paginatedData.length === 0" class="bg-white rounded-2xl p-12 text-center shadow-sm border border-[#dce7f3]">
+        <div class="w-14 h-14 bg-[#edf4fb] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-file-contract text-[#7d94ac] text-2xl"></i>
+        </div>
+        <h3 class="text-[15px] font-semibold text-[#183b63]">
           {{ filter ? 'No matching award letters found' : 'No award letters yet' }}
         </h3>
-        <p class="mt-2 text-gray-500">
+        <p class="mt-2 text-[13px] text-[#7a93af]">
           {{ filter ? 'Try adjusting your search.' : 'Create your first award letter to get started.' }}
         </p>
-        <router-link to="/create/awarding-letter" class="mt-6 inline-block btn-primary">
+        <router-link to="/create/awarding-letter" class="mt-6 inline-block bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all">
           Create Award Letter
         </router-link>
       </div>
 
       <!-- Table -->
-      <div v-else class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
+      <div v-else class="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#dce7f3]">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+          <table class="min-w-full divide-y divide-[#edf2fa]">
+            <thead class="bg-[#f7faff]">
               <tr>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">No</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tender</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Award Letter File</th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Created At</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">No</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Tender</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Award Letter File</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold text-[#7d94ac] uppercase tracking-[0.18em]">Created At</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-[#edf2fa]">
               <tr
                 v-for="(letter, index) in paginatedData"
                 :key="letter.award_id"
-                class="hover:bg-gray-50 transition-colors"
+                class="hover:bg-[#f7faff] transition-colors"
               >
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#67819d] font-medium">
                   {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#183b63]">
                   {{ letter.tender?.title || '—' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <button
                     v-if="letter.awardletter_file"
                     @click="downloadAwardLetterFile(letter.awardletter_file)"
-                    class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-green-700 bg-green-50 rounded-md hover:bg-green-100 transition"
+                    class="inline-flex items-center px-3 py-1.5 text-sm font-semibold text-[#2f78dd] bg-[#edf4fb] rounded-xl hover:bg-[#dce7f3] transition"
                   >
                     <i class="fas fa-download mr-1.5"></i>
                     Download PDF
                   </button>
-                  <span v-else class="text-gray-400">—</span>
+                  <span v-else class="text-[#a4b8cf]">—</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4a6a8a]">
                   {{ formatDate(letter.created_at) || '—' }}
                 </td>
               </tr>
@@ -102,25 +111,25 @@
         </div>
 
         <!-- Pagination -->
-        <div class="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200 bg-gray-50">
-          <div class="text-sm text-gray-700">
-            Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
-            <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredData.length) }}</span> of
-            <span class="font-medium">{{ filteredData.length }}</span> letters
+        <div class="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#e4edf7] bg-[#f7faff]">
+          <div class="text-[13px] text-[#7a93af]">
+            Showing <span class="font-semibold text-[#183b63]">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
+            <span class="font-semibold text-[#183b63]">{{ Math.min(currentPage * itemsPerPage, filteredData.length) }}</span> of
+            <span class="font-semibold text-[#183b63]">{{ filteredData.length }}</span> letters
           </div>
 
           <div class="flex gap-2">
             <button
               :disabled="currentPage === 1"
               @click="changePage(currentPage - 1)"
-              class="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
+              class="px-4 py-2 text-sm font-semibold rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 transition"
             >
               Previous
             </button>
             <button
               :disabled="currentPage * itemsPerPage >= filteredData.length"
               @click="changePage(currentPage + 1)"
-              class="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 transition"
+              class="px-4 py-2 text-sm font-semibold rounded-xl border border-[#d9e6f3] bg-white text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40 transition"
             >
               Next
             </button>
@@ -248,7 +257,7 @@ function exportToPDF() {
       body: tableData,
       startY: 30,
       styles: { fontSize: 9, cellPadding: 3 },
-      headStyles: { fillColor: [40, 58, 83] },
+      headStyles: { fillColor: [25, 79, 146] },
       alternateRowStyles: { fillColor: [245, 247, 250] }
     })
 
@@ -262,47 +271,5 @@ function exportToPDF() {
 </script>
 
 <style scoped>
-.btn-primary {
-  background-color: #1e293b;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary:hover {
-  background-color: #0f172a;
-}
-
-.btn-export {
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-  border: 1px solid;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn-export.excel {
-  border-color: #16a34a;
-  color: #166534;
-}
-
-.btn-export.excel:hover {
-  background-color: #f0fdf4;
-}
-
-.btn-export.pdf {
-  border-color: #dc2626;
-  color: #991b1b;
-}
-
-.btn-export.pdf:hover {
-  background-color: #fef2f2;
-}
+/* Budget design system - scoped styles removed, all inline */
 </style>

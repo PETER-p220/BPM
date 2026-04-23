@@ -1,35 +1,30 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 px-4 py-8 sm:px-6 lg:px-8">
+  <div class="min-h-screen font-['DM_Sans',sans-serif] px-4 py-8 sm:px-6 lg:px-8" style="background:radial-gradient(circle at top right,rgba(48,120,221,0.08),transparent 22%),linear-gradient(180deg,#eff5fb 0%,#eaf1f8 100%)">
     <div class="mx-auto max-w-7xl">
 
       <!-- Header -->
-      <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-            All Projects
-          </h1>
-          <p class="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
-            Overview and management of all assigned projects
-          </p>
+      <div class="mb-8 rounded-2xl px-6 py-5 shadow-sm border border-[#dce7f3]" style="background:linear-gradient(135deg,#eef5ff 0%,#ffffff 46%,#f7fbff 100%)">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 class="text-xl md:text-2xl font-bold text-[#183b63]">All Projects</h1>
+            <p class="text-[13px] text-[#7a93af]">Overview and management of all assigned projects</p>
+          </div>
+          <router-link to="/assign/project">
+            <button class="bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-[0_12px_24px_rgba(35,96,182,0.22)] hover:shadow-lg transition-all flex items-center gap-2">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Assign New Project
+            </button>
+          </router-link>
         </div>
-
-        <router-link to="/assign/project">
-          <button
-            class="inline-flex items-center gap-2 rounded-lg bg-gray-800 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2"
-          >
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Assign New Project
-          </button>
-        </router-link>
       </div>
 
       <!-- Search + Export -->
       <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="relative flex-1 max-w-md">
           <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="h-5 w-5 text-[#a4b8cf]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
@@ -37,124 +32,102 @@
             v-model="filter"
             type="text"
             placeholder="Search by name, status, contract..."
-            class="block w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 sm:text-sm"
+            class="block w-full rounded-xl border border-[#d9e6f3] bg-white py-2.5 pl-11 pr-4 text-[#183b63] placeholder:text-[#a4b8cf] focus:border-[#2f78dd] focus:ring-1 focus:ring-[#2f78dd]/30 sm:text-sm"
           />
         </div>
 
         <div class="flex flex-wrap gap-3">
           <button
             @click="exportToExcel"
-            class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            class="px-4 py-2.5 rounded-xl font-semibold text-sm border border-[#1f9d8b]/30 text-[#1f9d8b] bg-[#edfaf7] hover:bg-[#d4f3ec] transition-all flex items-center gap-2"
           >
-            <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="h-4 w-4 text-[#1f9d8b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Export Excel
+            Excel
           </button>
 
           <button
             @click="exportToPDF"
-            class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            class="px-4 py-2.5 rounded-xl font-semibold text-sm border border-[#e87461]/30 text-[#e87461] bg-[#fef2f0] hover:bg-[#fde3df] transition-all flex items-center gap-2"
           >
-            <svg class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="h-4 w-4 text-[#e87461]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Export PDF
+            PDF
           </button>
         </div>
       </div>
 
       <!-- Table Card -->
-      <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div class="overflow-hidden rounded-2xl border border-[#dce7f3] bg-white shadow-sm">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-800">
+          <table class="min-w-full divide-y divide-[#edf2fa]">
+            <thead class="bg-[#f7faff]">
               <tr>
-                <th class="w-12 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  No
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Project Name
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Engineer
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Created By
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Start Date
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  End Date
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Contract
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Created At
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Status
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Follow Up
-                </th>
-                <th class="w-24 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Action
-                </th>
+                <th class="w-12 px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">No</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Project Name</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Engineer</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Created By</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Start Date</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">End Date</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Contract</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Created At</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Status</th>
+                <th class="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Follow Up</th>
+                <th class="w-24 px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d94ac]">Action</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody class="divide-y divide-[#edf2fa]">
               <tr
                 v-for="(project, index) in paginatedProjects"
                 :key="project.project_id"
-                class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
+                class="hover:bg-[#f7faff] transition-colors"
               >
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-[#67819d] font-medium">
                   {{ index + 1 + (currentPage - 1) * itemsPerPage }}
                 </td>
                 <td class="px-6 py-4">
                   <button
                     @click="openProjectModal(project.project_id)"
-                    class="text-teal-600 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300 font-medium hover:underline"
+                    class="text-[#1f9d8b] hover:text-[#194f92] font-semibold hover:underline"
                   >
                     {{ project.project_name }}
                   </button>
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-[#183b63]">
                   {{ project.user.name }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-[#183b63]">
                   {{ project.created_by }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-[#4a6a8a]">
                   {{ formatDate(project.start_date) }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-[#4a6a8a]">
                   {{ formatDate(project.end_date) }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-[#4a6a8a]">
                   {{ project.contract.title }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-[#4a6a8a]">
                   {{ formatDate(project.created_at) }}
                 </td>
                 <td class="whitespace-nowrap px-6 py-4">
                   <span
                     :class="statusBadgeClass(project.project_status)"
-                    class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-semibold tracking-[0.18em]"
                   >
                     {{ project.project_status }}
                   </span>
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-[#4a6a8a]">
                   {{ project.follow_up }}
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-sm">
                   <button
                     @click="editProject(project.project_id)"
-                    class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+                    class="text-[#7a93af] hover:text-[#194f92]"
                     title="Edit Project"
                   >
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -170,12 +143,14 @@
         <!-- Empty state -->
         <div
           v-if="paginatedProjects.length === 0"
-          class="py-16 text-center text-gray-500 dark:text-gray-400"
+          class="py-16 text-center"
         >
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m4-8V8a4 4 0 00-8 0v1m-4 8h16a2 2 0 002-2v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2z" />
-          </svg>
-          <p class="mt-4 text-lg font-medium">
+          <div class="w-14 h-14 bg-[#edf4fb] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="h-8 w-8 text-[#7d94ac]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m4-8V8a4 4 0 00-8 0v1m-4 8h16a2 2 0 002-2v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <p class="text-[15px] font-semibold text-[#183b63]">
             {{ filter ? 'No matching projects found' : 'No projects yet' }}
           </p>
         </div>
@@ -183,20 +158,20 @@
 
       <!-- Pagination -->
       <div v-if="filteredProjects.length > itemsPerPage" class="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
-        <div class="text-sm text-gray-600 dark:text-gray-300">
+        <div class="text-[13px] text-[#7a93af]">
           Showing
-          <span class="font-medium text-gray-900 dark:text-gray-100">
+          <span class="font-semibold text-[#183b63]">
             {{ (currentPage - 1) * itemsPerPage + 1 }}–{{ Math.min(currentPage * itemsPerPage, filteredProjects.length) }}
           </span>
           of
-          <span class="font-medium text-gray-900 dark:text-gray-100">{{ filteredProjects.length }}</span>
+          <span class="font-semibold text-[#183b63]">{{ filteredProjects.length }}</span>
         </div>
 
         <div class="flex items-center gap-1.5">
           <button
             :disabled="currentPage === 1"
             @click="changePage(currentPage - 1)"
-            class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+            class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d9e6f3] text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40"
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -208,10 +183,10 @@
             :key="page"
             @click="changePage(page)"
             :class="[
-              'flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors',
+              'flex h-9 w-9 items-center justify-center rounded-xl text-sm font-semibold transition-colors',
               page === currentPage
-                ? 'bg-teal-600 text-white shadow-sm'
-                : 'border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800'
+                ? 'bg-[linear-gradient(135deg,#194f92_0%,#2f78dd_100%)] text-white border-[#2f78dd] shadow-md'
+                : 'border border-[#d9e6f3] text-[#4a6a8a] hover:bg-[#f7faff]'
             ]"
           >
             {{ page }}
@@ -220,7 +195,7 @@
           <button
             :disabled="currentPage * itemsPerPage >= filteredProjects.length"
             @click="changePage(currentPage + 1)"
-            class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+            class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d9e6f3] text-[#4a6a8a] hover:bg-[#f7faff] disabled:opacity-40"
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

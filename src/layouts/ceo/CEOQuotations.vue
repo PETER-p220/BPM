@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900 font-['DM_Sans',sans-serif]">
+  <div class="min-h-screen bg-white font-['DM_Sans',sans-serif]">
     <!-- Header -->
     <div class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
       <div class="max-w-7xl mx-auto px-6 py-4">
@@ -14,7 +14,7 @@
               <span class="text-slate-500 dark:text-slate-400">Total:</span>
               <span class="font-bold text-slate-900 dark:text-white">{{ quotations.length }}</span>
             </div>
-            <button @click="exportData" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors flex items-center gap-2">
+            <button @click="exportData" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
@@ -36,7 +36,7 @@
             :class="[
               'px-6 py-2.5 rounded-lg text-sm font-semibold transition-all',
               activeTab === tab.value
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-red-600 text-white shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
             ]"
           >
@@ -58,7 +58,7 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search quotations..."
-            class="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            class="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         
@@ -66,7 +66,7 @@
           <button
             @click="approveSelected"
             :disabled="selectedQuotations.length === 0"
-            class="px-4 py-2.5 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center gap-2"
+            class="px-4 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center gap-2"
           >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
